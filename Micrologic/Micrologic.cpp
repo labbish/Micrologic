@@ -6,11 +6,10 @@
 
 using namespace std;
 
-Blocks blocks;
 bool Exit = 0;
 bool Echo = 1;
 
-void command(string cmd) {
+void command(Blocks& blocks, string cmd) {
 	std::stringstream ss(cmd);
 	std::string s;
 	std::vector<std::string> args;
@@ -195,7 +194,7 @@ void command(string cmd) {
 			char fcmd[1000];
 			printf("\n");
 			while (fin.getline(fcmd, 1000)) {
-				command(fcmd);
+				command(blocks, fcmd);
 			}
 			printf("\n\n");
 		}
@@ -219,14 +218,24 @@ void command(string cmd) {
 }
 
 int main(int argc, const char* argv[]) {
+	//test
+	Blocks blocks;
+	blocks.add({ Blocks() });
+	command(blocks, "line 4");
+	command(blocks.Bs[0], "open C:/Users/14354/source/repos/Micrologic/plus.mcl");
+	blocks.Bs[0].inputLines.push_back(&(blocks.L[0]));
+	blocks.Bs[0].inputLines.push_back(&(blocks.L[1]));
+	blocks.Bs[0].outputLines.push_back(&(blocks.L[2]));
+	blocks.Bs[0].outputLines.push_back(&(blocks.L[3]));
+
 	if (argc == 2) {
-		command("open " + string(argv[1]));
+		command(blocks, "open " + string(argv[1]));
 	}
 	while (1) {
 		printf(">>>");
 		string cmd;
 		getline(cin, cmd);
-		command(cmd);
+		command(blocks, cmd);
 		if (Exit == 1) break;
 	}
 }
