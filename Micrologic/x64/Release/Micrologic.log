@@ -1,14 +1,8 @@
-﻿  Block.cpp
-  BlockA.cpp
-  BlockN.cpp
-  BlockR.cpp
-  Blocks.cpp
-  BlockT.cpp
-  Line.cpp
+﻿  Blocks.cpp
   Micrologic.cpp
   正在生成代码
-  617 of 920 functions (67.1%) were compiled, the rest were copied from previous compilation.
-    198 functions were new in current compilation
-    12 functions had inline decision re-evaluated but remain unchanged
+  129 of 1104 functions (11.7%) were compiled, the rest were copied from previous compilation.
+    114 functions were new in current compilation
+    97 functions had inline decision re-evaluated but remain unchanged
   已完成代码的生成
   Micrologic.vcxproj -> C:\Users\14354\source\repos\Micrologic\x64\Release\Micrologic.exe

@@ -104,6 +104,55 @@ void command(string cmd) {
 			if (Echo) printf("Set value of No.%d line to %d\n", a, (bool)b);
 		}
 	}
+	else if (args[0] == "input:" && args.size() >= 2) {
+		int a = -1;
+		try {
+			a = atoi(args[1].c_str());
+		}
+		catch (...) {}
+		if (a >= 0 && a < blocks.L.size()) {
+			blocks.addInput({ a });
+			if (Echo) printf("Added line No.%d as input line No.%d.\n", a, int(blocks.inputs.size() - 1));
+		}
+	}
+	else if (args[0] == "input" && args.size() >= 3) {
+		int a = -1, b = -1;
+		try {
+			a = atoi(args[1].c_str());
+			b = atoi(args[2].c_str());
+		}
+		catch (...) {}
+		if (a >= 0 && a < blocks.inputs.size()) {
+			if (b == 0 || b == 1) {
+				blocks.input(a, b);
+				printf("Inputed value %d to input line No.%d.\n", b, a);
+			}
+		}
+	}
+	else if (args[0] == "output:" && args.size() >= 2) {
+		int a = -1;
+		try {
+			a = atoi(args[1].c_str());
+		}
+		catch (...) {}
+		if (a >= 0 && a < blocks.L.size()) {
+			blocks.addOutput({ a });
+			if (Echo) printf("Added line No.%d as output line No.%d.\n", a, int(blocks.outputs.size() - 1));
+		}
+	}
+	else if (args[0] == "output" && args.size() == 1) {
+		printf("Value of output lines are: ");
+		for (bool l : blocks.output()) printf("%d ", l);
+		printf("\n");
+	}
+	else if (args[0] == "output" && args.size() >= 2) {
+		int a = -1;
+		try {
+			a = atoi(args[1].c_str());
+		}
+		catch (...) {}
+		if (a >= 0 && a < blocks.outputs.size()) printf("Value of No.%d output line is %d\n", a, blocks.output(a));
+	}
 	else if (args[0] == "tick" && args.size() == 1) {
 		blocks.tick();
 		if (Echo) printf("Ticked.\n");

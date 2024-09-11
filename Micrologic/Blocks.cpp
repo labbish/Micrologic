@@ -35,3 +35,27 @@ void Blocks::clear() {
 	std::vector<BlockR>().swap(R);
 	std::vector<BlockT>().swap(T);
 }
+
+void Blocks::addInput(std::vector<int> inputs) {
+	for (int i : inputs) this->inputs.push_back(i);
+}
+
+void Blocks::addOutput(std::vector<int> outputs) {
+	for (int i : outputs) this->outputs.push_back(i);
+}
+
+void Blocks::input(int order, bool value) {
+	this->L[inputs[order]].value = this->L[inputs[order]].nextValue = value;
+}
+
+bool Blocks::output(int order) {
+	return this->L[outputs[order]].value;
+}
+
+std::vector<bool> Blocks::output() {
+	std::vector<bool> outs;
+	for (int i : outputs) {
+		outs.push_back(L[i].value);
+	}
+	return outs;
+}

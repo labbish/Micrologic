@@ -7,11 +7,18 @@
 
 class Blocks {
 public:
+	std::vector<int> inputs;
+	std::vector<int> outputs;
 	std::vector<Line> L;
 	std::vector<BlockN> N;
 	std::vector<BlockA> A;
 	std::vector<BlockR> R;
 	std::vector<BlockT> T;
+	void addInput(std::vector<int> inputs);
+	void addOutput(std::vector<int> outputs);
+	void input(int order, bool value);
+	bool output(int order);
+	std::vector<bool> output();
 	void add(std::vector<Line> L);
 	void add(std::vector<BlockN> N);
 	void add(std::vector<BlockA> A);

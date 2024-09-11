@@ -2,11 +2,10 @@ echo binary one digit a+b problem
 echo input: Line 0&1
 echo output: Line 12&13
 echo sample:
-echo set 0 1
-echo set 1 1
-echo tick 6
-echo check 12
-echo check 13
+echo >>>input 0 1
+echo >>>input 1 1
+echo >>>tick 6
+echo >>>output
 @echo 0
 
 line 14
@@ -21,5 +20,9 @@ R 6 7 13
 T 9 10
 T 10 11
 T 11 12
+input: 0
+input: 1
+output: 12
+output: 13
 
 @echo 1
