@@ -25,7 +25,6 @@ void Blocks::add(std::vector<Blocks> Bs) {
 }
 
 void Blocks::tick() {
-	//printf("S%d,%d\n", int(inputLines.size()), int(outputLines.size()));
 	for (int i = 0; i < inputLines.size(); i++) L[inputs[i]].nextValue = L[inputs[i]].value = inputLines[i]->value;
 	for (int i = 0; i < N.size(); i++) N[i].tick();
 	for (int i = 0; i < A.size(); i++) A[i].tick();
@@ -34,7 +33,6 @@ void Blocks::tick() {
 	for (int i = 0; i < Bs.size(); i++) Bs[i].tick();
 	for (int i = 0; i < L.size(); i++) L[i].flush();
 	for (int i = 0; i < outputLines.size(); i++) outputLines[i]->nextValue = outputLines[i]->value = L[outputs[i]].value;
-	printf("\n");
 }
 
 void Blocks::clear() {
