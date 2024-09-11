@@ -1,0 +1,59 @@
+{
+  "version": "2.1.0",
+  "$schema": "https://schemastore.azurewebsites.net/schemas/json/sarif-2.1.0-rtm.5.json",
+  "runs": [
+    {
+      "results": [],
+      "tool": {
+        "driver": {
+          "name": "PREfast",
+          "fullName": "PREfast Code Analysis",
+          "version": "14.42.34226.3",
+          "informationUri": "https://aka.ms/cpp/ca"
+        }
+      },
+      "invocations": [
+        {
+          "executionSuccessful": true
+        }
+      ],
+      "artifacts": [
+        {
+          "location": {
+            "uri": "file:///c:/users/14354/source/repos/micrologic/micrologic/blockn.cpp"
+          },
+          "roles": [
+            "analysisTarget"
+          ],
+          "hashes": {
+            "sha-256": "0e68c7c0a2232a4be08418121f5ebd96e07383d09eb0738c870b2a00006b793a"
+          }
+        },
+        {
+          "location": {
+            "uri": "file:///c:/users/14354/source/repos/micrologic/micrologic/blockn.h"
+          },
+          "hashes": {
+            "sha-256": "6e495c0299d5041e0bbcc47662e1ad857e9ccdad9c66e73148963ae31144a018"
+          }
+        },
+        {
+          "location": {
+            "uri": "file:///c:/users/14354/source/repos/micrologic/micrologic/block.h"
+          },
+          "hashes": {
+            "sha-256": "0ec254a5a24dc51566cb57615ce89785f10e0d085b20f29e421b98fa52db13f9"
+          }
+        },
+        {
+          "location": {
+            "uri": "file:///c:/users/14354/source/repos/micrologic/micrologic/line.h"
+          },
+          "hashes": {
+            "sha-256": "ec039db0cbfb9c7fd03bb10712d43e51cdb8e4813f635e57b8c53cb5e645b5ca"
+          }
+        }
+      ]
+    }
+  ]
+}
