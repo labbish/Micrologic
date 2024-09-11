@@ -1,6 +1,7 @@
 #pragma once
 
 #include <string>
+#include <map>
 #include "BlockN.h"
 #include "BlockA.h"
 #include "BlockR.h"
@@ -10,6 +11,7 @@ class Blocks :public Block {
 public:
 	std::vector<int> inputs;
 	std::vector<int> outputs;
+	std::map<std::string, std::string> mods; //modName->fileName
 	std::vector<Line> L;
 	std::vector<BlockN> N;
 	std::vector<BlockA> A;
