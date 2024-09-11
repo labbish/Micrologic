@@ -99,8 +99,10 @@ void command(string cmd) {
 			b = atoi(args[2].c_str());
 		}
 		catch (...) {}
-		blocks.L[a].set(b);
-		if (a >= 0 && a < blocks.L.size() && (b == 0 || b == 1)) if (Echo) printf("Set value of No.%d line to %d\n", a, (bool)b);
+		if (a >= 0 && a < blocks.L.size() && (b == 0 || b == 1)) {
+			blocks.L[a].set(b);
+			if (Echo) printf("Set value of No.%d line to %d\n", a, (bool)b);
+		}
 	}
 	else if (args[0] == "tick" && args.size() == 1) {
 		blocks.tick();
