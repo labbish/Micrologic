@@ -5,5 +5,5 @@ bool BlockR::check() {
 }
 
 void BlockR::tick() {
-	this->outputLines[0]->nextValue = this->inputLines[0]->value && this->inputLines[1]->value;
+	this->outputLines[0]->nextValue = this->inputLines[0]->value || this->inputLines[1]->value;
 }

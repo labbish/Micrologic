@@ -2,7 +2,7 @@ echo Warning: You need to set path before loading this file!
 echo Sample:
 echo >>>input 0 1
 echo >>>input 1 1
-echo >>>tick 6
+echo >>>tick 4
 echo >>>output
 
 @echo 0

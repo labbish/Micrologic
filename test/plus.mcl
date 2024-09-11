@@ -1,14 +1,13 @@
-//echo binary one digit a+b problem
-//echo input: Line 0&1
-//echo output: Line 12&13
-//echo sample:
-//echo >>>input 0 1
-//echo >>>input 1 1
-//echo >>>tick 6
-//echo >>>output
+echo binary one digit a+b problem
+echo input: Line 0&1
+echo output: Line 12&13
+echo sample:
+echo >>>input 0 1
+echo >>>input 1 1
+echo >>>tick 4
+echo >>>output
 
 @echo 0
-
 line 14
 A 0 1 9
 N 0 4
@@ -25,5 +24,3 @@ input: 0
 input: 1
 output: 12
 output: 13
-
-@echo 1
