@@ -1,4 +1,3 @@
-﻿  Blocks.cpp
-  Micrologic.cpp
-  正在生成代码...
+﻿  Micrologic.cpp
+C:\Users\14354\source\repos\Micrologic\Micrologic\Micrologic.cpp(228,15): warning C4267: “初始化”: 从“size_t”转换到“int”，可能丢失数据
   Micrologic.vcxproj -> C:\Users\14354\source\repos\Micrologic\x64\Debug\Micrologic.exe

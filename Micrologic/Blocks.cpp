@@ -20,12 +20,21 @@ void Blocks::add(std::vector<BlockT> T) {
 	for (BlockT t : T) this->T.push_back(t);
 }
 
+void Blocks::add(std::vector<Blocks> Bs) {
+	for (Blocks b : Bs) this->Bs.push_back(b);
+}
+
 void Blocks::tick() {
+	//printf("S%d,%d\n", int(inputLines.size()), int(outputLines.size()));
+	for (int i = 0; i < inputLines.size(); i++) L[inputs[i]].nextValue = L[inputs[i]].value = inputLines[i]->value;
 	for (int i = 0; i < N.size(); i++) N[i].tick();
 	for (int i = 0; i < A.size(); i++) A[i].tick();
 	for (int i = 0; i < R.size(); i++) R[i].tick();
 	for (int i = 0; i < T.size(); i++) T[i].tick();
+	for (int i = 0; i < Bs.size(); i++) Bs[i].tick();
 	for (int i = 0; i < L.size(); i++) L[i].flush();
+	for (int i = 0; i < outputLines.size(); i++) outputLines[i]->nextValue = outputLines[i]->value = L[outputs[i]].value;
+	printf("\n");
 }
 
 void Blocks::clear() {
@@ -58,4 +67,8 @@ std::vector<bool> Blocks::output() {
 		outs.push_back(L[i].value);
 	}
 	return outs;
+}
+
+bool Blocks::check() {
+	return this->inputs.size() == this->inputLines.size() && this->outputs.size() == this->outputLines.size();
 }

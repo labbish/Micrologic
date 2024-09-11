@@ -6,11 +6,11 @@
 
 using namespace std;
 
-Blocks blocks;
-bool Exit = 0;
 bool Echo = 1;
+bool Exit = 0;
+string path = "";
 
-void command(string cmd) {
+bool command(Blocks& blocks, string cmd) {
 	std::stringstream ss(cmd);
 	std::string s;
 	std::vector<std::string> args;
@@ -125,7 +125,7 @@ void command(string cmd) {
 		if (a >= 0 && a < blocks.inputs.size()) {
 			if (b == 0 || b == 1) {
 				blocks.input(a, b);
-				printf("Inputed value %d to input line No.%d.\n", b, a);
+				if (Echo) printf("Inputted value %d to input line No.%d.\n", b, a);
 			}
 		}
 	}
@@ -190,16 +190,69 @@ void command(string cmd) {
 	else if (args[0] == "open" && args.size() >= 2) {
 		ifstream fin;
 		try {
-			fin.open(args[1], ios::out | ios::in);
-			printf("Opened: %s\n", args[1].c_str());
+			fin.open(path + args[1], ios::out | ios::in);
+			if (Echo) printf("Opened: %s\n", args[1].c_str());
 			char fcmd[1000];
 			printf("\n");
 			while (fin.getline(fcmd, 1000)) {
-				command(fcmd);
+				command(blocks, fcmd);
 			}
 			printf("\n\n");
 		}
 		catch (...) {}
+	}
+	else if (args[0] == "mod" && args.size() >= 3) {
+		blocks.mods.insert({ args[1],args[2] });
+		if (Echo) printf("Loaded Mod: %s (%s)\n", args[1].c_str(), args[2].c_str());
+	}
+	else if (args[0] == "block" && args.size() >= 2) {
+		string filename = blocks.mods[args[1]];
+		bool del = 0;
+		blocks.Bs.push_back(Blocks());
+		command(blocks.Bs[blocks.Bs.size() - 1], "open " + filename);
+		vector<int> ins, outs;
+		if (blocks.Bs[blocks.Bs.size() - 1].inputs.size() == 0 && blocks.Bs[blocks.Bs.size() - 1].outputs.size() == 0) del = 1;
+		if (args.size() >= 2 + blocks.Bs[blocks.Bs.size() - 1].inputs.size() + blocks.Bs[blocks.Bs.size() - 1].outputs.size()) {
+			for (int i = 2; i < 2 + blocks.Bs[blocks.Bs.size() - 1].inputs.size(); i++) {
+				int a = -1;
+				try {
+					a = atoi(args[i].c_str());
+				}
+				catch (...) {}
+				if (a >= 0 && a < blocks.L.size()) {
+					blocks.Bs[blocks.Bs.size() - 1].inputLines.push_back(&(blocks.L[a]));
+					ins.push_back(a);
+				}
+				else del = 1;
+			}
+			for (int i = 2 + blocks.Bs[blocks.Bs.size() - 1].inputs.size(); i < 2 + blocks.Bs[blocks.Bs.size() - 1].inputs.size() + blocks.Bs[blocks.Bs.size() - 1].outputs.size(); i++) {
+				int a = -1;
+				try {
+					a = atoi(args[i].c_str());
+				}
+				catch (...) {}
+				if (a >= 0 && a < blocks.L.size()) {
+					blocks.Bs[blocks.Bs.size() - 1].outputLines.push_back(&(blocks.L[a]));
+					outs.push_back(a);
+				}
+				else del = 1;
+			}
+		}
+		else del = 1;
+		if (del) blocks.Bs.pop_back();
+		else {
+			if (Echo) {
+				printf("No.%d block (%s) added. Input: No.", (int)blocks.Bs.size() - 1, args[1].c_str());
+				for (int a : ins) {
+					printf("%d ", a);
+				}
+				printf("line. Output: No.");
+				for (int a : outs) {
+					printf("%d ", a);
+				}
+				printf("line.\n");
+			}
+		}
 	}
 	else if (args[0] == "echo") {
 		printf((cmd.substr(5, cmd.size()) + "\n").c_str());
@@ -212,21 +265,30 @@ void command(string cmd) {
 		catch (...) {}
 		if (a == 0 || a == 1) Echo = a;
 	}
+	else if (args[0] == "path" && args.size() == 1) {
+		printf("Current Path: %s\n", path.c_str());
+	}
+	else if (args[0] == "path" && args.size() >= 2) {
+		path = args[1];
+		printf("Set path to: %s\n", args[1].c_str());
+	}
 	else if (args[0] == "clear") {
 		printf("Cleared.\n");
 		blocks.clear();
 	}
+	return Echo;
 }
 
 int main(int argc, const char* argv[]) {
+	Blocks blocks;
 	if (argc == 2) {
-		command("open " + string(argv[1]));
+		Echo = command(blocks, "open " + string(argv[1]));
 	}
 	while (1) {
 		printf(">>>");
 		string cmd;
 		getline(cin, cmd);
-		command(cmd);
+		command(blocks, cmd);
 		if (Exit == 1) break;
 	}
 }
