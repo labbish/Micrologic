@@ -263,6 +263,17 @@ bool command(Blocks& blocks, string cmd) {
 			printf("\n");
 		}
 	}
+	else if (args[0] == "speed" && args.size() == 2) {
+		int a = -1;
+		try {
+			a = atoi(args[1].c_str());
+		}
+		catch (...) {}
+		if (a >= 1) {
+			blocks.speed = a;
+		}
+		if (Echo) printf("Set speed to %d.", a);
+	}
 	else if (args[0] == "open" && args.size() == 2) {
 		ifstream fin;
 		try {

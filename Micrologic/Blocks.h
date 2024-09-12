@@ -11,6 +11,8 @@
 
 class Blocks :public Block {
 public:
+	Blocks();
+	int speed = 1;
 	std::vector<int> inputs;
 	std::vector<int> outputs;
 	std::map<std::string, std::string> mods; //modName->fileName
