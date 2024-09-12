@@ -1,6 +1,8 @@
 #include "BlockA.h"
 
 bool BlockA::check() {
+	for (Line* l : this->inputLines) if (l->mode != LINE) return false;
+	for (Line* l : this->outputLines) if (l->mode != LINE) return false;
 	return this->inputLines.size() == 2 && this->outputLines.size() == 1;
 }
 

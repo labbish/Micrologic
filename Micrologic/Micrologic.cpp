@@ -34,6 +34,22 @@ bool command(Blocks& blocks, string cmd) {
 			if (Echo) printf("No.%d~%d line added.\n", s, (int)blocks.L.size() - 1);
 		}
 	}
+	else if (args[0] == "wline" && args.size() == 1) {
+		blocks.add({ Line(WIDELINE) });
+		if (Echo) printf("No.%d wide line added.\n", (int)blocks.L.size() - 1);
+	}
+	else if (args[0] == "wline" && args.size() == 2) {
+		int a = -1;
+		try {
+			a = atoi(args[1].c_str());
+		}
+		catch (...) {}
+		if (a >= 1) {
+			int s = (int)blocks.L.size();
+			for (int i = 0; i < a; i++) blocks.add({ Line(WIDELINE) });
+			if (Echo) printf("No.%d~%d wide line added.\n", s, (int)blocks.L.size() - 1);
+		}
+	}
 	else if (args[0] == "N" && args.size() == 3) {
 		int a = -1, b = -1;
 		try {
@@ -78,9 +94,37 @@ bool command(Blocks& blocks, string cmd) {
 			if (Echo) printf("No.%d blockT added. Input: No.%d line. Output: No.%d line.\n", (int)blocks.N.size() - 1, a, b);
 		}
 	}
+	else if (args[0] == "C" && args.size() == 6) {
+		int a[4] = { -1,-1,-1,-1 }, b = -1;
+		try {
+			for (int i = 0; i < 4; i++) a[i] = atoi(args[i + 1].c_str());
+			b = atoi(args[5].c_str());
+		}
+		catch (...) {}
+		bool valid = 1;
+		for (int i = 0; i < 4; i++) if (a[i] < 0 || a[i] >= blocks.L.size()) valid = 0;
+		if (b >= 0 && b <= blocks.L.size() && valid) {
+			blocks.add({ BlockC({&(blocks.L[a[0]]),&(blocks.L[a[1]]),&(blocks.L[a[2]]),&(blocks.L[a[3]])},{&(blocks.L[b])}) });
+			if (Echo) printf("No.%d blockC added. Input: No.%d %d %d %d line. Output: No.%d line.\n", (int)blocks.C.size() - 1, a[0], a[1], a[2], a[3], b);
+		}
+	}
+	else if (args[0] == "P" && args.size() == 6) {
+		int a = -1, b[4] = { -1,-1,-1,-1 };
+		try {
+			a = atoi(args[1].c_str());
+			for (int i = 0; i < 4; i++) b[i] = atoi(args[i + 2].c_str());
+		}
+		catch (...) {}
+		bool valid = 1;
+		for (int i = 0; i < 4; i++) if (b[i] < 0 || b[i] >= blocks.L.size()) valid = 0;
+		if (a >= 0 && a <= blocks.L.size() && valid) {
+			blocks.add({ BlockP({&(blocks.L[a])} ,{&(blocks.L[b[0]]),&(blocks.L[b[1]]),&(blocks.L[b[2]]),&(blocks.L[b[3]])}) });
+			if (Echo) printf("No.%d blockP added. Input: No.%d line. Output: No.%d %d %d %d line.\n", (int)blocks.P.size() - 1, a, b[0], b[1], b[2], b[3]);
+		}
+	}
 	else if (args[0] == "check" && args.size() == 1) {
 		printf("Value of lines are: ");
-		for (auto l : blocks.L) printf("%d ", l.value);
+		for (Line l : blocks.L) printf("%s ", l.checkValue().c_str());
 		printf("\n");
 	}
 	else if (args[0] == "check" && args.size() == 2) {
@@ -89,7 +133,7 @@ bool command(Blocks& blocks, string cmd) {
 			a = atoi(args[1].c_str());
 		}
 		catch (...) {}
-		if (a >= 0 && a < blocks.L.size()) printf("Value of No.%d line is %d\n", a, blocks.L[a].value);
+		if (a >= 0 && a < blocks.L.size()) printf("Value of No.%d line is %s\n", a, blocks.L[a].checkValue().c_str());
 	}
 	else if (args[0] == "set" && args.size() == 3) {
 		int a = -1, b = -1;
@@ -100,7 +144,24 @@ bool command(Blocks& blocks, string cmd) {
 		catch (...) {}
 		if (a >= 0 && a < blocks.L.size() && (b == 0 || b == 1)) {
 			blocks.L[a].set(b);
-			if (Echo) printf("Set value of No.%d line to %d\n", a, (bool)b);
+			if (Echo) printf("Set value of No.%d line to %d.\n", a, b);
+		}
+	}
+	else if (args[0] == "set" && args.size() == 6) {
+		int a = -1;
+		short b[4] = { -1,-1,-1,-1 };
+		try {
+			a = atoi(args[1].c_str());
+			for (int i = 0; i < 4; i++) b[i] = atoi(args[i + 2].c_str());
+		}
+		catch (...) {}
+		bool valid = 1;
+		for (int i = 0; i < 4; i++) if (b[i] != 0 && b[i] != 1) valid = 0;
+		if (a >= 0 && a < blocks.L.size() && valid) {
+			bool c[4];
+			for (int i = 0; i < 4; i++) c[i] = b[i];
+			blocks.L[a].set(c);
+			if (Echo) printf("Set wide value of No.%d line to %d%d%d%d.\n", a, b[0], b[1], b[2], b[3]);
 		}
 	}
 	else if (args[0] == "input:" && args.size() == 2) {
@@ -128,6 +189,22 @@ bool command(Blocks& blocks, string cmd) {
 			}
 		}
 	}
+	else if (args[0] == "input" && args.size() == 6) {
+		int a = -1, b[4] = { -1,-1,-1,-1 };
+		try {
+			a = atoi(args[1].c_str());
+			for (int i = 0; i < 4; i++) b[i] = atoi(args[i + 2].c_str());
+		}
+		catch (...) {}
+		bool valid = 1;
+		for (int i = 0; i < 4; i++) if (b[i] != 0 && b[i] != 1) valid = 0;
+		if (a >= 0 && a < blocks.L.size() && valid) {
+			bool c[4];
+			for (int i = 0; i < 4; i++) c[i] = b[i];
+			blocks.input(a, c);
+			if (Echo) printf("Inputted value %d%d%d%d to input line No.%d.\n", b[0], b[1], b[2], b[3], a);
+		}
+	}
 	else if (args[0] == "output:" && args.size() == 2) {
 		int a = -1;
 		try {
@@ -141,7 +218,7 @@ bool command(Blocks& blocks, string cmd) {
 	}
 	else if (args[0] == "output" && args.size() == 1) {
 		printf("Value of output lines are: ");
-		for (bool l : blocks.output()) printf("%d ", l);
+		for (std::string l : blocks.output()) printf("%s ", l.c_str());
 		printf("\n");
 	}
 	else if (args[0] == "output" && args.size() == 2) {
@@ -150,7 +227,7 @@ bool command(Blocks& blocks, string cmd) {
 			a = atoi(args[1].c_str());
 		}
 		catch (...) {}
-		if (a >= 0 && a < blocks.outputs.size()) printf("Value of No.%d output line is %d\n", a, blocks.output(a));
+		if (a >= 0 && a < blocks.outputs.size()) printf("Value of No.%d output line is %s\n", a, blocks.output(a).c_str());
 	}
 	else if (args[0] == "tick" && args.size() == 1) {
 		blocks.tick();
@@ -170,7 +247,7 @@ bool command(Blocks& blocks, string cmd) {
 	else if (args[0] == "tick!" && args.size() == 1) {
 		blocks.tick();
 		printf("Value of lines after ticking are: ");
-		for (auto l : blocks.L) printf("%d ", l.value);
+		for (Line l : blocks.L) printf("%s ", l.checkValue().c_str());
 		printf("\n");
 	}
 	else if (args[0] == "tick!" && args.size() == 2) {
@@ -182,7 +259,7 @@ bool command(Blocks& blocks, string cmd) {
 		for (int i = 0; i < a; i++) {
 			blocks.tick();
 			printf("Value of lines after ticking are: ");
-			for (auto l : blocks.L) printf("%d ", l.value);
+			for (Line l : blocks.L) printf("%s ", l.checkValue().c_str());
 			printf("\n");
 		}
 	}
@@ -253,6 +330,24 @@ bool command(Blocks& blocks, string cmd) {
 			}
 		}
 	}
+	else if (args[0] == "inspect" && args.size() == 3) {
+		string type = args[1];
+		int a = -1;
+		try {
+			a = atoi(args[2].c_str());
+			bool b;
+			bool valid = 0;
+			if (type == "N") { b = blocks.N[a].check(); valid = 1; }
+			if (type == "A") { b = blocks.A[a].check(); valid = 1; }
+			if (type == "R") { b = blocks.R[a].check(); valid = 1; }
+			if (type == "T") { b = blocks.T[a].check(); valid = 1; }
+			if (type == "C") { b = blocks.C[a].check(); valid = 1; }
+			if (type == "P") { b = blocks.P[a].check(); valid = 1; }
+			if (type == "block") { b = blocks.Bs[a].check(); valid = 1; }
+			if (valid) printf("Inspection result of %s No.%d is %d.\n", type.c_str(), a, b);
+		}
+		catch (...) {}
+	}
 	else if (args[0] == "echo") {
 		if (Echo) printf((cmd.substr(5, cmd.size()) + "\n").c_str());
 	}
@@ -272,6 +367,7 @@ bool command(Blocks& blocks, string cmd) {
 		printf("Set path to: %s\n", args[1].c_str());
 	}
 	else if (args[0] == "clear") {
+		system("cls");
 		printf("Cleared.\n");
 		blocks.clear();
 	}
