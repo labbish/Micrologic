@@ -130,7 +130,9 @@
   <ItemGroup>
     <ClCompile Include="Block.cpp" />
     <ClCompile Include="BlockA.cpp" />
+    <ClCompile Include="BlockC.cpp" />
     <ClCompile Include="BlockN.cpp" />
+    <ClCompile Include="BlockP.cpp" />
     <ClCompile Include="BlockR.cpp" />
     <ClCompile Include="Blocks.cpp" />
     <ClCompile Include="BlockT.cpp" />
@@ -140,7 +142,9 @@
   <ItemGroup>
     <ClInclude Include="Block.h" />
     <ClInclude Include="BlockA.h" />
+    <ClInclude Include="BlockC.h" />
     <ClInclude Include="BlockN.h" />
+    <ClInclude Include="BlockP.h" />
     <ClInclude Include="BlockR.h" />
     <ClInclude Include="Blocks.h" />
     <ClInclude Include="BlockT.h" />
