@@ -10,7 +10,6 @@ bool Exit = 0;
 string path = "";
 
 bool command(Blocks& blocks, string cmd) {
-	//printf("[]%s\n", cmd.c_str());
 	std::stringstream ss(cmd);
 	std::string s;
 	std::vector<std::string> args;
@@ -71,7 +70,6 @@ bool command(Blocks& blocks, string cmd) {
 		if (a >= 0 && a < blocks.L.size() && b >= 0 && b < blocks.L.size() && c >= 0 && c < blocks.L.size()) {
 			blocks.add({ BlockA({&(blocks.L[a]),&(blocks.L[b])},{&(blocks.L[c])}) });
 			if (Echo) printf("No.%d blockA added. Input: No.%d&%d line. Output: No.%d line.\n", (int)blocks.A.size() - 1, a, b, c);
-			//printf("%d,%d,%d\n", &(blocks.L[a]), &(blocks.L[b]), &(blocks.L[c]));
 		}
 	}
 	else if (args[0] == "R" && args.size() == 4) {
