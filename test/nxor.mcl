@@ -1,0 +1,10 @@
+@echo 0
+
+mod xor xor.mcl
+speed 2
+line 4
+block xor 0 1 2
+N 2 3
+input: 0
+input: 1
+output: 3

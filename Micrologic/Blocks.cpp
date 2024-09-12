@@ -1,5 +1,17 @@
 #include "Blocks.h"
 
+Blocks::Blocks() {
+	int cap = 1024;
+	this->L.reserve(cap);
+	this->N.reserve(cap);
+	this->A.reserve(cap);
+	this->R.reserve(cap);
+	this->T.reserve(cap);
+	this->C.reserve(cap);
+	this->Bs.reserve(cap);
+	this->L.reserve(cap);
+}
+
 void Blocks::add(std::vector<Line> L) {
 	for (Line l : L) this->L.push_back(l);
 }
@@ -33,21 +45,23 @@ void Blocks::add(std::vector<Blocks> Bs) {
 }
 
 void Blocks::tick() {
-	for (int i = 0; i < inputLines.size(); i++) {
-		L[inputs[i]].nextValue = L[inputs[i]].value = inputLines[i]->value;
-		for (int j = 0; j < 4; j++) L[inputs[i]].nextWideValue[j] = L[inputs[i]].wideValue[j] = inputLines[i]->wideValue[j];
-	}
-	for (int i = 0; i < N.size(); i++) N[i].tick();
-	for (int i = 0; i < A.size(); i++) A[i].tick();
-	for (int i = 0; i < R.size(); i++) R[i].tick();
-	for (int i = 0; i < T.size(); i++) T[i].tick();
-	for (int i = 0; i < C.size(); i++) C[i].tick();
-	for (int i = 0; i < P.size(); i++) P[i].tick();
-	for (int i = 0; i < Bs.size(); i++) Bs[i].tick();
-	for (int i = 0; i < L.size(); i++) L[i].flush();
-	for (int i = 0; i < outputLines.size(); i++) {
-		outputLines[i]->nextValue = outputLines[i]->value = L[outputs[i]].value;
-		for (int j = 0; j < 4; j++) outputLines[i]->nextWideValue[j] = outputLines[i]->wideValue[j] = L[outputs[i]].wideValue[j];
+	for (int i = 0; i < speed; i++) {
+		for (int i = 0; i < inputLines.size(); i++) {
+			L[inputs[i]].nextValue = L[inputs[i]].value = inputLines[i]->value;
+			for (int j = 0; j < 4; j++) L[inputs[i]].nextWideValue[j] = L[inputs[i]].wideValue[j] = inputLines[i]->wideValue[j];
+		}
+		for (int i = 0; i < N.size(); i++) N[i].tick();
+		for (int i = 0; i < A.size(); i++) A[i].tick();
+		for (int i = 0; i < R.size(); i++) R[i].tick();
+		for (int i = 0; i < T.size(); i++) T[i].tick();
+		for (int i = 0; i < C.size(); i++) C[i].tick();
+		for (int i = 0; i < P.size(); i++) P[i].tick();
+		for (int i = 0; i < Bs.size(); i++) Bs[i].tick();
+		for (int i = 0; i < L.size(); i++) L[i].flush();
+		for (int i = 0; i < outputLines.size(); i++) {
+			outputLines[i]->nextValue = outputLines[i]->value = L[outputs[i]].value;
+			for (int j = 0; j < 4; j++) outputLines[i]->nextWideValue[j] = outputLines[i]->wideValue[j] = L[outputs[i]].wideValue[j];
+		}
 	}
 }
 
