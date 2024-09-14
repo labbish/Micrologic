@@ -2,6 +2,7 @@
 #include <string>
 #include <sstream>
 #include <fstream>
+#include <direct.h>
 #include "Blocks.h"
 
 using namespace std;
@@ -385,7 +386,7 @@ bool command(Blocks& blocks, string cmd, string exepath) {
 	else if (args[0] == "help" && args.size() == 1) {
 		ifstream fin;
 		try {
-			fin.open(exepath + "help.txt", ios::out | ios::in);
+			fin.open(exepath + "\\help.txt", ios::out | ios::in);
 			char fhelp[1024] = "";
 			while (fin.getline(fhelp, 1024)) {
 				printf("%s\n", fhelp);
@@ -409,7 +410,7 @@ bool command(Blocks& blocks, string cmd, string exepath) {
 
 int main(int argc, const char* argv[]) {
 	Blocks blocks;
-	string exepath = (string(argv[0]).substr(0, string(argv[0]).rfind("\\")) + "\\").c_str();
+	string exepath = string(_getcwd(NULL, 0));
 	if (argc == 2) {
 		Echo = command(blocks, "open " + string(argv[1]), exepath);
 	}
