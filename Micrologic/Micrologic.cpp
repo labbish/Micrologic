@@ -9,7 +9,7 @@ using namespace std;
 bool Exit = 0;
 string path = "";
 
-bool command(Blocks& blocks, string cmd) {
+bool command(Blocks& blocks, string cmd, string exepath) {
 	std::stringstream ss(cmd);
 	std::string s;
 	std::vector<std::string> args;
@@ -282,7 +282,7 @@ bool command(Blocks& blocks, string cmd) {
 			bool b = fin.good() && Echo;
 			if (b) printf("Opened: %s\n\n", args[1].c_str());
 			while (fin.getline(fcmd, 256)) {
-				command(blocks, fcmd);
+				command(blocks, fcmd, exepath);
 			}
 			if (b) printf("\n");
 		}
@@ -296,7 +296,7 @@ bool command(Blocks& blocks, string cmd) {
 		string filename = blocks.mods[args[1]];
 		bool del = 0;
 		blocks.Bs.push_back(Blocks());
-		command(blocks.Bs[blocks.Bs.size() - 1], "open " + filename);
+		command(blocks.Bs[blocks.Bs.size() - 1], "open " + filename, exepath);
 		vector<int> ins, outs;
 		if (blocks.Bs[blocks.Bs.size() - 1].inputs.size() == 0 && blocks.Bs[blocks.Bs.size() - 1].outputs.size() == 0) del = 1;
 		if (args.size() >= 2 + blocks.Bs[blocks.Bs.size() - 1].inputs.size() + blocks.Bs[blocks.Bs.size() - 1].outputs.size()) {
@@ -382,19 +382,42 @@ bool command(Blocks& blocks, string cmd) {
 		printf("Cleared.\n");
 		blocks.clear();
 	}
+	else if (args[0] == "help" && args.size() == 1) {
+		ifstream fin;
+		try {
+			fin.open(exepath + "help.txt", ios::out | ios::in);
+			char fhelp[1024] = "";
+			while (fin.getline(fhelp, 1024)) {
+				printf("%s\n", fhelp);
+			}
+		}
+		catch (...) {}
+	}
+	else if (args[0] == "help" && args.size() == 2) {
+		ifstream fin;
+		try {
+			fin.open(exepath + "help.txt", ios::out | ios::in);
+			char fhelp[1024] = "";
+			while (fin.getline(fhelp, 1024)) {
+				if (string(fhelp).substr(0, string(args[1]).length()) == string(args[1])) printf("%s\n", fhelp);
+			}
+		}
+		catch (...) {}
+	}
 	return Echo;
 }
 
 int main(int argc, const char* argv[]) {
 	Blocks blocks;
+	string exepath = (string(argv[0]).substr(0, string(argv[0]).rfind("\\")) + "\\").c_str();
 	if (argc == 2) {
-		Echo = command(blocks, "open " + string(argv[1]));
+		Echo = command(blocks, "open " + string(argv[1]), exepath);
 	}
 	while (1) {
 		printf(">>>");
 		string cmd;
 		getline(cin, cmd);
-		command(blocks, cmd);
+		command(blocks, cmd, exepath);
 		if (Exit == 1) break;
 	}
 }

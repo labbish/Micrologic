@@ -1,9 +1,8 @@
-﻿  Blocks.cpp
-  Micrologic.cpp
-C:\Users\14354\source\repos\Micrologic\Micrologic\Micrologic.cpp(317,15): warning C4267: “初始化”: 从“size_t”转换到“int”，可能丢失数据
+﻿  Micrologic.cpp
+C:\Users\14354\source\repos\Micrologic\Micrologic\Micrologic.cpp(315,15): warning C4267: “初始化”: 从“size_t”转换到“int”，可能丢失数据
   正在生成代码
-  48 of 1577 functions ( 3.0%) were compiled, the rest were copied from previous compilation.
-    14 functions were new in current compilation
-    69 functions had inline decision re-evaluated but remain unchanged
+  19 of 1583 functions ( 1.2%) were compiled, the rest were copied from previous compilation.
+    7 functions were new in current compilation
+    74 functions had inline decision re-evaluated but remain unchanged
   已完成代码的生成
   Micrologic.vcxproj -> C:\Users\14354\source\repos\Micrologic\x64\Release\Micrologic.exe

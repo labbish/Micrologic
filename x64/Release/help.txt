@@ -1,0 +1,53 @@
+Micrologic Help
+
+=== Basic Principle ===
+
+* The world of Micrologic is made up of 2 elements: "line" (including "wideline") and "block".
+* A line contains a value within {0,1} (aka. 1bit), while a wideline contains a value within {0,1,2,...,15} (aka. 4bits).
+* A block has some input ports and some output ports. When you define a block, you must link all these ports to a line (or wideline). The block reads all its input values, does something inside it, and then output to the output lines linking with it.
+* Every "tick", every block on the board updates its outputs based on its previous (aka. before this tick) inputs. There's no need for users to worry about "update order", because in fact the interpreter saves a snapshot of the values before this tick and update outputs based on it. So, as long as you don't set one line as an output of multiple blocks (of course this is unrecommanded!), the order doesn't matter.
+* Note: Every object in Micrologic is automatically assigned a order number, and you'll have to follow it.
+* Note: The order number of lines and wide lines are shared.
+
+=== Commands ===
+
+Note: When creating blocks, the front part are inputs and the rest are outputs. 
+Note: Many commands have no error messages when you make a mistake. So be careful to what you write on your own.
+Note: [ALINE] = [LINE] or [WLINE] below.
+
+end                                                       Closes the interpreter.
+line                                                      Creates an new line.
+line [NUM]                                                Creates multiple new lines.
+wline                                                     Creates an new wline.
+wline [NUM]                                               Creates multiple new wlines.
+N [LINE] [LINE]                                           Creates an block N. It is used as "not".
+A [LINE] [LINE] [LINE]                                    Creates an block A. It is used as "and".
+R [LINE] [LINE] [LINE]                                    Creates an block R. It is used as "or".
+T [LINE] [LINE]                                           Creates an block T. It is used as a 1 tick delay.
+C [LINE] [LINE] [LINE] [LINE] [WLINE]                     Creates an block C. It is used to combine 4 lines into a wline.
+P [WLINE] [LINE] [LINE] [LINE] [LINE]                     Creates an block P. It is used to split 1 wline into 4 lines.
+set [LINE] [VALUE]                                        Set the value of a designated line.
+set [WLINE] [VALUE] [VALUE] [VALUE] [VALUE]               Set the value of the 4 digits of a designated wline.
+check                                                     Outputs values of all lines in order.
+check [ALINE]                                             Outputs value of a designated line.
+input: [ALINE]                                            Set a designated line as an input line.
+input [INPUT] [LINE]                                      Set the value of a designated input line.
+input [INPUT] [LINE] [LINE] [LINE] [LINE]                 Set the value of a designated input wline.
+output: [ALINE]                                           Set a designated line as an output line.
+output                                                    Output the value of all lines.
+output [OUTPUT]                                           Output the value of a designated output wline.
+tick                                                      Tick once.
+tick [TIMES]                                              Tick mutiple times.
+tick!                                                     Tick once, and output values of all lines after it.
+tick! [TIMES]                                             Tick mutiple times, and output values of all lines after every tick.
+speed [SPEED]                                             Set speed. The default speed is 1.
+path [PATH]                                               Set path of scripts. Afterwards, your [FILE] will be replaced to [PATH]+[FILE]. (So remember to end with "/"!)
+open [FILE]                                               Open an Micrologic script file.
+mod [MOD] [FILE]                                          Give an file a mod name, in order to use it as a block afterwards.
+block [MOD] [INPUT [INPUT ...]] [OUTPUT [OUTPUT ...]]     Creates a user-defined block.
+inspect [BLOCK]                                           Checks whether a block connects correct line type.
+echo [MESSAGE]                                            Outputs a message.
+@echo [ECHO]                                              Set whether to echo messages. Requires 0 or 1.
+clear                                                     Restarts the interpreter.
+help                                                      Show help.
+help [COMMAND]                                            Show help for a designated command.

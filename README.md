@@ -1,5 +1,2 @@
 # Micrologic
 
-## TODO
-
-* GUI
