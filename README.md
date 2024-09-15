@@ -1,5 +1,5 @@
 # Micrologic
-The project aims to create a shell intepretor to run Micrologic.
+The project aims to create a shell intepreter to run Micrologic.
 
 Hard to use because of there aren't any gui.
 
