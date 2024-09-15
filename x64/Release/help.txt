@@ -45,9 +45,7 @@ path [PATH]                                               Set path of scripts. A
 open [FILE]                                               Open an Micrologic script file.
 mod [MOD] [FILE]                                          Give an file a mod name, in order to use it as a block afterwards.
 block [MOD] [INPUT [INPUT ...]] [OUTPUT [OUTPUT ...]]     Creates a user-defined block.
-inspect [BLOCK]                                           Checks whether a block connects correct line type.
+inspect [BLOCKTYPE] [BLOCK]                                           Checks whether a block connects correct line type.
 echo [MESSAGE]                                            Outputs a message.
 @echo [ECHO]                                              Set whether to echo messages. Requires 0 or 1.
 clear                                                     Restarts the interpreter.
-help                                                      Show help.
-help [COMMAND]                                            Show help for a designated command.
