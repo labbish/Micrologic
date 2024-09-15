@@ -397,10 +397,10 @@ bool command(Blocks& blocks, string cmd, string exepath) {
 	else if (args[0] == "help" && args.size() == 2) {
 		ifstream fin;
 		try {
-			fin.open(exepath + "help.txt", ios::out | ios::in);
+			fin.open(exepath + "\\help.txt", ios::out | ios::in);
 			char fhelp[1024] = "";
 			while (fin.getline(fhelp, 1024)) {
-				if (string(fhelp).substr(0, string(args[1]).length()) == string(args[1])) printf("%s\n", fhelp);
+				if (string(fhelp).substr(0, args[1].length()) == args[1]) printf("%s\n", fhelp);
 			}
 		}
 		catch (...) {}

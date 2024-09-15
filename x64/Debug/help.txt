@@ -49,3 +49,5 @@ inspect [BLOCKTYPE] [BLOCK]                                           Checks whe
 echo [MESSAGE]                                            Outputs a message.
 @echo [ECHO]                                              Set whether to echo messages. Requires 0 or 1.
 clear                                                     Restarts the interpreter.
+help                                                      Show help file.
+help [COMMAND]                                            Show help for a designated command.
