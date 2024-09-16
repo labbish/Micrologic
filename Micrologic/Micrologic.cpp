@@ -275,6 +275,22 @@ bool command(Blocks& blocks, string cmd, string exepath) {
 		}
 		if (Echo) printf("Set speed to %d.", a);
 	}
+	else if (args[0] == "open" && count(cmd.begin(), cmd.end(), '\"') >= 2) {
+		ifstream fin;
+		int x = cmd.find("\""), y = cmd.rfind("\"");
+		string f = cmd.substr(x + 1, y - x - 1);
+		try {
+			fin.open(path + f, ios::out | ios::in);
+			char fcmd[256] = "";
+			bool b = fin.good() && Echo;
+			if (b) printf("Opened: %s\n\n", f.c_str());
+			while (fin.getline(fcmd, 256)) {
+				command(blocks, fcmd, exepath);
+			}
+			if (b) printf("\n");
+		}
+		catch (...) {}
+	}
 	else if (args[0] == "open" && args.size() == 2) {
 		ifstream fin;
 		try {
@@ -373,6 +389,12 @@ bool command(Blocks& blocks, string cmd, string exepath) {
 	}
 	else if (args[0] == "path" && args.size() == 1) {
 		printf("Current Path: %s\n", path.c_str());
+	}
+	else if (args[0] == "path" && count(cmd.begin(), cmd.end(), '\"') >= 2) {
+		int x = cmd.find("\""), y = cmd.rfind("\"");
+		string f = cmd.substr(x + 1, y - x - 1);
+		path = f;
+		printf("Set path to: %s\n", f.c_str());
 	}
 	else if (args[0] == "path" && args.size() == 2) {
 		path = args[1];
