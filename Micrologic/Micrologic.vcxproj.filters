@@ -74,5 +74,8 @@
     <ClInclude Include="BlockP.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="Messages.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

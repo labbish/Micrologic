@@ -149,6 +149,7 @@
     <ClInclude Include="Blocks.h" />
     <ClInclude Include="BlockT.h" />
     <ClInclude Include="Line.h" />
+    <ClInclude Include="Messages.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

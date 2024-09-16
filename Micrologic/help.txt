@@ -51,3 +51,4 @@ echo [MESSAGE]                                            Outputs a message.
 clear                                                     Clear the interpreter' data and restart.
 help                                                      Show help.
 help [COMMAND]                                            Show help for a designated command.
+lang [LANGUAGE]                                           Change language. Includes en_us and zh_cn.
