@@ -41,7 +41,7 @@ tick [TIMES]                                              Tick mutiple times.
 tick!                                                     Tick once, and output values of all lines after it.
 tick! [TIMES]                                             Tick mutiple times, and output values of all lines after every tick.
 speed [SPEED]                                             Set speed. The default speed is 1.
-path [PATH]                                               Set path of scripts. Afterwards, your [FILE] will be replaced to [PATH]+[FILE]. (So remember to end with "/"!) Use double quotation marks when the path name include spaces.
+path [PATH]                                               Set path of scripts. Use double quotation marks when the path name include spaces.
 open [FILE]                                               Open an Micrologic script file. Use double quotation marks when the file name include spaces.
 mod [MOD] [FILE]                                          Give an file a mod name, in order to use it as a block afterwards.
 block [MOD] [INPUT [INPUT ...]] [OUTPUT [OUTPUT ...]]     Creates a user-defined block.

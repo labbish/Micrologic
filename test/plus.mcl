@@ -21,7 +21,7 @@ A 5 9 10
 block p3 4 10 8 11 16
 block p3 3 11 7 12 15
 block p3 2 12 6 13 14
-nxor 5 9 17
+block nxor 5 9 17
 C 14 15 16 17 18
 
 @echo 1

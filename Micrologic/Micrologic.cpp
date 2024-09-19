@@ -282,7 +282,13 @@ bool command(Blocks& blocks, string cmd, string exepath) {
 		int x = cmd.find("\""), y = cmd.rfind("\"");
 		string f = cmd.substr(x + 1, y - x - 1);
 		try {
-			fin.open(path + f, ios::out | ios::in);
+			fin.open(f, ios::out | ios::in);
+			string nextPath = f.substr(0, f.rfind("\\") + 1);
+			if (!fin.good()) {
+				fin.open(path + f, ios::out | ios::in);
+				nextPath = (path + f).substr(0, f.rfind("\\") + 1);
+			}
+			if (nextPath != "") path = nextPath;
 			char fcmd[256] = "";
 			bool b = fin.good() && Echo;
 			if (b) printf(getMessage(lang, "OPEN"), f.c_str());
@@ -295,8 +301,15 @@ bool command(Blocks& blocks, string cmd, string exepath) {
 	}
 	else if (args[0] == "open" && args.size() == 2) {
 		ifstream fin;
+		string f = args[1];
 		try {
-			fin.open(path + args[1], ios::out | ios::in);
+			fin.open(f, ios::out | ios::in);
+			string nextPath = f.substr(0, f.rfind("\\") + 1);
+			if (!fin.good()) {
+				fin.open(path + f, ios::out | ios::in);
+				nextPath = (path + f).substr(0, f.rfind("\\") + 1);
+			}
+			if (nextPath != "") path = nextPath;
 			char fcmd[256] = "";
 			bool b = fin.good() && Echo;
 			if (b) printf(getMessage(lang, "OPEN"), args[1].c_str());
@@ -395,12 +408,15 @@ bool command(Blocks& blocks, string cmd, string exepath) {
 	else if (args[0] == "path" && count(cmd.begin(), cmd.end(), '\"') >= 2) {
 		int x = cmd.find("\""), y = cmd.rfind("\"");
 		string f = cmd.substr(x + 1, y - x - 1);
-		path = f;
-		printf(getMessage(lang, "PATH_SET"), f.c_str());
+		if (f[f.size() - 1] == '\\' || f[f.size() - 1] == '/') path = f;
+		else path = f + "\\";
+		printf(getMessage(lang, "PATH_SET"), path.c_str());
 	}
 	else if (args[0] == "path" && args.size() == 2) {
-		path = args[1];
-		printf(getMessage(lang, "PATH_SET"), args[1].c_str());
+		string f = args[1];
+		if (f[f.size() - 1] == '\\' || f[f.size() - 1] == '/') path = f;
+		else path = f + "\\";
+		printf(getMessage(lang, "PATH_SET"), path.c_str());
 	}
 	else if (args[0] == "clear") {
 		system("cls");
