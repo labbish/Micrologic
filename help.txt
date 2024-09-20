@@ -23,7 +23,7 @@ wline [NUM]                                               Creates multiple new w
 N [LINE] [LINE]                                           Creates an block N. It is used as "not".
 A [LINE] [LINE] [LINE]                                    Creates an block A. It is used as "and".
 R [LINE] [LINE] [LINE]                                    Creates an block R. It is used as "or".
-T [ALINE] [ALINE]                                           Creates an block T. It is used as "identity", often as a 1 tick delay.
+T [ALINE] [ALINE]                                         Creates an block T. It is used as "identity", often as a 1 tick delay.
 C [LINE] [LINE] [LINE] [LINE] [WLINE]                     Creates an block C. It is used to combine 4 lines into a wide line.
 P [WLINE] [LINE] [LINE] [LINE] [LINE]                     Creates an block P. It is used to split 1 wide line into 4 lines.
 set [LINE] [VALUE]                                        Set the value of a designated line.
