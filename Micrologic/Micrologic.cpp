@@ -12,6 +12,14 @@ bool Exit = 0;
 string path = "";
 string lang = "en_us";
 
+//convert all slashes to backslashes
+string convertSlash(string file) {
+	for (int i = 0; i < file.length(); i++) {
+		if (file[i] == '/') file[i] = '\\';
+	}
+	return file;
+}
+
 bool command(Blocks& blocks, string cmd, string exepath) {
 	std::stringstream ss(cmd);
 	std::string s;
@@ -281,6 +289,7 @@ bool command(Blocks& blocks, string cmd, string exepath) {
 		ifstream fin;
 		int x = cmd.find("\""), y = cmd.rfind("\"");
 		string f = cmd.substr(x + 1, y - x - 1);
+		f = convertSlash(f);
 		try {
 			fin.open(f, ios::out | ios::in);
 			string nextPath = f.substr(0, f.rfind("\\") + 1);
@@ -302,6 +311,7 @@ bool command(Blocks& blocks, string cmd, string exepath) {
 	else if (args[0] == "open" && args.size() == 2) {
 		ifstream fin;
 		string f = args[1];
+		f = convertSlash(f);
 		try {
 			fin.open(f, ios::out | ios::in);
 			string nextPath = f.substr(0, f.rfind("\\") + 1);
@@ -408,13 +418,15 @@ bool command(Blocks& blocks, string cmd, string exepath) {
 	else if (args[0] == "path" && count(cmd.begin(), cmd.end(), '\"') >= 2) {
 		int x = cmd.find("\""), y = cmd.rfind("\"");
 		string f = cmd.substr(x + 1, y - x - 1);
-		if (f[f.size() - 1] == '\\' || f[f.size() - 1] == '/') path = f;
+		f = convertSlash(f);
+		if (f[f.size() - 1] == '\\') path = f;
 		else path = f + "\\";
 		printf(getMessage(lang, "PATH_SET"), path.c_str());
 	}
 	else if (args[0] == "path" && args.size() == 2) {
 		string f = args[1];
-		if (f[f.size() - 1] == '\\' || f[f.size() - 1] == '/') path = f;
+		f = convertSlash(f);
+		if (f[f.size() - 1] == '\\') path = f;
 		else path = f + "\\";
 		printf(getMessage(lang, "PATH_SET"), path.c_str());
 	}
