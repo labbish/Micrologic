@@ -473,6 +473,17 @@ bool command(Blocks& blocks, string cmd, string exepath) {
 	else if (args[0] == "neko" && args.size() == 1) {
 		printf(getMessage(lang, "NEKO"));
 	}
+
+	FILE* file = nullptr;
+	errno_t err = fopen_s(&file, "debug.log", "w");
+	if (file == nullptr || err != 0) {
+		cerr << "Error: " << err << "\n";
+	}
+	else {
+		for (Line l : blocks.L) fprintf(file, "%s ", l.checkValue().c_str());
+		fclose(file);
+	}
+
 	return Echo;
 }
 
