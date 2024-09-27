@@ -2,6 +2,6 @@
 C:\Users\14354\source\repos\Micrologic\Micrologic\Micrologic.cpp(290,9): warning C4267: “初始化”: 从“size_t”转换到“int”，可能丢失数据
 C:\Users\14354\source\repos\Micrologic\Micrologic\Micrologic.cpp(290,29): warning C4267: “初始化”: 从“size_t”转换到“int”，可能丢失数据
 C:\Users\14354\source\repos\Micrologic\Micrologic\Micrologic.cpp(357,15): warning C4267: “初始化”: 从“size_t”转换到“int”，可能丢失数据
-C:\Users\14354\source\repos\Micrologic\Micrologic\Micrologic.cpp(419,9): warning C4267: “初始化”: 从“size_t”转换到“int”，可能丢失数据
-C:\Users\14354\source\repos\Micrologic\Micrologic\Micrologic.cpp(419,29): warning C4267: “初始化”: 从“size_t”转换到“int”，可能丢失数据
+C:\Users\14354\source\repos\Micrologic\Micrologic\Micrologic.cpp(420,9): warning C4267: “初始化”: 从“size_t”转换到“int”，可能丢失数据
+C:\Users\14354\source\repos\Micrologic\Micrologic\Micrologic.cpp(420,29): warning C4267: “初始化”: 从“size_t”转换到“int”，可能丢失数据
   Micrologic.vcxproj -> C:\Users\14354\source\repos\Micrologic\x64\Debug\Micrologic.exe

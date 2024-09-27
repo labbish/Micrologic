@@ -2,11 +2,11 @@
 C:\Users\14354\source\repos\Micrologic\Micrologic\Micrologic.cpp(290,9): warning C4267: “初始化”: 从“size_t”转换到“int”，可能丢失数据
 C:\Users\14354\source\repos\Micrologic\Micrologic\Micrologic.cpp(290,29): warning C4267: “初始化”: 从“size_t”转换到“int”，可能丢失数据
 C:\Users\14354\source\repos\Micrologic\Micrologic\Micrologic.cpp(357,15): warning C4267: “初始化”: 从“size_t”转换到“int”，可能丢失数据
-C:\Users\14354\source\repos\Micrologic\Micrologic\Micrologic.cpp(419,9): warning C4267: “初始化”: 从“size_t”转换到“int”，可能丢失数据
-C:\Users\14354\source\repos\Micrologic\Micrologic\Micrologic.cpp(419,29): warning C4267: “初始化”: 从“size_t”转换到“int”，可能丢失数据
+C:\Users\14354\source\repos\Micrologic\Micrologic\Micrologic.cpp(420,9): warning C4267: “初始化”: 从“size_t”转换到“int”，可能丢失数据
+C:\Users\14354\source\repos\Micrologic\Micrologic\Micrologic.cpp(420,29): warning C4267: “初始化”: 从“size_t”转换到“int”，可能丢失数据
   正在生成代码
-  105 of 1842 functions ( 5.7%) were compiled, the rest were copied from previous compilation.
-    86 functions were new in current compilation
-    208 functions had inline decision re-evaluated but remain unchanged
+  14 of 1842 functions ( 0.8%) were compiled, the rest were copied from previous compilation.
+    0 functions were new in current compilation
+    99 functions had inline decision re-evaluated but remain unchanged
   已完成代码的生成
   Micrologic.vcxproj -> C:\Users\14354\source\repos\Micrologic\x64\Release\Micrologic.exe

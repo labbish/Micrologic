@@ -402,7 +402,8 @@ bool command(Blocks& blocks, string cmd, string exepath) {
 		catch (...) {}
 	}
 	else if (args[0] == "echo") {
-		if (Echo) printf((cmd.substr(5, cmd.size()) + "\n").c_str());
+		if (args.size() > 1)
+			if (Echo) printf((cmd.substr(5, cmd.size()) + "\n").c_str());
 	}
 	else if (args[0] == "@echo" && args.size() == 2) {
 		int a = -1;
@@ -475,7 +476,7 @@ bool command(Blocks& blocks, string cmd, string exepath) {
 	}
 
 	FILE* file = nullptr;
-	errno_t err = fopen_s(&file, "debug.log", "w");
+	errno_t err = fopen_s(&file, (exepath + "\\debug.log").c_str(), "w");
 	if (file == nullptr || err != 0) {
 		cerr << "Error: " << err << "\n";
 	}
