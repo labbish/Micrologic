@@ -1,8 +1,8 @@
 #include "BlockN.h"
 
 bool BlockN::check() {
-	for (Line* l : this->inputLines) if (l->mode != LINE) return false;
-	for (Line* l : this->outputLines) if (l->mode != LINE) return false;
+	for (Line* l : this->inputLines) if (l->mode != Line::LINE) return false;
+	for (Line* l : this->outputLines) if (l->mode != Line::LINE) return false;
 	return this->inputLines.size() == 1 && this->outputLines.size() == 1;
 }
 

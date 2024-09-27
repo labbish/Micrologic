@@ -46,7 +46,7 @@ bool command(Blocks& blocks, string cmd, string exepath) {
 		}
 	}
 	else if (args[0] == "wline" && args.size() == 1) {
-		blocks.add({ Line(WIDELINE) });
+		blocks.add({ Line(Line::WIDELINE) });
 		if (Echo) printf(getMessage(lang, "WLINE"), (int)blocks.L.size() - 1);
 	}
 	else if (args[0] == "wline" && args.size() == 2) {
@@ -57,7 +57,7 @@ bool command(Blocks& blocks, string cmd, string exepath) {
 		catch (...) {}
 		if (a >= 1) {
 			int s = (int)blocks.L.size();
-			for (int i = 0; i < a; i++) blocks.add({ Line(WIDELINE) });
+			for (int i = 0; i < a; i++) blocks.add({ Line(Line::WIDELINE) });
 			if (Echo) printf(getMessage(lang, "WLINES"), s, (int)blocks.L.size() - 1);
 		}
 	}
@@ -383,6 +383,63 @@ bool command(Blocks& blocks, string cmd, string exepath) {
 			}
 		}
 	}
+	else if (args[0] == "tag" && args.size() == 2) {
+		int a = -1;
+		try {
+			a = atoi(args[1].c_str());
+		}
+		catch (...) {}
+		if (a >= 0 && a < blocks.L.size()) {
+			string I = (count(blocks.inputs.begin(), blocks.inputs.end(), a) != 0) ? "I" : "-";
+			string O = (count(blocks.outputs.begin(), blocks.outputs.end(), a) != 0) ? "O" : "-";
+			printf(getMessage(lang, "TAG"), a);
+			printf(getMessage(lang, "TAG" + I + O));
+		}
+	}
+	else if (args[0] == "type" && args.size() == 2) {
+		int a = -1;
+		try {
+			a = atoi(args[1].c_str());
+		}
+		catch (...) {}
+		if (a >= 0 && a < blocks.L.size()) {
+			string W = (blocks.L[a].mode == Line::WIDELINE) ? "W" : "L";
+			printf(getMessage(lang, "TYPE"), a);
+			printf(getMessage(lang, "TYPE" + W));
+		}
+	}
+	else if (args[0] == "check-input" && args.size() == 1) {
+		printf(getMessage(lang, "CHECK_INPUTS"));
+		for (int i = 0; i < blocks.inputs.size(); i++)
+			printf("%d ", blocks.inputs[i]);
+		printf("\n");
+	}
+	else if (args[0] == "check-input" && args.size() == 2) {
+		int a = -1;
+		try {
+			a = atoi(args[1].c_str());
+		}
+		catch (...) {}
+		if (a >= 0 && a < blocks.inputs.size()) {
+			printf(getMessage(lang, "CHECK_INPUT"), a, blocks.inputs[a]);
+		}
+	}
+	else if (args[0] == "check-output" && args.size() == 1) {
+		printf(getMessage(lang, "CHECK_OUTPUTS"));
+		for (int i = 0; i < blocks.outputs.size(); i++)
+			printf("%d ", blocks.outputs[i]);
+		printf("\n");
+	}
+	else if (args[0] == "check-output" && args.size() == 2) {
+		int a = -1;
+		try {
+			a = atoi(args[1].c_str());
+		}
+		catch (...) {}
+		if (a >= 0 && a < blocks.outputs.size()) {
+			printf(getMessage(lang, "CHECK_OUTPUT"), a, blocks.outputs[a]);
+		}
+	}
 	else if (args[0] == "inspect" && args.size() == 3) {
 		string type = args[1];
 		int a = -1;
@@ -475,17 +532,17 @@ bool command(Blocks& blocks, string cmd, string exepath) {
 		printf(getMessage(lang, "NEKO"));
 	}
 
-	//FILE* file = nullptr;
-	//errno_t err = fopen_s(&file, (exepath + "\\debug.log").c_str(), "w");
-	//if (file == nullptr || err != 0) {
-	//	cerr << "Error: " << err << "\n";
-	//}
 	FILE* file = _fsopen((exepath + "\\debug.log").c_str(), "w", _SH_DENYNO);
 	if (file == nullptr) {
 		cerr << "Error writing debug.log\n";
 	}
 	else {
-		for (Line l : blocks.L) fprintf(file, "%s ", l.checkValue().c_str());
+		for (int i = 0; i < blocks.L.size(); i++) {
+			Line l = blocks.L[i];
+			char I = blocks.isInput(i) ? 'I' : '-';
+			char O = blocks.isOutput(i) ? 'O' : '-';
+			fprintf(file, "%c%c%s ", I, O, l.checkValue().c_str());
+		}
 		fclose(file);
 	}
 

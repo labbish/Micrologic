@@ -30,6 +30,8 @@ public:
 	void input(int order, bool value[4]);
 	std::string output(int order);
 	std::vector<std::string> output();
+	bool isInput(int line);
+	bool isOutput(int line);
 	void add(std::vector<Line> L);
 	void add(std::vector<BlockN> N);
 	void add(std::vector<BlockA> A);

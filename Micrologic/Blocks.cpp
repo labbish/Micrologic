@@ -108,6 +108,14 @@ std::vector<std::string> Blocks::output() {
 	return outs;
 }
 
+bool Blocks::isInput(int line) {
+	return std::count(inputs.begin(), inputs.end(), line) != 0;
+}
+
+bool Blocks::isOutput(int line) {
+	return std::count(outputs.begin(), outputs.end(), line) != 0;
+}
+
 bool Blocks::check() {
 	if (!(this->inputs.size() == this->inputLines.size() && this->outputs.size() == this->outputLines.size())) return false;
 	for (int i = 0; i < this->inputs.size(); i++) if (this->L[inputs[i]].mode != this->inputLines[i]->mode) return false;

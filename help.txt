@@ -45,6 +45,12 @@ path [PATH]                                               Set path of scripts. U
 open [FILE]                                               Open an Micrologic script file. Use double quotation marks when the file name include spaces.
 mod [MOD] [FILE]                                          Give an file a mod name, in order to use it as a block afterwards.
 block [MOD] [INPUT [INPUT ...]] [OUTPUT [OUTPUT ...]]     Creates a user-defined block.
+tag [ALINE]                                               Check whether a line is set as input or output.
+type [ALINE]                                              Check whether a line is wide.
+check-input                                               Lists the line order numbers of input lines.
+check-input [INPUT]                                       Lists the line order number of a designated input line.
+check-output                                              Lists the line order numbers of output lines.
+check-output [OUTPUT]                                     Lists the line order number of a designated output line.
 inspect [BLOCKTYPE] [BLOCK]                               Checks whether a block connects correct line type.
 echo [MESSAGE]                                            Outputs a message.
 @echo [ECHO]                                              Set whether to echo messages. Requires 0 or 1.

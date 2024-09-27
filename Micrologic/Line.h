@@ -3,13 +3,12 @@
 #include <cstdio>
 #include <string>
 
-enum {
-	LINE = 0,
-	WIDELINE = 1
-};
-
 class Line {
 public:
+	static enum {
+		LINE = 0,
+		WIDELINE = 1
+	};
 	short mode;
 	bool nextValue;
 	bool value;
