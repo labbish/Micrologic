@@ -291,10 +291,10 @@ bool command(Blocks& blocks, string cmd, string exepath) {
 		string f = cmd.substr(x + 1, y - x - 1);
 		f = convertSlash(f);
 		try {
-			fin.open(f, ios::out | ios::in);
+			fin.open(f, ios::in);
 			string nextPath = f.substr(0, f.rfind("\\") + 1);
 			if (!fin.good()) {
-				fin.open(path + f, ios::out | ios::in);
+				fin.open(path + f, ios::in);
 				nextPath = (path + f).substr(0, f.rfind("\\") + 1);
 			}
 			if (nextPath != "") path = nextPath;
@@ -313,10 +313,10 @@ bool command(Blocks& blocks, string cmd, string exepath) {
 		string f = args[1];
 		f = convertSlash(f);
 		try {
-			fin.open(f, ios::out | ios::in);
+			fin.open(f, ios::in);
 			string nextPath = f.substr(0, f.rfind("\\") + 1);
 			if (!fin.good()) {
-				fin.open(path + f, ios::out | ios::in);
+				fin.open(path + f, ios::in);
 				nextPath = (path + f).substr(0, f.rfind("\\") + 1);
 			}
 			if (nextPath != "") path = nextPath;
@@ -475,10 +475,14 @@ bool command(Blocks& blocks, string cmd, string exepath) {
 		printf(getMessage(lang, "NEKO"));
 	}
 
-	FILE* file = nullptr;
-	errno_t err = fopen_s(&file, (exepath + "\\debug.log").c_str(), "w");
-	if (file == nullptr || err != 0) {
-		cerr << "Error: " << err << "\n";
+	//FILE* file = nullptr;
+	//errno_t err = fopen_s(&file, (exepath + "\\debug.log").c_str(), "w");
+	//if (file == nullptr || err != 0) {
+	//	cerr << "Error: " << err << "\n";
+	//}
+	FILE* file = _fsopen((exepath + "\\debug.log").c_str(), "w", _SH_DENYNO);
+	if (file == nullptr) {
+		cerr << "Error writing debug.log\n";
 	}
 	else {
 		for (Line l : blocks.L) fprintf(file, "%s ", l.checkValue().c_str());
