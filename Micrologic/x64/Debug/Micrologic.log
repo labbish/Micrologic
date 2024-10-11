@@ -1,10 +1,4 @@
-﻿  Micrologic.cpp
-C:\Users\14354\source\repos\Micrologic\Micrologic\Line.h(8,14): warning C4091: “static ”: 没有声明变量时忽略“Line::<unnamed-enum-LINE>”的左侧
-  (编译源文件“Micrologic.cpp”)
-  
-C:\Users\14354\source\repos\Micrologic\Micrologic\Micrologic.cpp(290,9): warning C4267: “初始化”: 从“size_t”转换到“int”，可能丢失数据
-C:\Users\14354\source\repos\Micrologic\Micrologic\Micrologic.cpp(290,29): warning C4267: “初始化”: 从“size_t”转换到“int”，可能丢失数据
-C:\Users\14354\source\repos\Micrologic\Micrologic\Micrologic.cpp(357,15): warning C4267: “初始化”: 从“size_t”转换到“int”，可能丢失数据
-C:\Users\14354\source\repos\Micrologic\Micrologic\Micrologic.cpp(477,9): warning C4267: “初始化”: 从“size_t”转换到“int”，可能丢失数据
-C:\Users\14354\source\repos\Micrologic\Micrologic\Micrologic.cpp(477,29): warning C4267: “初始化”: 从“size_t”转换到“int”，可能丢失数据
+﻿  Interpreter.cpp
+  Micrologic.cpp
+  正在生成代码...
   Micrologic.vcxproj -> C:\Users\14354\source\repos\Micrologic\x64\Debug\Micrologic.exe

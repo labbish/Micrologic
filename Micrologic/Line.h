@@ -2,21 +2,26 @@
 
 #include <cstdio>
 #include <string>
+#include <array>
 
 class Line {
 public:
-	static enum {
+	enum {
 		LINE = 0,
 		WIDELINE = 1
 	};
 	short mode;
 	bool nextValue;
 	bool value;
-	bool nextWideValue[4];
-	bool wideValue[4];
+	std::array<bool, 4> nextWideValue;
+	std::array<bool, 4> wideValue;
 	Line(int mode = LINE);
+	Line(const Line&);
+	Line& operator=(const Line&);
+	Line(Line&&) noexcept;
+	Line& operator=(Line&&) noexcept;
 	void set(bool value);
-	void set(bool wideValue[4]);
+	void set(std::array<bool, 4> wideValue);
 	void flush();
 	std::string checkValue();
 };

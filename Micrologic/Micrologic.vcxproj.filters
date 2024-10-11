@@ -13,6 +13,12 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="头文件\BlockTypes">
+      <UniqueIdentifier>{a4a1133d-1b73-40d7-ac09-f5bde9563ce1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="源文件\BlockTypes">
+      <UniqueIdentifier>{c9a3a871-9c72-48c5-9cfc-04985fe96971}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Micrologic.cpp">
@@ -22,27 +28,30 @@
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="Block.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="BlockN.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="Blocks.cpp">
-      <Filter>源文件</Filter>
+      <Filter>源文件\BlockTypes</Filter>
     </ClCompile>
     <ClCompile Include="BlockA.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="BlockR.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="BlockT.cpp">
-      <Filter>源文件</Filter>
+      <Filter>源文件\BlockTypes</Filter>
     </ClCompile>
     <ClCompile Include="BlockC.cpp">
-      <Filter>源文件</Filter>
+      <Filter>源文件\BlockTypes</Filter>
+    </ClCompile>
+    <ClCompile Include="BlockN.cpp">
+      <Filter>源文件\BlockTypes</Filter>
     </ClCompile>
     <ClCompile Include="BlockP.cpp">
+      <Filter>源文件\BlockTypes</Filter>
+    </ClCompile>
+    <ClCompile Include="Blocks.cpp">
+      <Filter>源文件\BlockTypes</Filter>
+    </ClCompile>
+    <ClCompile Include="BlockR.cpp">
+      <Filter>源文件\BlockTypes</Filter>
+    </ClCompile>
+    <ClCompile Include="BlockT.cpp">
+      <Filter>源文件\BlockTypes</Filter>
+    </ClCompile>
+    <ClCompile Include="Interpreter.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>
@@ -50,31 +59,37 @@
     <ClInclude Include="Line.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="Messages.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
     <ClInclude Include="Block.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="BlockN.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="Blocks.h">
-      <Filter>头文件</Filter>
+      <Filter>头文件\BlockTypes</Filter>
     </ClInclude>
     <ClInclude Include="BlockA.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="BlockR.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="BlockT.h">
-      <Filter>头文件</Filter>
+      <Filter>头文件\BlockTypes</Filter>
     </ClInclude>
     <ClInclude Include="BlockC.h">
-      <Filter>头文件</Filter>
+      <Filter>头文件\BlockTypes</Filter>
+    </ClInclude>
+    <ClInclude Include="BlockN.h">
+      <Filter>头文件\BlockTypes</Filter>
     </ClInclude>
     <ClInclude Include="BlockP.h">
+      <Filter>头文件\BlockTypes</Filter>
+    </ClInclude>
+    <ClInclude Include="BlockR.h">
+      <Filter>头文件\BlockTypes</Filter>
+    </ClInclude>
+    <ClInclude Include="Blocks.h">
+      <Filter>头文件\BlockTypes</Filter>
+    </ClInclude>
+    <ClInclude Include="BlockT.h">
+      <Filter>头文件\BlockTypes</Filter>
+    </ClInclude>
+    <ClInclude Include="Interpreter.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="Messages.h">
+    <ClInclude Include="ErrorMsg.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>

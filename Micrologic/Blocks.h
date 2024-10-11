@@ -9,9 +9,18 @@
 #include "BlockC.h"
 #include "BlockP.h"
 
+template <class T>
+inline void clearContainer(T& container) {
+	T().swap(container);
+}
+
 class Blocks :public Block {
 public:
 	Blocks();
+	Blocks(const Blocks&);
+	Blocks& operator=(const Blocks& other);
+	Blocks(Blocks&&) noexcept;
+	Blocks& operator=(Blocks&& other) noexcept;
 	int speed = 1;
 	std::vector<int> inputs;
 	std::vector<int> outputs;
@@ -27,7 +36,7 @@ public:
 	void addInput(std::vector<int> inputs);
 	void addOutput(std::vector<int> outputs);
 	void input(int order, bool value);
-	void input(int order, bool value[4]);
+	void input(int order, std::array<bool, 4> value);
 	std::string output(int order);
 	std::vector<std::string> output();
 	bool isInput(int line);
@@ -39,6 +48,8 @@ public:
 	void add(std::vector<BlockT> T);
 	void add(std::vector<BlockC> C);
 	void add(std::vector<BlockP> P);
+	void add(const Blocks& Bs);
+	void add(Blocks&& Bs);
 	void add(std::vector<Blocks> Bs);
 	void tick();
 	void clear();

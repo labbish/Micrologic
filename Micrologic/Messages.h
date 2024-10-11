@@ -1,6 +1,8 @@
 ﻿#pragma once
+
 #include <string>
 #include <map>
+#include "ErrorMsg.h"
 
 const std::vector<std::string> languages = { "en_us", "zh_cn" };
 
@@ -53,11 +55,11 @@ const std::map<std::string, std::string> zh_cn = {
 	{"LINES","添加了第%d~%d条线。\n"},
 	{"WLINE","添加了第%d条宽线。\n"},
 	{"WLINES","添加了第%d~%d条宽线。\n"},
-	{"BLOCKN","添加了第%d个N块，输入线号为%d，输出线号为 %d。\n"},
-	{"BLOCKA","添加了第%d个A块，输入线号为%d和%d，输出线号为 %d。\n"},
-	{"BLOCKR","添加了第%d个R块，输入线号为%d和%d，输出线号为 %d。\n"},
-	{"BLOCKT","添加了第%d个T块，输入线号为%d，输出线号为 %d。\n"},
-	{"BLOCKC","添加了第%d个C块，输入线号为%d %d %d %d，输出线号为 %d。\n"},
+	{"BLOCKN","添加了第%d个N块，输入线号为%d，输出线号为%d。\n"},
+	{"BLOCKA","添加了第%d个A块，输入线号为%d和%d，输出线号为%d。\n"},
+	{"BLOCKR","添加了第%d个R块，输入线号为%d和%d，输出线号为%d。\n"},
+	{"BLOCKT","添加了第%d个T块，输入线号为%d，输出线号为%d。\n"},
+	{"BLOCKC","添加了第%d个C块，输入线号为%d %d %d %d，输出线号为%d。\n"},
 	{"BLOCKP","添加了第%d个C块，输入线号为%d，输出线号为%d %d %d %d。\n"},
 	{"CHECK","第%d条线的值是%s\n"},
 	{"CHECKS","所有线的值是："},
@@ -93,7 +95,15 @@ const std::map<std::string, std::string> zh_cn = {
 };
 
 inline const char* getMessage(std::string lang, std::string key) {
-	if (lang == "en_us") return en_us.at(key).c_str();
-	else if (lang == "zh_cn") return zh_cn.at(key).c_str();
-	else return "";
+	try {
+		if (lang == "en_us") return en_us.at(key).c_str();
+		else if (lang == "zh_cn") return zh_cn.at(key).c_str();
+		else {
+			ErrorMsg() << "Language not found: " << lang ;
+		}
+	}
+	catch (const std::out_of_range&) {
+		ErrorMsg() << "Message not found: " << lang << "." << key ;
+	}
+	return "";
 }

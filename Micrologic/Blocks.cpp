@@ -9,39 +9,123 @@ Blocks::Blocks() {
 	this->T.reserve(cap);
 	this->C.reserve(cap);
 	this->Bs.reserve(cap);
-	this->L.reserve(cap);
+}
+
+Blocks::Blocks(const Blocks& other) {
+	speed = other.speed;
+	inputs = other.inputs;
+	outputs = other.outputs;
+	mods = other.mods;
+	L = other.L;
+	N = other.N;
+	A = other.A;
+	R = other.R;
+	T = other.T;
+	C = other.C;
+	P = other.P;
+	Bs = other.Bs;
+}
+
+Blocks& Blocks::operator=(const Blocks& other) {
+	speed = other.speed;
+	inputs = other.inputs;
+	outputs = other.outputs;
+	mods = other.mods;
+	L = other.L;
+	N = other.N;
+	A = other.A;
+	R = other.R;
+	T = other.T;
+	C = other.C;
+	P = other.P;
+	Bs = other.Bs;
+	return *this;
+}
+
+Blocks::Blocks(Blocks&& other) noexcept {
+	speed = other.speed;
+	inputs = std::move(other.inputs);
+	outputs = std::move(other.outputs);
+	mods = std::move(other.mods);
+	L = std::move(other.L);
+	N = std::move(other.N);
+	A = std::move(other.A);
+	R = std::move(other.R);
+	T = std::move(other.T);
+	C = std::move(other.C);
+	P = std::move(other.P);
+	Bs = std::move(other.Bs);
+	other.speed = 0;
+}
+
+Blocks& Blocks::operator=(Blocks&& other) noexcept {
+	if (this != &other) {
+		inputs.clear();
+		outputs.clear();
+		mods.clear();
+		L.clear();
+		N.clear();
+		A.clear();
+		R.clear();
+		T.clear();
+		C.clear();
+		P.clear();
+		Bs.clear();
+		speed = other.speed;
+		inputs = std::move(other.inputs);
+		outputs = std::move(other.outputs);
+		mods = std::move(other.mods);
+		L = std::move(other.L);
+		N = std::move(other.N);
+		A = std::move(other.A);
+		R = std::move(other.R);
+		T = std::move(other.T);
+		C = std::move(other.C);
+		P = std::move(other.P);
+		Bs = std::move(other.Bs);
+		other.speed = 0;
+	}
+	return *this;
 }
 
 void Blocks::add(std::vector<Line> L) {
-	for (Line l : L) this->L.push_back(l);
+	for (const Line& l : L) this->L.push_back(l);
 }
 
 void Blocks::add(std::vector<BlockN> N) {
-	for (BlockN n : N) this->N.push_back(n);
+	for (const BlockN& n : N) this->N.push_back(n);
 }
 
 void Blocks::add(std::vector<BlockA> A) {
-	for (BlockA a : A) this->A.push_back(a);
+	for (const BlockA& a : A) this->A.push_back(a);
 }
 
 void Blocks::add(std::vector<BlockR> R) {
-	for (BlockR r : R) this->R.push_back(r);
+	for (const BlockR& r : R) this->R.push_back(r);
 }
 
 void Blocks::add(std::vector<BlockT> T) {
-	for (BlockT t : T) this->T.push_back(t);
+	for (const BlockT& t : T) this->T.push_back(t);
 }
 
 void Blocks::add(std::vector<BlockC> C) {
-	for (BlockC c : C) this->C.push_back(c);
+	for (const BlockC& c : C) this->C.push_back(c);
 }
 
 void Blocks::add(std::vector<BlockP> P) {
-	for (BlockP p : P) this->P.push_back(p);
+	for (const BlockP& p : P) this->P.push_back(p);
+}
+
+void Blocks::add(const Blocks& b) {
+	this->Bs.push_back(b);
+}
+
+void Blocks::add(Blocks&& b) {
+	this->Bs.push_back(std::move(b));
 }
 
 void Blocks::add(std::vector<Blocks> Bs) {
-	for (Blocks b : Bs) this->Bs.push_back(b);
+	for (const Blocks& b : Bs) this->Bs.push_back(b);
 }
 
 void Blocks::tick() {
@@ -66,17 +150,17 @@ void Blocks::tick() {
 }
 
 void Blocks::clear() {
-	std::vector<Line>().swap(L);
-	std::vector<BlockN>().swap(N);
-	std::vector<BlockA>().swap(A);
-	std::vector<BlockR>().swap(R);
-	std::vector<BlockT>().swap(T);
-	std::vector<BlockC>().swap(C);
-	std::vector<BlockP>().swap(P);
-	std::vector<Blocks>().swap(Bs);
-	std::vector<int>().swap(inputs);
-	std::vector<int>().swap(outputs);
-	std::map<std::string, std::string>().swap(mods);
+	clearContainer(L);
+	clearContainer(N);
+	clearContainer(A);
+	clearContainer(R);
+	clearContainer(T);
+	clearContainer(C);
+	clearContainer(P);
+	clearContainer(Bs);
+	clearContainer(inputs);
+	clearContainer(outputs);
+	clearContainer(mods);
 }
 
 void Blocks::addInput(std::vector<int> inputs) {
@@ -92,7 +176,7 @@ void Blocks::input(int order, bool value) {
 	for (int i = 0; i < 4; i++) this->L[inputs[order]].wideValue[i] = this->L[inputs[order]].nextWideValue[i] = value;
 }
 
-void Blocks::input(int order, bool value[4]) {
+void Blocks::input(int order, std::array<bool, 4> value) {
 	for (int i = 0; i < 4; i++) this->L[inputs[order]].wideValue[i] = this->L[inputs[order]].nextWideValue[i] = value[i];
 }
 
