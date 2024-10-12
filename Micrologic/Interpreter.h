@@ -114,7 +114,9 @@ public:
 	virtual void open(std::string);
 	virtual void safe_open(std::string);
 	virtual void mod(std::string, std::string);
+	virtual void check_mods();
 	virtual void block(std::string, std::vector<int>);
+	virtual void block_type(int);
 	virtual void tag(int);
 	virtual void type(int);
 	virtual void check_input();
@@ -122,6 +124,7 @@ public:
 	virtual void check_output();
 	virtual void check_output(int);
 	virtual void inspect(std::string, int);
+	virtual void export__();
 	virtual void echo(std::string);
 	virtual void _echo(int);
 	virtual void __path();
@@ -140,26 +143,28 @@ public:
 	using Interpreter::Interpreter;
 	SubInterpreter(const Interpreter&);
 
-	void unavailable(std::string);
-	inline void check() { unavailable("check"); }
-	inline void check(int) { unavailable("check"); }
-	inline void output() { unavailable("output"); }
-	inline void output(int) { unavailable("output"); }
-	inline void tick() { unavailable("tick"); }
-	inline void tick(int) { unavailable("tick"); }
-	inline void tick_() { unavailable("tick!"); }
-	inline void tick_(int) { unavailable("tick!"); }
-	inline void tag(int) { unavailable("tag"); }
-	inline void type(int) { unavailable("type"); }
-	inline void check_input() { unavailable("check-input"); }
-	inline void check_input(int) { unavailable("check-input"); }
-	inline void check_output() { unavailable("check-input"); }
-	inline void check_output(int) { unavailable("check-output"); }
-	inline void inspect(std::string, int) { unavailable("check-output"); }
-	inline void __path() { unavailable("path"); }
-	inline void __path(std::string) { unavailable("path"); }
-	inline void clear() { unavailable("clear"); }
-	inline void help() { unavailable("help"); }
-	inline void help(std::string) { unavailable("help"); }
-	inline void __lang(std::string) { unavailable("lang"); }
+	void unavailableMessage(std::string);
+	inline void check() { unavailableMessage("check"); }
+	inline void check(int) { unavailableMessage("check"); }
+	inline void output() { unavailableMessage("output"); }
+	inline void output(int) { unavailableMessage("output"); }
+	inline void tick() { unavailableMessage("tick"); }
+	inline void tick(int) { unavailableMessage("tick"); }
+	inline void tick_() { unavailableMessage("tick!"); }
+	inline void tick_(int) { unavailableMessage("tick!"); }
+	inline void check_mods() { unavailableMessage("check-mods"); }
+	inline void tag(int) { unavailableMessage("tag"); }
+	inline void type(int) { unavailableMessage("type"); }
+	inline void check_input() { unavailableMessage("check-input"); }
+	inline void check_input(int) { unavailableMessage("check-input"); }
+	inline void check_output() { unavailableMessage("check-input"); }
+	inline void check_output(int) { unavailableMessage("check-output"); }
+	inline void inspect(std::string, int) { unavailableMessage("check-output"); }
+	inline void export__() { unavailableMessage("export"); }
+	inline void __path() { unavailableMessage("path"); }
+	inline void __path(std::string) { unavailableMessage("path"); }
+	inline void clear() { unavailableMessage("clear"); }
+	inline void help() { unavailableMessage("help"); }
+	inline void help(std::string) { unavailableMessage("help"); }
+	inline void __lang(std::string) { unavailableMessage("lang"); }
 };

@@ -2,12 +2,14 @@
 
 #include <string>
 #include <map>
+#include <format>
 #include "BlockN.h"
 #include "BlockA.h"
 #include "BlockR.h"
 #include "BlockT.h"
 #include "BlockC.h"
 #include "BlockP.h"
+#include "StableVector.h"
 
 template <class T>
 inline void clearContainer(T& container) {
@@ -16,7 +18,8 @@ inline void clearContainer(T& container) {
 
 class Blocks :public Block {
 public:
-	Blocks();
+	std::string type;
+	Blocks(std::string type = "");
 	Blocks(const Blocks&);
 	Blocks& operator=(const Blocks& other);
 	Blocks(Blocks&&) noexcept;
@@ -33,6 +36,7 @@ public:
 	std::vector<BlockC> C;
 	std::vector<BlockP> P;
 	std::vector<Blocks> Bs;
+	int findLine(Line*);
 	void addInput(std::vector<int> inputs);
 	void addOutput(std::vector<int> outputs);
 	void input(int order, bool value);
@@ -54,4 +58,5 @@ public:
 	void tick();
 	void clear();
 	bool check();
+	std::vector<std::string> exportBlocks();
 };

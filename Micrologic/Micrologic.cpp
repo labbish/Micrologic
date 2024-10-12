@@ -1,6 +1,8 @@
 ﻿#include "Interpreter.h"
+#include <Windows.h>
 
 int main(int argc, const char* argv[]) {
+	SetConsoleOutputCP(CP_UTF8);
 	Blocks blocks;
 	std::string exepath = std::string(_getcwd(NULL, 0));
 	Interpreter Micrologic(blocks, exepath);

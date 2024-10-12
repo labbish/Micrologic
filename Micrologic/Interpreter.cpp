@@ -240,7 +240,7 @@ void Interpreter::safe_open(std::string f) {
 	if (nextPath != "") path = nextPath;
 	char fcmd[256] = "";
 	if (!assertGoodFile(fin)) return;
-	writeMessage("OPEN", f.c_str());
+	writeMessage("SAFE_OPEN", f.c_str());
 	SubInterpreter sub = SubInterpreter(*this);
 	while (fin.getline(fcmd, 256)) {
 		sub.command(fcmd);
@@ -251,10 +251,17 @@ void Interpreter::mod(std::string name, std::string file) {
 	blocks.mods.insert({ name, file });
 	writeMessage("MOD", name.c_str(), file.c_str());
 }
+void Interpreter::check_mods() {
+	writeMessage("CHECK_MODS");
+	for (std::pair<std::string, std::string> mod : blocks.mods) {
+		printf("%s (%s) ", mod.first.c_str(), mod.second.c_str());
+	}
+	if (Echo) printf("\n");
+}
 void Interpreter::block(std::string name, std::vector<int> ios) {
 	std::vector<int> ins{}, outs{};
 	if (!assertInMap(name, blocks.mods)) return;
-	blocks.add(Blocks());
+	blocks.add(Blocks(name));
 	Blocks& newBlock = blocks.Bs[blocks.Bs.size() - 1];
 	std::string filename = blocks.mods[name];
 	SubInterpreter(newBlock, exepath, path, lang, Echo).command("safe-open " + filename);
@@ -288,6 +295,10 @@ void Interpreter::block(std::string name, std::vector<int> ios) {
 		if (Echo) printf("%d ", o);
 	}
 	writeMessage("BLOCK3");
+}
+void Interpreter::block_type(int a) {
+	if (!assertInRange(a, blocks.Bs)) return;
+	writeMessage("BLOCK_TYPE", a, blocks.Bs[a].type.c_str());
 }
 void Interpreter::tag(int a) {
 	if (!assertInRange(a, blocks.L)) return;
@@ -354,6 +365,9 @@ void Interpreter::inspect(std::string type, int a) {
 	}
 	writeMessage("INSPECT", type.c_str(), a, b);
 }
+void Interpreter::export__() {
+	for (std::string line : blocks.exportBlocks()) printf("%s\n", line.c_str());
+}
 void Interpreter::echo(std::string msg) {
 	printf((msg + "\n").c_str());
 }
@@ -381,13 +395,13 @@ void Interpreter::help(std::string cmd) {
 		if (firstWord(l) == cmd) printf((l + "\n").c_str());
 }
 void Interpreter::__lang(std::string lan) {
-	if (count(languages.begin(), languages.end(), lan)) {
+	if (hasLanguage(lan)) {
 		lang = lan;
 		writeMessage("LANG", lang.c_str());
 	}
 	else if (lan == "list") {
 		writeMessage("LANG_LIST");
-		for (std::string l : languages) {
+		for (std::string l : getKeys()) {
 			printf("%s ", l.c_str());
 		}
 		printf("\n");
@@ -432,7 +446,9 @@ bool Interpreter::command(std::string cmd) {
 	else if (args[0] == "safe-open" && count(cmd.begin(), cmd.end(), '\"') >= 2) safe_open(convertSlash(quotedPart(cmd)));
 	else if (args[0] == "safe-open" && args.size() == 2) safe_open(args[1]);
 	else if (args[0] == "mod" && args.size() == 3) mod(args[1], args[2]);
+	else if (args[0] == "check-mods" && args.size() == 1) check_mods();
 	else if (args[0] == "block" && args.size() >= 2) block(args[1], toInt(subVec(args, 2, (int)args.size())));
+	else if (args[0] == "block-type" && args.size() == 2) block_type(toInt(args[1]));
 	else if (args[0] == "tag" && args.size() == 2) tag(toInt(args[1]));
 	else if (args[0] == "type" && args.size() == 2) type(toInt(args[1]));
 	else if (args[0] == "check-input" && args.size() == 1) check_input();
@@ -440,6 +456,7 @@ bool Interpreter::command(std::string cmd) {
 	else if (args[0] == "check-output" && args.size() == 1) check_output();
 	else if (args[0] == "check-output" && args.size() == 2) check_output(toInt(args[1]));
 	else if (args[0] == "inspect" && args.size() == 3) inspect(args[1], toInt(args[2]));
+	else if (args[0] == "export" && args.size() == 1) export__();
 	else if (args[0] == "echo" && args.size() > 1) echo(cmd.substr(5, cmd.size()));
 	else if (args[0] == "@echo" && args.size() == 2) _echo(toInt(args[1]));
 	else if (args[0] == "path" && args.size() == 1) __path();
@@ -487,13 +504,13 @@ void Interpreter::writeMessage(std::string message, ...) {
 	if (Echo) {
 		va_list args;
 		va_start(args, message);
-		vprintf(getMessage(lang, message), args);
+		vprintf(getMessage(lang, message).c_str(), args);
 		va_end(args);
 	}
 }
 
 SubInterpreter::SubInterpreter(const Interpreter& father) :Interpreter(father) {}
 
-void SubInterpreter::unavailable(std::string cmd) {
+void SubInterpreter::unavailableMessage(std::string cmd) {
 	ErrorMsg() << "Command " << cmd << " is unavailable when opening file in safe mode";
 }
