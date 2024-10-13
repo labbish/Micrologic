@@ -2,6 +2,7 @@
 
 #include <string>
 #include <map>
+#include <set>
 #include <format>
 #include "BlockN.h"
 #include "BlockA.h"
@@ -28,14 +29,14 @@ public:
 	std::vector<int> inputs;
 	std::vector<int> outputs;
 	std::map<std::string, std::string> mods; //modName->fileName
-	std::vector<Line> L;
-	std::vector<BlockN> N;
-	std::vector<BlockA> A;
-	std::vector<BlockR> R;
-	std::vector<BlockT> T;
-	std::vector<BlockC> C;
-	std::vector<BlockP> P;
-	std::vector<Blocks> Bs;
+	StableVector<Line> L;
+	StableVector<BlockN> N;
+	StableVector<BlockA> A;
+	StableVector<BlockR> R;
+	StableVector<BlockT> T;
+	StableVector<BlockC> C;
+	StableVector<BlockP> P;
+	StableVector<Blocks> Bs;
 	int findLine(Line*);
 	void addInput(std::vector<int> inputs);
 	void addOutput(std::vector<int> outputs);

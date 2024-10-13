@@ -2,13 +2,13 @@
 
 Blocks::Blocks(std::string type) :type(type) {
 	int cap = 1024;
-	this->L.reserve(cap);
+	/*this->L.reserve(cap);
 	this->N.reserve(cap);
 	this->A.reserve(cap);
 	this->R.reserve(cap);
 	this->T.reserve(cap);
 	this->C.reserve(cap);
-	this->Bs.reserve(cap);
+	this->Bs.reserve(cap);*/
 }
 
 Blocks::Blocks(const Blocks& other) {

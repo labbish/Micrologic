@@ -92,6 +92,8 @@
 
     "INSPECT": "Inspection result of %s No.%d is %d.\n",
 
+    "DEL": "Deleted %s No.%d.\n",
+
     "PATH": "Current Path: %s\n",
 
     "PATH_SET": "Set path to: %s\n",
@@ -196,6 +198,8 @@
     "TYPEW": "宽线。\n",
 
     "INSPECT": "所有块%s中的第%d个的校验结果是%d。\n",
+
+    "DEL": "已删除%s中的第%d个。\n",
 
     "PATH": "当前目录：%s\n",
 

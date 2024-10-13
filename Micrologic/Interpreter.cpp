@@ -365,6 +365,41 @@ void Interpreter::inspect(std::string type, int a) {
 	}
 	writeMessage("INSPECT", type.c_str(), a, b);
 }
+void Interpreter::del(std::string type, int a) {
+	if (type == "line") {
+		if (!assertInRange(a, blocks.L)) return;
+		blocks.L.erase(a);
+	}
+	if (type == "N") {
+		if (!assertInRange(a, blocks.N)) return;
+		blocks.N.erase(a);
+	}
+	if (type == "A") {
+		if (!assertInRange(a, blocks.A)) return;
+		blocks.A.erase(a);
+	}
+	if (type == "R") {
+		if (!assertInRange(a, blocks.R)) return;
+		blocks.R.erase(a);
+	}
+	if (type == "T") {
+		if (!assertInRange(a, blocks.T)) return;
+		blocks.T.erase(a);
+	}
+	if (type == "C") {
+		if (!assertInRange(a, blocks.C)) return;
+		blocks.C.erase(a);
+	}
+	if (type == "P") {
+		if (!assertInRange(a, blocks.P)) return;
+		blocks.P.erase(a);
+	}
+	if (type == "block") {
+		if (!assertInRange(a, blocks.Bs)) return;
+		blocks.Bs.erase(a);
+	}
+	writeMessage("DEL", type.c_str(), a);
+}
 void Interpreter::export__() {
 	for (std::string line : blocks.exportBlocks()) printf("%s\n", line.c_str());
 }
@@ -456,6 +491,7 @@ bool Interpreter::command(std::string cmd) {
 	else if (args[0] == "check-output" && args.size() == 1) check_output();
 	else if (args[0] == "check-output" && args.size() == 2) check_output(toInt(args[1]));
 	else if (args[0] == "inspect" && args.size() == 3) inspect(args[1], toInt(args[2]));
+	else if (args[0] == "del" && args.size() == 3) del(args[1], toInt(args[2]));
 	else if (args[0] == "export" && args.size() == 1) export__();
 	else if (args[0] == "echo" && args.size() > 1) echo(cmd.substr(5, cmd.size()));
 	else if (args[0] == "@echo" && args.size() == 2) _echo(toInt(args[1]));

@@ -34,6 +34,14 @@ inline bool assertInRange(int i, std::vector<T> vec) {
 	}
 	return true;
 }
+template <typename T>
+inline bool assertInRange(int i, StableVector<T> vec) {
+	if (i < 0 || i >= vec.size()) {
+		ErrorMsg() << "Number out of range: " << i;
+		return false;
+	}
+	return true;
+}
 template <typename T, typename T1>
 inline bool assertInMap(T t, std::map<T, T1> mp) {
 	if (mp.find(t) == mp.end()) {
@@ -124,6 +132,7 @@ public:
 	virtual void check_output();
 	virtual void check_output(int);
 	virtual void inspect(std::string, int);
+	virtual void del(std::string, int);
 	virtual void export__();
 	virtual void echo(std::string);
 	virtual void _echo(int);
@@ -157,9 +166,10 @@ public:
 	inline void type(int) { unavailableMessage("type"); }
 	inline void check_input() { unavailableMessage("check-input"); }
 	inline void check_input(int) { unavailableMessage("check-input"); }
-	inline void check_output() { unavailableMessage("check-input"); }
+	inline void check_output() { unavailableMessage("check-output"); }
 	inline void check_output(int) { unavailableMessage("check-output"); }
-	inline void inspect(std::string, int) { unavailableMessage("check-output"); }
+	inline void inspect(std::string, int) { unavailableMessage("inspect"); }
+	inline void del() { unavailableMessage("del"); }
 	inline void export__() { unavailableMessage("export"); }
 	inline void __path() { unavailableMessage("path"); }
 	inline void __path(std::string) { unavailableMessage("path"); }
