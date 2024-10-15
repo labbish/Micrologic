@@ -153,6 +153,7 @@ public:
 	SubInterpreter(const Interpreter&);
 
 	void unavailableMessage(std::string);
+	inline void end() { unavailableMessage("end"); }
 	inline void check() { unavailableMessage("check"); }
 	inline void check(int) { unavailableMessage("check"); }
 	inline void output() { unavailableMessage("output"); }
