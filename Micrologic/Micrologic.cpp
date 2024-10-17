@@ -9,7 +9,7 @@ int main(int argc, const char* argv[]) {
 	if (argc == 2) {
 		Micrologic.Echo = Micrologic.command("open " + std::string(argv[1]));
 	}
-	while (1) {
+	while (true) {
 		printf(">>>");
 		std::string cmd;
 		std::getline(std::cin, cmd);

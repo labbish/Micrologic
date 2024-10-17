@@ -210,7 +210,7 @@ void Interpreter::speed(int v) {
 	blocks.speed = v;
 	writeMessage("SPEED", v);
 }
-void Interpreter::open(std::string f) {
+void Interpreter::openInterfere(std::string f, Interpreter* interpreter) {
 	std::ifstream fin;
 	fin.open(f, std::ios::in);
 	std::string nextPath = pathPart(f);
@@ -219,33 +219,22 @@ void Interpreter::open(std::string f) {
 		fin.open(f, std::ios::in);
 		nextPath = pathPart(f);
 	}
-	if (nextPath != "") path = nextPath;
+	if (nextPath != "") interpreter->path = path = nextPath;
 	char fcmd[256] = "";
 	if (!assertGoodFile(fin)) return;
 	writeMessage("OPEN", f.c_str());
 	while (fin.getline(fcmd, 256)) {
-		command(fcmd);
+		if (perStep) pause();
+		interpreter->command(fcmd);
 	}
 	if (Echo) printf("\n");
 }
+void Interpreter::open(std::string f) {
+	openInterfere(f, this);
+}
 void Interpreter::safe_open(std::string f) {
-	std::ifstream fin;
-	fin.open(f, std::ios::in);
-	std::string nextPath = pathPart(f);
-	if (!fin.good()) {
-		f = path + f;
-		fin.open(f, std::ios::in);
-		nextPath = pathPart(f);
-	}
-	if (nextPath != "") path = nextPath;
-	char fcmd[256] = "";
-	if (!assertGoodFile(fin)) return;
-	writeMessage("SAFE_OPEN", f.c_str());
-	SubInterpreter sub = SubInterpreter(*this);
-	while (fin.getline(fcmd, 256)) {
-		sub.command(fcmd);
-	}
-	if (Echo) printf("\n");
+	SafeInterpreter tempInterpreter = SafeInterpreter(*this);
+	openInterfere(f, &tempInterpreter);
 }
 void Interpreter::mod(std::string name, std::string file) {
 	blocks.mods.insert({ name, file });
@@ -264,7 +253,7 @@ void Interpreter::block(std::string name, std::vector<int> ios) {
 	blocks.add(Blocks(name));
 	Blocks& newBlock = blocks.Bs[blocks.Bs.size() - 1];
 	std::string filename = blocks.mods[name];
-	SubInterpreter(newBlock, exepath, path, lang, Echo).command("safe-open " + filename);
+	SafeInterpreter(newBlock, exepath, path, lang, Echo).command("safe-open " + filename);
 	if (ios.size() != newBlock.inputs.size() + newBlock.outputs.size()) {
 		ErrorMsg() << "Incorrect line count";
 		blocks.Bs.pop_back();
@@ -410,6 +399,14 @@ void Interpreter::_echo(int echo) {
 	if (!assertBit(echo)) return;
 	Echo = echo;
 }
+void Interpreter::_clock(int time) {
+	if (!assertBit(time)) return;
+	debugTime = time;
+}
+void Interpreter::_per_step(int step) {
+	if (!assertBit(step)) return;
+	perStep = step;
+}
 void Interpreter::__path() {
 	writeMessage("PATH", path.c_str());
 }
@@ -448,6 +445,8 @@ void Interpreter::neko() {
 }
 
 bool Interpreter::command(std::string cmd) {
+	TimeDebugger timeDebugger;
+	timeDebugger.flush();
 	std::vector<std::string> args = breakLine(cmd);
 	if (args.size() == 0) {}
 	else if (args[0] == "end" && args.size() == 1) Exit = 1;
@@ -495,6 +494,8 @@ bool Interpreter::command(std::string cmd) {
 	else if (args[0] == "export" && args.size() == 1) export__();
 	else if (args[0] == "echo" && args.size() > 1) echo(cmd.substr(5, cmd.size()));
 	else if (args[0] == "@echo" && args.size() == 2) _echo(toInt(args[1]));
+	else if (args[0] == "@clock" && args.size() == 2) _clock(toInt(args[1]));
+	else if (args[0] == "@per-step" && args.size() == 2) _per_step(toInt(args[1]));
 	else if (args[0] == "path" && args.size() == 1) __path();
 	else if (args[0] == "path" && count(cmd.begin(), cmd.end(), '\"') >= 2) __path(addSlash(convertSlash(quotedPart(cmd))));
 	else if (args[0] == "path" && args.size() == 2) __path(addSlash(args[1]));
@@ -505,6 +506,7 @@ bool Interpreter::command(std::string cmd) {
 	else if (args[0] == "neko" && args.size() == 1) neko();
 	else ErrorMsg() << "No such command or incorrect argument count";
 	writeDebug();
+	if (debugTime) timeDebugger.debug();
 	return Echo;
 }
 
@@ -545,8 +547,8 @@ void Interpreter::writeMessage(std::string message, ...) {
 	}
 }
 
-SubInterpreter::SubInterpreter(const Interpreter& father) :Interpreter(father) {}
+SafeInterpreter::SafeInterpreter(const Interpreter& father) :Interpreter(father) {}
 
-void SubInterpreter::unavailableMessage(std::string cmd) {
+void SafeInterpreter::unavailableMessage(std::string cmd) {
 	ErrorMsg() << "Command " << cmd << " is unavailable when opening file in safe mode";
 }

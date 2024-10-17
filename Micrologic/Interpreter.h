@@ -9,8 +9,10 @@
 #include <array>
 #include <cstdarg>
 #include <direct.h>
+#include <conio.h>
 #include "Blocks.h"
 #include "Messages.h"
+#include "TimeDebugger.h"
 
 inline bool assertPositive(int a) {
 	if (a <= 0) {
@@ -66,6 +68,17 @@ inline std::vector<T> subVec(const std::vector<T>& vec, int start, int end) {
 	return std::vector<T>(vec.begin() + start, vec.begin() + end);
 }
 
+inline void clearCurrentLine() {
+	std::cout << "\r";
+	std::cout << std::string(128, ' ');
+	std::cout << "\r";
+}
+inline void pause() {
+	printf("Click any key to continue...");
+	_getch();
+	clearCurrentLine();
+}
+
 class Interpreter {
 public:
 	bool Echo;
@@ -74,9 +87,11 @@ public:
 	Blocks& blocks;
 	std::string path;
 	std::string exepath;
+	bool debugTime;
+	bool perStep;
 
-	Interpreter(Blocks& blocks, std::string exepath, std::string path = "", std::string lang = "en_us", bool Echo = true)
-		:blocks(blocks), exepath(exepath), path(path), lang(lang), Echo(Echo) {
+	Interpreter(Blocks& blocks, std::string exepath, std::string path = "", std::string lang = "en_us", bool Echo = true, bool debugTime = false, bool perStep = false)
+		:blocks(blocks), exepath(exepath), path(path), lang(lang), Echo(Echo), debugTime(debugTime), perStep(perStep) {
 	}
 
 	bool isNum(std::string);
@@ -119,6 +134,7 @@ public:
 	virtual void tick_();
 	virtual void tick_(int);
 	virtual void speed(int);
+	virtual void openInterfere(std::string, Interpreter*);
 	virtual void open(std::string);
 	virtual void safe_open(std::string);
 	virtual void mod(std::string, std::string);
@@ -136,6 +152,8 @@ public:
 	virtual void export__();
 	virtual void echo(std::string);
 	virtual void _echo(int);
+	virtual void _clock(int);
+	virtual void _per_step(int);
 	virtual void __path();
 	virtual void __path(std::string);
 	virtual void clear();
@@ -147,10 +165,10 @@ public:
 	bool command(std::string cmd);
 };
 
-class SubInterpreter :public Interpreter {
+class SafeInterpreter :public Interpreter {
 public:
 	using Interpreter::Interpreter;
-	SubInterpreter(const Interpreter&);
+	SafeInterpreter(const Interpreter&);
 
 	void unavailableMessage(std::string);
 	inline void end() { unavailableMessage("end"); }
@@ -172,6 +190,8 @@ public:
 	inline void inspect(std::string, int) { unavailableMessage("inspect"); }
 	inline void del() { unavailableMessage("del"); }
 	inline void export__() { unavailableMessage("export"); }
+	inline void _clock(int) { unavailableMessage("@clock"); }
+	inline void _per_step(int) { unavailableMessage("@per-step"); }
 	inline void __path() { unavailableMessage("path"); }
 	inline void __path(std::string) { unavailableMessage("path"); }
 	inline void clear() { unavailableMessage("clear"); }

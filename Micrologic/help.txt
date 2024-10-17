@@ -60,7 +60,9 @@ del [BLOCKTYPE] [BLOCK]                                   Delete a designated bl
 del line [ALINE]                                          Delete a designated line. No bugs were found in tn test but you'd betterbe careful of those blocks without line connection.
 export                                                    Export current blocks.
 echo [MESSAGE]                                            Outputs a message.
-@echo [ECHO]                                              Set whether to echo messages. Requires 0 or 1.
+@echo [SHOW]                                              Set whether to echo messages. Requires 0 or 1.
+@clock [SHOW]                                             Set whether to show time of command running. Requires 0 or 1.
+@pre-tick [SHOW]                                          Set whether to run file step by step. Requires 0 or 1.
 clear                                                     Clear the interpreter' data and restart.
 help                                                      Show help.
 help [COMMAND]                                            Show help for a designated command.

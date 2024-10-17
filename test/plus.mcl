@@ -7,6 +7,8 @@ echo >>>output
 @echo 0
 
 mod p3 p3.mcl
+mod nxor nxor.mcl
+
 speed 5
 wline 2
 line 16
