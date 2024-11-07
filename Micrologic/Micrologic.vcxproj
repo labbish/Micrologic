@@ -143,7 +143,6 @@
     <ClCompile Include="Interpreter.cpp" />
     <ClCompile Include="Line.cpp" />
     <ClCompile Include="Micrologic.cpp" />
-    <ClCompile Include="StableVector.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Block.h" />

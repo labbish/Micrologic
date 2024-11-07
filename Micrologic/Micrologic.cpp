@@ -1,6 +1,8 @@
 ﻿#include "Interpreter.h"
 #include <Windows.h>
 
+using namespace labbish::Micrologic;
+
 int main(int argc, const char* argv[]) {
 	SetConsoleOutputCP(CP_UTF8);
 	Blocks blocks;
