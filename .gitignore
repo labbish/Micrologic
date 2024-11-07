@@ -33,3 +33,11 @@
 
 # Ignore Micrologic/x64 folder
 Micrologic/x64/
+
+# Labbish Libs
+Micrologic/StableVector.h
+Micrologic/ErrorMsg.h
+Micrologic/TimeDebugger.h
+
+# json lib
+Micrologic/nlohmann
