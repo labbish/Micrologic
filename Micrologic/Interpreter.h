@@ -49,7 +49,7 @@ namespace labbish {
 		template <typename T, typename T1>
 		inline bool assertInMap(T t, std::map<T, T1> mp) {
 			if (mp.find(t) == mp.end()) {
-				message::ErrorMsg() << "Key not found: " << t;
+				message::ErrorMsg() << "Key not found: \"" << t << "\"";
 				return false;
 			}
 			return true;
@@ -96,6 +96,8 @@ namespace labbish {
 				:blocks(blocks), exepath(exepath), path(path), lang(lang), Echo(Echo), debugTime(debugTime), perStep(perStep) {
 			}
 
+			void normalizeArg(std::string&);
+			void normalizeArgs(std::vector<std::string>&);
 			bool isNum(std::string);
 			int toInt(std::string);
 			std::vector<int> toInt(std::vector<std::string>);

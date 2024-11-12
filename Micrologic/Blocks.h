@@ -4,6 +4,7 @@
 #include <map>
 #include <set>
 #include <format>
+#include <algorithm>
 #include "BlockN.h"
 #include "BlockA.h"
 #include "BlockR.h"
