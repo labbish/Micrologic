@@ -2,7 +2,21 @@
 
 namespace labbish {
 	namespace Micrologic {
+		void Interpreter::normalizeArg(std::string& str) {
+			auto isdirty = [](char c) {
+				return c == '\t' || c == '\n' || c == '\r' || c == '\f' || c == '\v';
+				};
+			str.erase(std::remove_if(str.begin(), str.end(), isdirty), str.end());
+		} // delete all dirty chars
+
+		void Interpreter::normalizeArgs(std::vector<std::string>& strs) {
+			for (int i = 0; i < strs.size(); i++) {
+				normalizeArg(strs[i]);
+			}
+		}
+
 		bool Interpreter::isNum(std::string str) {
+			if (str == "") return false;
 			for (int i = 0; i < str.length(); i++) {
 				char c = str[i];
 				if ((c < '0' || c > '9') && !(i == 0 && c == '-')) return false;
@@ -12,14 +26,14 @@ namespace labbish {
 
 		int Interpreter::toInt(std::string str) {
 			if (!isNum(str)) {
-				message::ErrorMsg() << "Not a num: " << str;
+				message::ErrorMsg() << "Not a num: \"" << str << "\"";
 				return -1;
 			}
 			try {
 				return std::stoi(str);
 			}
 			catch (const std::invalid_argument&) {
-				message::ErrorMsg() << "Not a num: " << str;
+				message::ErrorMsg() << "Not a num: \"" << str << "\"";
 			}
 			catch (const std::out_of_range&) {
 				message::ErrorMsg() << "Num out of range: " << str;
@@ -74,6 +88,7 @@ namespace labbish {
 			while (std::getline(ss, s, ' ')) {
 				args.push_back(s);
 			}
+			normalizeArgs(args);
 			return args;
 		}
 
@@ -440,7 +455,7 @@ namespace labbish {
 				}
 				printf("\n");
 			}
-			else message::ErrorMsg() << "Language not found: " << lan;
+			else message::ErrorMsg() << "Language not found: \"" << lan << "\"";
 		}
 		void Interpreter::neko() {
 			writeMessage("NEKO");
@@ -506,7 +521,7 @@ namespace labbish {
 			else if (args[0] == "help" && args.size() == 2) help(args[1]);
 			else if (args[0] == "lang" && args.size() == 2) __lang(args[1]);
 			else if (args[0] == "neko" && args.size() == 1) neko();
-			else message::ErrorMsg() << "No such command or incorrect argument count";
+			else message::ErrorMsg() << "No such command or incorrect argument count: \"" << cmd << "\"";
 			writeDebug();
 			if (debugTime) timeDebugger.debug();
 			return Echo;
@@ -552,7 +567,7 @@ namespace labbish {
 		SafeInterpreter::SafeInterpreter(const Interpreter& father) :Interpreter(father) {}
 
 		void SafeInterpreter::unavailableMessage(std::string cmd) {
-			message::ErrorMsg() << "Command " << cmd << " is unavailable when opening file in safe mode";
+			message::ErrorMsg() << "Command \"" << cmd << "\" is unavailable when opening file in safe mode";
 		}
 	}
 }

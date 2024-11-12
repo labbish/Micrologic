@@ -2,7 +2,7 @@
 
 #include <map>
 #include <string>
-#include "nlohmann/json.hpp"
+#include <nlohmann/json.hpp>
 #include "ErrorMsg.h"
 
 namespace labbish {
