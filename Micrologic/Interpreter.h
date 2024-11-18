@@ -97,9 +97,10 @@ namespace labbish {
 			bool debugTime;
 			bool perStep;
 			FILE* out;
+			FILE* defaultOut;
 
-			Interpreter(Blocks& blocks, std::string exepath, std::string path = "", std::string lang = "en_us", bool Echo = true, bool debugTime = false, bool perStep = false)
-				:blocks(blocks), exepath(exepath), path(path), lang(lang), Echo(Echo), debugTime(debugTime), perStep(perStep), out(stdout) {
+			Interpreter(Blocks& blocks, std::string exepath, std::string path = "", std::string lang = "en_us", bool Echo = true, FILE* defaultOut = stdout, bool debugTime = false, bool perStep = false)
+				:blocks(blocks), exepath(exepath), path(path), lang(lang), Echo(Echo), debugTime(debugTime), perStep(perStep), defaultOut(defaultOut), out(defaultOut) {
 			}
 
 			void normalizeArg(std::string&);
@@ -152,6 +153,7 @@ namespace labbish {
 			virtual void check_mods();
 			virtual void block(std::string, std::vector<int>);
 			virtual void block_type(int);
+			virtual void exec(int, std::string);
 			virtual void tag(int);
 			virtual void type(int);
 			virtual void check_input();
@@ -173,7 +175,7 @@ namespace labbish {
 			virtual void __lang(std::string);
 			virtual void neko();
 
-			bool command(std::string cmd);
+			bool command(std::string cmd, FILE* customOut = NULL);
 		};
 
 		class SafeInterpreter :public Interpreter {

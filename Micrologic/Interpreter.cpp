@@ -253,10 +253,13 @@ namespace labbish {
 			if (Echo) fprintf(out, "\n");
 		}
 		void Interpreter::open(std::string f) {
-			openInterface(f, this);
+			Interpreter tempInterpreter = Interpreter(*this);
+			tempInterpreter.defaultOut = out;
+			openInterface(f, &tempInterpreter);
 		}
 		void Interpreter::safe_open(std::string f) {
 			SafeInterpreter tempInterpreter = SafeInterpreter(*this);
+			tempInterpreter.defaultOut = out;
 			openInterface(f, &tempInterpreter);
 		}
 		void Interpreter::mod(std::string name, std::string file) {
@@ -276,7 +279,7 @@ namespace labbish {
 			blocks.add(Blocks(name));
 			Blocks& newBlock = blocks.Bs[blocks.Bs.size() - 1];
 			std::string filename = blocks.mods[name];
-			SafeInterpreter(newBlock, exepath, path, lang, Echo).command("safe-open " + filename);
+			SafeInterpreter(newBlock, exepath, path, lang, Echo, out).command("safe-open " + filename);
 			if (ios.size() != newBlock.inputs.size() + newBlock.outputs.size()) {
 				writeError("LINE_COUNT");
 				blocks.Bs.pop_back();
@@ -311,6 +314,9 @@ namespace labbish {
 		void Interpreter::block_type(int a) {
 			if (!assertInRange(a, blocks.Bs)) return;
 			writeMessage("BLOCK_TYPE", a, blocks.Bs[a].type.c_str());
+		}
+		void Interpreter::exec(int a, std::string cmd) {
+			//Interpreter(*this)
 		}
 		void Interpreter::tag(int a) {
 			if (!assertInRange(a, blocks.L)) return;
@@ -468,22 +474,23 @@ namespace labbish {
 			writeMessage("NEKO");
 		}
 
-		bool Interpreter::command(std::string cmdline) {
+		bool Interpreter::command(std::string cmdline, FILE* customOut) {
 			message::TimeDebugger timeDebugger;
 			timeDebugger.flush();
 
 			std::string cmd = cutRedirection(cmdline).first;
 			std::vector<std::string> args = breakLine(cmd);
 
-			out = stdout;
+			out = defaultOut;
 			std::string outfile = cutRedirection(cmdline).second;
 			if (outfile != "") {
-				FILE* fout = fopen(outfile.c_str(), "w+");
+				FILE* fout = fopen(outfile.c_str(), "a");
 				if (fout == NULL) writeError("CANNOT_WRITE", outfile);
 				else {
 					out = fout;
 				}
 			}
+			if (customOut != NULL) out = customOut;
 
 			if (args.size() == 0) {}
 			else if (args[0] == "end" && args.size() == 1) Exit = 1;
@@ -544,7 +551,7 @@ namespace labbish {
 			else writeError("NO_CMD", cmd);
 			writeDebug();
 			if (debugTime) timeDebugger.debug();
-			if (out != stdout) {
+			if (out != stdout && out != defaultOut) {
 				fclose(out);
 			}
 			return Echo;
