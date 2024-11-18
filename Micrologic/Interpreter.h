@@ -1,5 +1,7 @@
 #pragma once
 
+#define _CRT_SECURE_NO_WARNINGS
+
 #include <iostream>
 #include <string>
 #include <sstream>
@@ -94,9 +96,10 @@ namespace labbish {
 			std::string exepath;
 			bool debugTime;
 			bool perStep;
+			FILE* out;
 
 			Interpreter(Blocks& blocks, std::string exepath, std::string path = "", std::string lang = "en_us", bool Echo = true, bool debugTime = false, bool perStep = false)
-				:blocks(blocks), exepath(exepath), path(path), lang(lang), Echo(Echo), debugTime(debugTime), perStep(perStep) {
+				:blocks(blocks), exepath(exepath), path(path), lang(lang), Echo(Echo), debugTime(debugTime), perStep(perStep), out(stdout) {
 			}
 
 			void normalizeArg(std::string&);
@@ -112,6 +115,7 @@ namespace labbish {
 			std::string addSlash(std::string filename); //add backslash to the end if none
 			std::string convertSlash(std::string filename); //convert all slashes to backslashes
 
+			std::pair<std::string, std::string> cutRedirection(std::string); //cut "command>file" to ("command","file")
 			std::vector<std::string> breakLine(std::string);
 
 			void writeDebug();
@@ -141,7 +145,7 @@ namespace labbish {
 			virtual void tick_();
 			virtual void tick_(int);
 			virtual void speed(int);
-			virtual void openInterfere(std::string, Interpreter*);
+			virtual void openInterface(std::string, Interpreter*);
 			virtual void open(std::string);
 			virtual void safe_open(std::string);
 			virtual void mod(std::string, std::string);
@@ -176,6 +180,10 @@ namespace labbish {
 		public:
 			using Interpreter::Interpreter;
 			SafeInterpreter(const Interpreter&);
+
+			inline void open(std::string f) {
+				safe_open(f);
+			}
 
 			void unavailableMessage(std::string);
 			inline void end() { unavailableMessage("end"); }

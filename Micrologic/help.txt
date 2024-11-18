@@ -12,7 +12,7 @@ Micrologic Help
 === Commands ===
 
 Note: When creating blocks, the front part are inputs and the rest are outputs. 
-Note: Many commands have no error messages when you make a mistake. So be careful to what you write on your own.
+Note: Use [COMMAND]>[FILE] to redirect output.
 Note: [ALINE] = [LINE | WLINE] below.
 
 end                                                       Closes the interpreter.

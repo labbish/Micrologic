@@ -81,6 +81,12 @@ namespace labbish {
 			return filename;
 		}
 
+		std::pair<std::string, std::string> Interpreter::cutRedirection(std::string cmd) {
+			size_t pos = cmd.rfind(">");
+			if (pos != std::string::npos) return { cmd.substr(0, pos), cmd.substr(pos + 1) };
+			else return { cmd, "" };
+		}
+
 		std::vector<std::string> Interpreter::breakLine(std::string cmd) {
 			std::stringstream ss(cmd);
 			std::string s;
@@ -148,8 +154,8 @@ namespace labbish {
 		}
 		void Interpreter::check() {
 			writeMessage("CHECKS");
-			for (Line l : blocks.L) printf("%s ", l.checkValue().c_str());
-			printf("\n");
+			for (Line l : blocks.L) fprintf(out, "%s ", l.checkValue().c_str());
+			fprintf(out, "\n");
 		}
 		void Interpreter::check(int i) {
 			if (!assertInRange(i, blocks.L)) return;
@@ -191,8 +197,8 @@ namespace labbish {
 		}
 		void Interpreter::output() {
 			writeMessage("OUTPUTS");
-			for (std::string l : blocks.output()) printf("%s ", l.c_str());
-			printf("\n");
+			for (std::string l : blocks.output()) fprintf(out, "%s ", l.c_str());
+			fprintf(out, "\n");
 		}
 		void Interpreter::output(int i) {
 			if (!assertInRange(i, blocks.outputs)) return;
@@ -210,16 +216,16 @@ namespace labbish {
 		void Interpreter::tick_() {
 			blocks.tick();
 			writeMessage("TICK!");
-			for (Line l : blocks.L) if (Echo) printf("%s ", l.checkValue().c_str());
-			if (Echo) printf("\n");
+			for (Line l : blocks.L) if (Echo) fprintf(out, "%s ", l.checkValue().c_str());
+			if (Echo) fprintf(out, "\n");
 		}
 		void Interpreter::tick_(int t) {
 			if (!assertPositive(t)) return;
 			for (int i = 0; i < t; i++) {
 				blocks.tick();
 				writeMessage("TICKS!");
-				for (Line l : blocks.L) if (Echo) printf("%s ", l.checkValue().c_str());
-				if (Echo) printf("\n");
+				for (Line l : blocks.L) if (Echo) fprintf(out, "%s ", l.checkValue().c_str());
+				if (Echo) fprintf(out, "\n");
 			}
 		}
 		void Interpreter::speed(int v) {
@@ -227,7 +233,7 @@ namespace labbish {
 			blocks.speed = v;
 			writeMessage("SPEED", v);
 		}
-		void Interpreter::openInterfere(std::string f, Interpreter* interpreter) {
+		void Interpreter::openInterface(std::string f, Interpreter* interpreter) {
 			std::ifstream fin;
 			fin.open(f, std::ios::in);
 			std::string nextPath = pathPart(f);
@@ -244,14 +250,14 @@ namespace labbish {
 				if (perStep) pause();
 				interpreter->command(fcmd);
 			}
-			if (Echo) printf("\n");
+			if (Echo) fprintf(out, "\n");
 		}
 		void Interpreter::open(std::string f) {
-			openInterfere(f, this);
+			openInterface(f, this);
 		}
 		void Interpreter::safe_open(std::string f) {
 			SafeInterpreter tempInterpreter = SafeInterpreter(*this);
-			openInterfere(f, &tempInterpreter);
+			openInterface(f, &tempInterpreter);
 		}
 		void Interpreter::mod(std::string name, std::string file) {
 			blocks.mods.insert({ name, file });
@@ -260,9 +266,9 @@ namespace labbish {
 		void Interpreter::check_mods() {
 			writeMessage("CHECK_MODS");
 			for (std::pair<std::string, std::string> mod : blocks.mods) {
-				printf("%s (%s) ", mod.first.c_str(), mod.second.c_str());
+				fprintf(out, "%s (%s) ", mod.first.c_str(), mod.second.c_str());
 			}
-			if (Echo) printf("\n");
+			if (Echo) fprintf(out, "\n");
 		}
 		void Interpreter::block(std::string name, std::vector<int> ios) {
 			std::vector<int> ins{}, outs{};
@@ -294,11 +300,11 @@ namespace labbish {
 			}
 			writeMessage("BLOCK1", (int)blocks.Bs.size() - 1, name.c_str());
 			for (int i : ins) {
-				if (Echo) printf("%d ", i);
+				if (Echo) fprintf(out, "%d ", i);
 			}
 			writeMessage("BLOCK2");
 			for (int o : outs) {
-				if (Echo) printf("%d ", o);
+				if (Echo) fprintf(out, "%d ", o);
 			}
 			writeMessage("BLOCK3");
 		}
@@ -322,8 +328,8 @@ namespace labbish {
 		void Interpreter::check_input() {
 			writeMessage("CHECK_INPUTS");
 			for (int i = 0; i < blocks.inputs.size(); i++)
-				printf("%d ", blocks.inputs[i]);
-			printf("\n");
+				fprintf(out, "%d ", blocks.inputs[i]);
+			fprintf(out, "\n");
 		}
 		void Interpreter::check_input(int a) {
 			if (!assertInRange(a, blocks.inputs)) return;
@@ -332,8 +338,8 @@ namespace labbish {
 		void Interpreter::check_output() {
 			writeMessage("CHECK_OUTPUTS");
 			for (int i = 0; i < blocks.outputs.size(); i++)
-				printf("%d ", blocks.outputs[i]);
-			printf("\n");
+				fprintf(out, "%d ", blocks.outputs[i]);
+			fprintf(out, "\n");
 		}
 		void Interpreter::check_output(int a) {
 			if (!assertInRange(a, blocks.outputs)) return;
@@ -407,10 +413,10 @@ namespace labbish {
 			writeMessage("DEL", type.c_str(), a);
 		}
 		void Interpreter::export__() {
-			for (std::string line : blocks.exportBlocks()) printf("%s\n", line.c_str());
+			for (std::string line : blocks.exportBlocks()) fprintf(out, "%s\n", line.c_str());
 		}
 		void Interpreter::echo(std::string msg) {
-			printf((msg + "\n").c_str());
+			fprintf(out, (msg + "\n").c_str());
 		}
 		void Interpreter::_echo(int echo) {
 			if (!assertBit(echo)) return;
@@ -437,11 +443,12 @@ namespace labbish {
 			blocks.clear();
 		}
 		void Interpreter::help() {
-			for (std::string l : getHelp()) printf((l + "\n").c_str());
+			for (std::string l : getHelp()) fprintf(out, (l + "\n").c_str());
 		}
 		void Interpreter::help(std::string cmd) {
-			for (std::string l : getHelp())
-				if (firstWord(l) == cmd) printf((l + "\n").c_str());
+			for (std::string l : getHelp()) {
+				if (firstWord(l) == cmd) fprintf(out, (l + "\n").c_str());
+			}
 		}
 		void Interpreter::__lang(std::string lan) {
 			if (hasLanguage(lan)) {
@@ -451,9 +458,9 @@ namespace labbish {
 			else if (lan == "list") {
 				writeMessage("LANG_LIST");
 				for (std::string l : getKeys()) {
-					printf("%s ", l.c_str());
+					fprintf(out, "%s ", l.c_str());
 				}
-				printf("\n");
+				fprintf(out, "\n");
 			}
 			writeError("NO_LANG", lang);
 		}
@@ -461,10 +468,23 @@ namespace labbish {
 			writeMessage("NEKO");
 		}
 
-		bool Interpreter::command(std::string cmd) {
+		bool Interpreter::command(std::string cmdline) {
 			message::TimeDebugger timeDebugger;
 			timeDebugger.flush();
+
+			std::string cmd = cutRedirection(cmdline).first;
 			std::vector<std::string> args = breakLine(cmd);
+
+			out = stdout;
+			std::string outfile = cutRedirection(cmdline).second;
+			if (outfile != "") {
+				FILE* fout = fopen(outfile.c_str(), "w+");
+				if (fout == NULL) writeError("CANNOT_WRITE", outfile);
+				else {
+					out = fout;
+				}
+			}
+
 			if (args.size() == 0) {}
 			else if (args[0] == "end" && args.size() == 1) Exit = 1;
 			else if (args[0] == "line" && args.size() == 1) line();
@@ -524,6 +544,9 @@ namespace labbish {
 			else writeError("NO_CMD", cmd);
 			writeDebug();
 			if (debugTime) timeDebugger.debug();
+			if (out != stdout) {
+				fclose(out);
+			}
 			return Echo;
 		}
 
@@ -560,7 +583,7 @@ namespace labbish {
 			if (Echo) {
 				va_list args;
 				va_start(args, message);
-				vprintf(getMessage(lang, message).c_str(), args);
+				vfprintf(out, getMessage(lang, message).c_str(), args);
 				va_end(args);
 			}
 		}
