@@ -16,16 +16,19 @@
 
 namespace labbish {
 	namespace Micrologic {
+		const int NOT_NUM = 0xDEADCAFE; //Magic~
+
 		inline bool assertPositive(int a) {
+			if (a == NOT_NUM) return false;
 			if (a <= 0) {
-				message::ErrorMsg() << "Should be positive: " << a;
+				writeError("NOT_POSITIVE", a);
 				return false;
 			}
 			return true;
 		}
 		inline bool assertBit(int a) {
 			if (a != 0 && a != 1) {
-				message::ErrorMsg() << "Should be bit: " << a;
+				writeError("NOT_BIT", a);
 				return false;
 			}
 			return true;
@@ -33,7 +36,7 @@ namespace labbish {
 		template <typename T>
 		inline bool assertInRange(int i, std::vector<T> vec) {
 			if (i < 0 || i >= vec.size()) {
-				message::ErrorMsg() << "Number out of range: " << i;
+				writeError("OUT_OF_RANGE", i);
 				return false;
 			}
 			return true;
@@ -41,7 +44,7 @@ namespace labbish {
 		template <typename T>
 		inline bool assertInRange(int i, StableVector<T> vec) {
 			if (i < 0 || i >= vec.size()) {
-				message::ErrorMsg() << "Number out of range: " << i;
+				writeError("OUT_OF_RANGE", i);
 				return false;
 			}
 			return true;
@@ -49,14 +52,14 @@ namespace labbish {
 		template <typename T, typename T1>
 		inline bool assertInMap(T t, std::map<T, T1> mp) {
 			if (mp.find(t) == mp.end()) {
-				message::ErrorMsg() << "Key not found: \"" << t << "\"";
+				writeError("NO_KEY", t);
 				return false;
 			}
 			return true;
 		}
-		inline bool assertGoodFile(std::ifstream& f) {
-			if (!f.good()) {
-				message::ErrorMsg() << "File not found";
+		inline bool assertGoodFile(std::ifstream& fin, const std::string& filename) {
+			if (!fin.good()) {
+				writeError("NO_FILE", filename);
 				return false;
 			}
 			return true;

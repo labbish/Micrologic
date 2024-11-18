@@ -26,19 +26,19 @@ namespace labbish {
 
 		int Interpreter::toInt(std::string str) {
 			if (!isNum(str)) {
-				message::ErrorMsg() << "Not a num: \"" << str << "\"";
-				return -1;
+				writeError("NOT_NUM", str);
+				return NOT_NUM;
 			}
 			try {
 				return std::stoi(str);
 			}
 			catch (const std::invalid_argument&) {
-				message::ErrorMsg() << "Not a num: \"" << str << "\"";
+				writeError("NOT_NUM", str);
 			}
 			catch (const std::out_of_range&) {
-				message::ErrorMsg() << "Num out of range: " << str;
+				writeError("OUT_OF_RANGE", str);
 			}
-			return -1;
+			return NOT_NUM;
 		}
 
 		std::vector<int> Interpreter::toInt(std::vector<std::string> strs) {
@@ -238,7 +238,7 @@ namespace labbish {
 			}
 			if (nextPath != "") interpreter->path = path = nextPath;
 			char fcmd[256] = "";
-			if (!assertGoodFile(fin)) return;
+			if (!assertGoodFile(fin, f)) return;
 			writeMessage("OPEN", f.c_str());
 			while (fin.getline(fcmd, 256)) {
 				if (perStep) pause();
@@ -272,7 +272,7 @@ namespace labbish {
 			std::string filename = blocks.mods[name];
 			SafeInterpreter(newBlock, exepath, path, lang, Echo).command("safe-open " + filename);
 			if (ios.size() != newBlock.inputs.size() + newBlock.outputs.size()) {
-				message::ErrorMsg() << "Incorrect line count";
+				writeError("LINE_COUNT");
 				blocks.Bs.pop_back();
 				return;
 			}
@@ -455,7 +455,7 @@ namespace labbish {
 				}
 				printf("\n");
 			}
-			else message::ErrorMsg() << "Language not found: \"" << lan << "\"";
+			writeError("NO_LANG", lang);
 		}
 		void Interpreter::neko() {
 			writeMessage("NEKO");
@@ -521,7 +521,7 @@ namespace labbish {
 			else if (args[0] == "help" && args.size() == 2) help(args[1]);
 			else if (args[0] == "lang" && args.size() == 2) __lang(args[1]);
 			else if (args[0] == "neko" && args.size() == 1) neko();
-			else message::ErrorMsg() << "No such command or incorrect argument count: \"" << cmd << "\"";
+			else writeError("NO_CMD", cmd);
 			writeDebug();
 			if (debugTime) timeDebugger.debug();
 			return Echo;
@@ -530,7 +530,7 @@ namespace labbish {
 		void Interpreter::writeDebug() {
 			FILE* file = _fsopen((exepath + "\\debug.log").c_str(), "w", _SH_DENYNO);
 			if (file == nullptr) {
-				message::ErrorMsg() << "Error writing debug.log";
+				writeError("CANNOT_WRITE", "debug.log");
 			}
 			else {
 				for (int i = 0; i < blocks.L.size(); i++) {
@@ -546,8 +546,9 @@ namespace labbish {
 		std::vector<std::string> Interpreter::getHelp() {
 			std::vector<std::string> helps;
 			std::ifstream fin;
-			fin.open(exepath + "\\help.txt", std::ios::in);
-			if (!assertGoodFile(fin)) return { "" };
+			std::string f = exepath + "\\help.txt";
+			fin.open(f, std::ios::in);
+			if (!assertGoodFile(fin, f)) return { "" };
 			char fhelp[1024] = "";
 			while (fin.getline(fhelp, 1024)) {
 				helps.push_back(fhelp);
@@ -567,7 +568,7 @@ namespace labbish {
 		SafeInterpreter::SafeInterpreter(const Interpreter& father) :Interpreter(father) {}
 
 		void SafeInterpreter::unavailableMessage(std::string cmd) {
-			message::ErrorMsg() << "Command \"" << cmd << "\" is unavailable when opening file in safe mode";
+			writeError("SAFE_MODE", cmd);
 		}
 	}
 }
