@@ -12,7 +12,9 @@ Micrologic Help
 === Commands ===
 
 Note: When creating blocks, the front part are inputs and the rest are outputs. 
-Note: Many commands have no error messages when you make a mistake. So be careful to what you write on your own.
+Note: Use [COMMAND]>[FILE] to redirect output. 
+      If command contains ">", add an ">" in th end of line. 
+      You may use ">stdio" to redirect to command line.
 Note: [ALINE] = [LINE | WLINE] below.
 
 end                                                       Closes the interpreter.
@@ -49,6 +51,7 @@ mod [MOD] [FILE]                                          Give an file a mod nam
 check-mods                                                Check all current mods.
 block [MOD] [INPUT [INPUT ...]] [OUTPUT [OUTPUT ...]]     Creates a user-defined block.
 block-type [BLOCK]                                        Check the type of a designated block.
+exec [BLOCK] [COMMAND]                                    Execute command in a designated block.
 tag [ALINE]                                               Check whether a line is set as input or output.
 type [ALINE]                                              Check whether a line is wide.
 check-input                                               Lists the line order numbers of input lines.

@@ -1,5 +1,7 @@
 #pragma once
 
+#define _CRT_SECURE_NO_WARNINGS
+
 #include <iostream>
 #include <string>
 #include <sstream>
@@ -16,32 +18,38 @@
 
 namespace labbish {
 	namespace Micrologic {
+		const int NOT_NUM = 0xDEADCAFE; //Magic~
+
 		inline bool assertPositive(int a) {
+			if (a == NOT_NUM) return false;
 			if (a <= 0) {
-				message::ErrorMsg() << "Should be positive: " << a;
+				writeError("NOT_POSITIVE", a);
 				return false;
 			}
 			return true;
 		}
 		inline bool assertBit(int a) {
+			if (a == NOT_NUM) return false;
 			if (a != 0 && a != 1) {
-				message::ErrorMsg() << "Should be bit: " << a;
+				writeError("NOT_BIT", a);
 				return false;
 			}
 			return true;
 		}
 		template <typename T>
 		inline bool assertInRange(int i, std::vector<T> vec) {
+			if (i == NOT_NUM) return false;
 			if (i < 0 || i >= vec.size()) {
-				message::ErrorMsg() << "Number out of range: " << i;
+				writeError("OUT_OF_RANGE", i);
 				return false;
 			}
 			return true;
 		}
 		template <typename T>
 		inline bool assertInRange(int i, StableVector<T> vec) {
+			if (i == NOT_NUM) return false;
 			if (i < 0 || i >= vec.size()) {
-				message::ErrorMsg() << "Number out of range: " << i;
+				writeError("OUT_OF_RANGE", i);
 				return false;
 			}
 			return true;
@@ -49,14 +57,14 @@ namespace labbish {
 		template <typename T, typename T1>
 		inline bool assertInMap(T t, std::map<T, T1> mp) {
 			if (mp.find(t) == mp.end()) {
-				message::ErrorMsg() << "Key not found: \"" << t << "\"";
+				writeError("NO_KEY", t);
 				return false;
 			}
 			return true;
 		}
-		inline bool assertGoodFile(std::ifstream& f) {
-			if (!f.good()) {
-				message::ErrorMsg() << "File not found";
+		inline bool assertGoodFile(std::ifstream& fin, const std::string& filename) {
+			if (!fin.good()) {
+				writeError("NO_FILE", filename);
 				return false;
 			}
 			return true;
@@ -91,9 +99,11 @@ namespace labbish {
 			std::string exepath;
 			bool debugTime;
 			bool perStep;
+			FILE* out;
+			FILE* defaultOut;
 
-			Interpreter(Blocks& blocks, std::string exepath, std::string path = "", std::string lang = "en_us", bool Echo = true, bool debugTime = false, bool perStep = false)
-				:blocks(blocks), exepath(exepath), path(path), lang(lang), Echo(Echo), debugTime(debugTime), perStep(perStep) {
+			Interpreter(Blocks& blocks, std::string exepath, std::string path = "", std::string lang = "en_us", bool Echo = true, FILE* defaultOut = stdout, bool debugTime = false, bool perStep = false)
+				:blocks(blocks), exepath(exepath), path(path), lang(lang), Echo(Echo), debugTime(debugTime), perStep(perStep), defaultOut(defaultOut), out(defaultOut) {
 			}
 
 			void normalizeArg(std::string&);
@@ -108,12 +118,16 @@ namespace labbish {
 			std::string pathPart(std::string);
 			std::string addSlash(std::string filename); //add backslash to the end if none
 			std::string convertSlash(std::string filename); //convert all slashes to backslashes
-
+			std::string subCommand(std::vector<std::string> cmd, size_t pos = 0, size_t len = -1);
+			std::pair<std::string, std::string> cutRedirection(std::string); //cut "command>file" to ("command","file")
 			std::vector<std::string> breakLine(std::string);
+			std::string combineLine(std::vector<std::string>);
 
 			void writeDebug();
 			std::vector<std::string> getHelp();
 			void writeMessage(std::string message, ...);
+
+			virtual void redirect(std::string outfile);
 
 			virtual void line(int = 1);
 			virtual void wline(int = 1);
@@ -138,13 +152,14 @@ namespace labbish {
 			virtual void tick_();
 			virtual void tick_(int);
 			virtual void speed(int);
-			virtual void openInterfere(std::string, Interpreter*);
+			virtual void openInterface(std::string, Interpreter*);
 			virtual void open(std::string);
 			virtual void safe_open(std::string);
 			virtual void mod(std::string, std::string);
 			virtual void check_mods();
 			virtual void block(std::string, std::vector<int>);
 			virtual void block_type(int);
+			virtual void exec(int, std::string);
 			virtual void tag(int);
 			virtual void type(int);
 			virtual void check_input();
@@ -173,6 +188,11 @@ namespace labbish {
 		public:
 			using Interpreter::Interpreter;
 			SafeInterpreter(const Interpreter&);
+
+			inline void open(std::string f) {
+				safe_open(f);
+			}
+			void redirect(std::string outfile);
 
 			void unavailableMessage(std::string);
 			inline void end() { unavailableMessage("end"); }
