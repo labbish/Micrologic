@@ -1,4 +1,6 @@
 tick
 output
+line>stdout
 path
-help path
+line>1
+help path>
