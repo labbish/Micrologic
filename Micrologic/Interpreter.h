@@ -29,6 +29,7 @@ namespace labbish {
 			return true;
 		}
 		inline bool assertBit(int a) {
+			if (a == NOT_NUM) return false;
 			if (a != 0 && a != 1) {
 				writeError("NOT_BIT", a);
 				return false;
@@ -37,6 +38,7 @@ namespace labbish {
 		}
 		template <typename T>
 		inline bool assertInRange(int i, std::vector<T> vec) {
+			if (i == NOT_NUM) return false;
 			if (i < 0 || i >= vec.size()) {
 				writeError("OUT_OF_RANGE", i);
 				return false;
@@ -45,6 +47,7 @@ namespace labbish {
 		}
 		template <typename T>
 		inline bool assertInRange(int i, StableVector<T> vec) {
+			if (i == NOT_NUM) return false;
 			if (i < 0 || i >= vec.size()) {
 				writeError("OUT_OF_RANGE", i);
 				return false;
@@ -115,9 +118,10 @@ namespace labbish {
 			std::string pathPart(std::string);
 			std::string addSlash(std::string filename); //add backslash to the end if none
 			std::string convertSlash(std::string filename); //convert all slashes to backslashes
-
+			std::string subCommand(std::vector<std::string> cmd, size_t pos = 0, size_t len = -1);
 			std::pair<std::string, std::string> cutRedirection(std::string); //cut "command>file" to ("command","file")
 			std::vector<std::string> breakLine(std::string);
+			std::string combineLine(std::vector<std::string>);
 
 			void writeDebug();
 			std::vector<std::string> getHelp();

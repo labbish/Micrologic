@@ -81,6 +81,14 @@ namespace labbish {
 			return filename;
 		}
 
+		std::string Interpreter::subCommand(std::vector<std::string> cmd, size_t pos, size_t len) {
+			std::vector<std::string> subcmd{};
+			for (size_t i = pos; i - pos < len && i < cmd.size(); i++) {
+				subcmd.push_back(cmd[i]);
+			}
+			return combineLine(subcmd);
+		}
+
 		std::pair<std::string, std::string> Interpreter::cutRedirection(std::string cmd) {
 			size_t pos = cmd.rfind(">");
 			if (pos != std::string::npos) return { cmd.substr(0, pos), cmd.substr(pos + 1) };
@@ -96,6 +104,15 @@ namespace labbish {
 			}
 			normalizeArgs(args);
 			return args;
+		}
+
+		std::string Interpreter::combineLine(std::vector<std::string> args) {
+			std::string cmd = "";
+			for (std::string arg : args) {
+				cmd += (arg + " ");
+			}
+			if (cmd != "") cmd = cmd.substr(0, cmd.length() - 1);
+			return cmd;
 		}
 
 		void Interpreter::line(int count) {
@@ -316,7 +333,9 @@ namespace labbish {
 			writeMessage("BLOCK_TYPE", a, blocks.Bs[a].type.c_str());
 		}
 		void Interpreter::exec(int a, std::string cmd) {
-			//Interpreter(*this)
+			if (!assertInRange(a, blocks.Bs)) return;
+			Interpreter blockInterpreter(blocks.Bs[a], exepath, path, lang, Echo, out, debugTime, perStep);
+			blockInterpreter.command(cmd);
 		}
 		void Interpreter::tag(int a) {
 			if (!assertInRange(a, blocks.L)) return;
@@ -519,6 +538,7 @@ namespace labbish {
 			else if (args[0] == "check-mods" && args.size() == 1) check_mods();
 			else if (args[0] == "block" && args.size() >= 2) block(args[1], toInt(subVec(args, 2, (int)args.size())));
 			else if (args[0] == "block-type" && args.size() == 2) block_type(toInt(args[1]));
+			else if (args[0] == "exec" && args.size() >= 2) exec(toInt(args[1]), subCommand(args, 2));
 			else if (args[0] == "tag" && args.size() == 2) tag(toInt(args[1]));
 			else if (args[0] == "type" && args.size() == 2) type(toInt(args[1]));
 			else if (args[0] == "check-input" && args.size() == 1) check_input();

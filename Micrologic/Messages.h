@@ -57,7 +57,7 @@ namespace labbish {
 		const std::map<std::string, std::string> ErrorMsgs = {
 			{ "NO_LANG", "Language not found: \"{}\"" },
 			{ "NO_MSG", "Message not found: \"{}\".\"{}\"" },
-			{ "NO_KEY", "Key not found: \"{}\".\"{}\"" },
+			{ "NO_KEY", "Key not found: \"{}\"" },
 			{ "NO_FILE", "File not found: \"{}\"" },
 			{ "NO_CMD", "No such command or incorrect argument count: \"{}\"" },
 			{ "NOT_NUM", "Not a num: \"{}\"" },

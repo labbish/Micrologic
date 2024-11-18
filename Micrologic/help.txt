@@ -51,6 +51,7 @@ mod [MOD] [FILE]                                          Give an file a mod nam
 check-mods                                                Check all current mods.
 block [MOD] [INPUT [INPUT ...]] [OUTPUT [OUTPUT ...]]     Creates a user-defined block.
 block-type [BLOCK]                                        Check the type of a designated block.
+exec [BLOCK] [COMMAND]                                    Execute command in a designated block.
 tag [ALINE]                                               Check whether a line is set as input or output.
 type [ALINE]                                              Check whether a line is wide.
 check-input                                               Lists the line order numbers of input lines.
