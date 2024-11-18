@@ -123,6 +123,8 @@ namespace labbish {
 			std::vector<std::string> getHelp();
 			void writeMessage(std::string message, ...);
 
+			virtual void redirect(std::string outfile);
+
 			virtual void line(int = 1);
 			virtual void wline(int = 1);
 			virtual void N(int, int);
@@ -175,7 +177,7 @@ namespace labbish {
 			virtual void __lang(std::string);
 			virtual void neko();
 
-			bool command(std::string cmd, FILE* customOut = NULL);
+			bool command(std::string cmd);
 		};
 
 		class SafeInterpreter :public Interpreter {
@@ -186,6 +188,7 @@ namespace labbish {
 			inline void open(std::string f) {
 				safe_open(f);
 			}
+			void redirect(std::string outfile);
 
 			void unavailableMessage(std::string);
 			inline void end() { unavailableMessage("end"); }

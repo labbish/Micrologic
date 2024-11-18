@@ -12,7 +12,9 @@ Micrologic Help
 === Commands ===
 
 Note: When creating blocks, the front part are inputs and the rest are outputs. 
-Note: Use [COMMAND]>[FILE] to redirect output.
+Note: Use [COMMAND]>[FILE] to redirect output. 
+      If command contains ">", add an ">" in th end of line. 
+      You may use ">stdio" to redirect to command line.
 Note: [ALINE] = [LINE | WLINE] below.
 
 end                                                       Closes the interpreter.

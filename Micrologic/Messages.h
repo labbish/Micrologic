@@ -68,6 +68,7 @@ namespace labbish {
 			{ "CANNOT_OPEN", "Error opening {}" },
 			{ "CANNOT_WRITE", "Error writing {}" },
 			{ "SAFE_MODE", "Command \"{}\" is unavailable when opening file in safe mode" },
+			{ "SAFE_REDIRECT", "Output redirection to files is unavailable when opening file in safe mode" },
 		};
 
 		template<typename... Args>

@@ -474,23 +474,15 @@ namespace labbish {
 			writeMessage("NEKO");
 		}
 
-		bool Interpreter::command(std::string cmdline, FILE* customOut) {
+		bool Interpreter::command(std::string cmdline) {
 			message::TimeDebugger timeDebugger;
 			timeDebugger.flush();
 
 			std::string cmd = cutRedirection(cmdline).first;
 			std::vector<std::string> args = breakLine(cmd);
 
-			out = defaultOut;
 			std::string outfile = cutRedirection(cmdline).second;
-			if (outfile != "") {
-				FILE* fout = fopen(outfile.c_str(), "a");
-				if (fout == NULL) writeError("CANNOT_WRITE", outfile);
-				else {
-					out = fout;
-				}
-			}
-			if (customOut != NULL) out = customOut;
+			redirect(outfile);
 
 			if (args.size() == 0) {}
 			else if (args[0] == "end" && args.size() == 1) Exit = 1;
@@ -595,10 +587,28 @@ namespace labbish {
 			}
 		}
 
+		void Interpreter::redirect(std::string outfile) {
+			out = defaultOut;
+			if (outfile == "stdout") out = stdout;
+			else if (outfile != "") {
+				FILE* fout = fopen(outfile.c_str(), "a");
+				if (fout == NULL) writeError("CANNOT_WRITE", outfile);
+				else {
+					out = fout;
+				}
+			}
+		}
+
 		SafeInterpreter::SafeInterpreter(const Interpreter& father) :Interpreter(father) {}
 
 		void SafeInterpreter::unavailableMessage(std::string cmd) {
 			writeError("SAFE_MODE", cmd);
+		}
+
+		void SafeInterpreter::redirect(std::string outfile) {
+			out = defaultOut;
+			if (outfile == "stdout") out = stdout;
+			else if (outfile != "") writeError("SAFE_REDIRECT");
 		}
 	}
 }
