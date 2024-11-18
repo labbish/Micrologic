@@ -1,8 +1,8 @@
 echo Sample:
-echo >>>input 0 1 0 1 1
-echo >>>input 1 1 1 0 1
-echo >>>tick
-echo >>>output
+echo >>>input 0 1 0 1 1>
+echo >>>input 1 1 1 0 1>
+echo >>>tick>
+echo >>>output>
 
 @echo 0
 
