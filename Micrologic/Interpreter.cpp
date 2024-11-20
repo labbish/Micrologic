@@ -463,12 +463,14 @@ namespace labbish {
 			writeMessage("PATH_SET", path.c_str());
 		}
 		void Interpreter::clear() {
-			system("cls");
+			clear_screen();
 			writeMessage("CLEAR");
 			blocks.clear();
 		}
 		void Interpreter::help() {
-			for (std::string l : getHelp()) fprintf(out, (l + "\n").c_str());
+			for (std::string l : getHelp()) {
+				fprintf(out, (l + "\n").c_str());
+			}
 		}
 		void Interpreter::help(std::string cmd) {
 			for (std::string l : getHelp()) {
