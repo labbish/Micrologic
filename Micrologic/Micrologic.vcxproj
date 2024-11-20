@@ -158,6 +158,7 @@
     <ClInclude Include="Line.h" />
     <ClInclude Include="Messages.h" />
     <ClInclude Include="StableVector.h" />
+    <ClInclude Include="SystemAbstraction.h" />
     <ClInclude Include="TimeDebugger.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

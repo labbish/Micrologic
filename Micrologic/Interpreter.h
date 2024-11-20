@@ -145,6 +145,7 @@ namespace labbish {
 
 			virtual void redirect(std::string outfile);
 
+			virtual void end();
 			virtual void line(std::optional<int> = 1);
 			virtual void wline(std::optional<int> = 1);
 			virtual void N(std::optional<int>, std::optional<int>);
@@ -212,34 +213,34 @@ namespace labbish {
 			void redirect(std::string outfile);
 
 			void unavailableMessage(std::string);
-			inline void end() { unavailableMessage("end"); }
-			inline void check() { unavailableMessage("check"); }
-			inline void check(std::optional<int>) { unavailableMessage("check"); }
-			inline void output() { unavailableMessage("output"); }
-			inline void output(std::optional<int>) { unavailableMessage("output"); }
-			inline void tick() { unavailableMessage("tick"); }
-			inline void tick(std::optional<int>) { unavailableMessage("tick"); }
-			inline void tick_() { unavailableMessage("tick!"); }
-			inline void tick_(std::optional<int>) { unavailableMessage("tick!"); }
-			inline void speed() { unavailableMessage("speed"); }
-			inline void check_mods() { unavailableMessage("check-mods"); }
-			inline void tag(std::optional<int>) { unavailableMessage("tag"); }
-			inline void type(std::optional<int>) { unavailableMessage("type"); }
-			inline void check_input() { unavailableMessage("check-input"); }
-			inline void check_input(std::optional<int>) { unavailableMessage("check-input"); }
-			inline void check_output() { unavailableMessage("check-output"); }
-			inline void check_output(std::optional<int>) { unavailableMessage("check-output"); }
-			inline void inspect(std::string, std::optional<int>) { unavailableMessage("inspect"); }
-			inline void del() { unavailableMessage("del"); }
-			inline void export__() { unavailableMessage("export"); }
-			inline void _clock(std::optional<int>) { unavailableMessage("@clock"); }
-			inline void _per_step(std::optional<int>) { unavailableMessage("@per-step"); }
-			inline void __path() { unavailableMessage("path"); }
-			inline void __path(std::string) { unavailableMessage("path"); }
-			inline void clear() { unavailableMessage("clear"); }
-			inline void help() { unavailableMessage("help"); }
-			inline void help(std::string) { unavailableMessage("help"); }
-			inline void __lang(std::string) { unavailableMessage("lang"); }
+			inline void end() override { unavailableMessage("end"); }
+			inline void check() override { unavailableMessage("check"); }
+			inline void check(std::optional<int>) override { unavailableMessage("check"); }
+			inline void output() override { unavailableMessage("output"); }
+			inline void output(std::optional<int>) override { unavailableMessage("output"); }
+			inline void tick() override { unavailableMessage("tick"); }
+			inline void tick(std::optional<int>) override { unavailableMessage("tick"); }
+			inline void tick_() override { unavailableMessage("tick!"); }
+			inline void tick_(std::optional<int>) override { unavailableMessage("tick!"); }
+			inline void speed() override { unavailableMessage("speed"); }
+			inline void check_mods() override { unavailableMessage("check-mods"); }
+			inline void tag(std::optional<int>) override { unavailableMessage("tag"); }
+			inline void type(std::optional<int>) override { unavailableMessage("type"); }
+			inline void check_input() override { unavailableMessage("check-input"); }
+			inline void check_input(std::optional<int>) override { unavailableMessage("check-input"); }
+			inline void check_output() override { unavailableMessage("check-output"); }
+			inline void check_output(std::optional<int>) override { unavailableMessage("check-output"); }
+			inline void inspect(std::string, std::optional<int>) override { unavailableMessage("inspect"); }
+			inline void del(std::string, std::optional<int>) override { unavailableMessage("del"); }
+			inline void export__() override { unavailableMessage("export"); }
+			inline void _clock(std::optional<int>) override { unavailableMessage("@clock"); }
+			inline void _per_step(std::optional<int>) override { unavailableMessage("@per-step"); }
+			inline void __path() override { unavailableMessage("path"); }
+			inline void __path(std::string) override { unavailableMessage("path"); }
+			inline void clear() override { unavailableMessage("clear"); }
+			inline void help() override { unavailableMessage("help"); }
+			inline void help(std::string) override { unavailableMessage("help"); }
+			inline void __lang(std::string) override { unavailableMessage("lang"); }
 		};
 	}
 }

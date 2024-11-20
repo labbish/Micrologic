@@ -115,6 +115,9 @@ namespace labbish {
 			return cmd;
 		}
 
+		void Interpreter::end() {
+			Exit = 1;
+		}
 		void Interpreter::line(std::optional<int> count) {
 			if (!assertPositive(count)) return;
 			int before = (int)blocks.L.size();
@@ -511,7 +514,7 @@ namespace labbish {
 			redirect(outfile);
 
 			if (args.size() == 0) {}
-			else if (args[0] == "end" && args.size() == 1) Exit = 1;
+			else if (args[0] == "end" && args.size() == 1) end();
 			else if (args[0] == "line" && args.size() == 1) line();
 			else if (args[0] == "line" && args.size() == 2) line(toInt(args[1]));
 			else if (args[0] == "wline" && args.size() == 1) wline();
