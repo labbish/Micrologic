@@ -10,6 +10,7 @@
 #include <variant>
 #include <array>
 #include <cstdarg>
+#include <optional>
 #include "Blocks.h"
 #include "Messages.h"
 #include "TimeDebugger.h"
@@ -17,38 +18,54 @@
 
 namespace labbish {
 	namespace Micrologic {
-		const int NOT_NUM = 0xDEADCAFE; //Magic~
+		template <typename T, size_t size>
+		inline std::array<T, size> operator*(std::array<std::optional<T>, size> arr) {
+			std::array<T, size> ans;
+			for (int i = 0; i < size; i++) {
+				ans[i] = *arr[i];
+			}
+			return ans;
+		}
 
-		inline bool assertPositive(int a) {
-			if (a == NOT_NUM) return false;
+		template <typename T>
+		inline std::vector<T> operator*(std::vector<std::optional<T>> vec) {
+			std::vector<T> ans;
+			for (int i = 0; i < vec.size(); i++) {
+				ans.push_back(*vec[i]);
+			}
+			return ans;
+		}
+
+		inline bool assertPositive(std::optional<int> a) {
+			if (a == std::nullopt) return false;
 			if (a <= 0) {
-				writeError("NOT_POSITIVE", a);
+				writeError("NOT_POSITIVE", *a);
 				return false;
 			}
 			return true;
 		}
-		inline bool assertBit(int a) {
-			if (a == NOT_NUM) return false;
+		inline bool assertBit(std::optional<int> a) {
+			if (a == std::nullopt) return false;
 			if (a != 0 && a != 1) {
-				writeError("NOT_BIT", a);
+				writeError("NOT_BIT", *a);
 				return false;
 			}
 			return true;
 		}
 		template <typename T>
-		inline bool assertInRange(int i, std::vector<T> vec) {
-			if (i == NOT_NUM) return false;
+		inline bool assertInRange(std::optional<int> i, std::vector<T> vec) {
+			if (i == std::nullopt) return false;
 			if (i < 0 || i >= vec.size()) {
-				writeError("OUT_OF_RANGE", i);
+				writeError("OUT_OF_RANGE", *i);
 				return false;
 			}
 			return true;
 		}
 		template <typename T>
-		inline bool assertInRange(int i, StableVector<T> vec) {
-			if (i == NOT_NUM) return false;
+		inline bool assertInRange(std::optional<int> i, StableVector<T> vec) {
+			if (i == std::nullopt) return false;
 			if (i < 0 || i >= vec.size()) {
-				writeError("OUT_OF_RANGE", i);
+				writeError("OUT_OF_RANGE", *i);
 				return false;
 			}
 			return true;
@@ -108,8 +125,8 @@ namespace labbish {
 			void normalizeArg(std::string&);
 			void normalizeArgs(std::vector<std::string>&);
 			bool isNum(std::string);
-			int toInt(std::string);
-			std::vector<int> toInt(std::vector<std::string>);
+			std::optional<int> toInt(std::string);
+			std::vector<std::optional<int>> toInt(std::vector<std::string>);
 			std::array<bool, 4> toBoolArray(std::array<int, 4>);
 
 			std::string quotedPart(std::string);
@@ -128,50 +145,50 @@ namespace labbish {
 
 			virtual void redirect(std::string outfile);
 
-			virtual void line(int = 1);
-			virtual void wline(int = 1);
-			virtual void N(int, int);
-			virtual void A(int, int, int);
-			virtual void R(int, int, int);
-			virtual void T(int, int);
-			virtual void C(std::array<int, 4>, int);
-			virtual void P(int, std::array<int, 4>);
+			virtual void line(std::optional<int> = 1);
+			virtual void wline(std::optional<int> = 1);
+			virtual void N(std::optional<int>, std::optional<int>);
+			virtual void A(std::optional<int>, std::optional<int>, std::optional<int>);
+			virtual void R(std::optional<int>, std::optional<int>, std::optional<int>);
+			virtual void T(std::optional<int>, std::optional<int>);
+			virtual void C(std::array<std::optional<int>, 4>, std::optional<int>);
+			virtual void P(std::optional<int>, std::array<std::optional<int>, 4>);
 			virtual void check();
-			virtual void check(int);
-			virtual void set(int, int);
-			virtual void set(int, std::array<int, 4>);
-			virtual void input_(int);
-			virtual void input(int, int);
-			virtual void input(int, std::array<int, 4>);
-			virtual void output_(int);
+			virtual void check(std::optional<int>);
+			virtual void set(std::optional<int>, std::optional<int>);
+			virtual void set(std::optional<int>, std::array<std::optional<int>, 4>);
+			virtual void input_(std::optional<int>);
+			virtual void input(std::optional<int>, std::optional<int>);
+			virtual void input(std::optional<int>, std::array<std::optional<int>, 4>);
+			virtual void output_(std::optional<int>);
 			virtual void output();
-			virtual void output(int);
+			virtual void output(std::optional<int>);
 			virtual void tick();
-			virtual void tick(int);
+			virtual void tick(std::optional<int>);
 			virtual void tick_();
-			virtual void tick_(int);
-			virtual void speed(int);
+			virtual void tick_(std::optional<int>);
+			virtual void speed(std::optional<int>);
 			virtual void openInterface(std::string, Interpreter*);
 			virtual void open(std::string);
 			virtual void safe_open(std::string);
 			virtual void mod(std::string, std::string);
 			virtual void check_mods();
-			virtual void block(std::string, std::vector<int>);
-			virtual void block_type(int);
-			virtual void exec(int, std::string);
-			virtual void tag(int);
-			virtual void type(int);
+			virtual void block(std::string, std::vector<std::optional<int>>);
+			virtual void block_type(std::optional<int>);
+			virtual void exec(std::optional<int>, std::string);
+			virtual void tag(std::optional<int>);
+			virtual void type(std::optional<int>);
 			virtual void check_input();
-			virtual void check_input(int);
+			virtual void check_input(std::optional<int>);
 			virtual void check_output();
-			virtual void check_output(int);
-			virtual void inspect(std::string, int);
-			virtual void del(std::string, int);
+			virtual void check_output(std::optional<int>);
+			virtual void inspect(std::string, std::optional<int>);
+			virtual void del(std::string, std::optional<int>);
 			virtual void export__();
 			virtual void echo(std::string);
-			virtual void _echo(int);
-			virtual void _clock(int);
-			virtual void _per_step(int);
+			virtual void _echo(std::optional<int>);
+			virtual void _clock(std::optional<int>);
+			virtual void _per_step(std::optional<int>);
 			virtual void __path();
 			virtual void __path(std::string);
 			virtual void clear();
@@ -196,25 +213,25 @@ namespace labbish {
 			void unavailableMessage(std::string);
 			inline void end() { unavailableMessage("end"); }
 			inline void check() { unavailableMessage("check"); }
-			inline void check(int) { unavailableMessage("check"); }
+			inline void check(std::optional<int>) { unavailableMessage("check"); }
 			inline void output() { unavailableMessage("output"); }
-			inline void output(int) { unavailableMessage("output"); }
+			inline void output(std::optional<int>) { unavailableMessage("output"); }
 			inline void tick() { unavailableMessage("tick"); }
-			inline void tick(int) { unavailableMessage("tick"); }
+			inline void tick(std::optional<int>) { unavailableMessage("tick"); }
 			inline void tick_() { unavailableMessage("tick!"); }
-			inline void tick_(int) { unavailableMessage("tick!"); }
+			inline void tick_(std::optional<int>) { unavailableMessage("tick!"); }
 			inline void check_mods() { unavailableMessage("check-mods"); }
-			inline void tag(int) { unavailableMessage("tag"); }
-			inline void type(int) { unavailableMessage("type"); }
+			inline void tag(std::optional<int>) { unavailableMessage("tag"); }
+			inline void type(std::optional<int>) { unavailableMessage("type"); }
 			inline void check_input() { unavailableMessage("check-input"); }
-			inline void check_input(int) { unavailableMessage("check-input"); }
+			inline void check_input(std::optional<int>) { unavailableMessage("check-input"); }
 			inline void check_output() { unavailableMessage("check-output"); }
-			inline void check_output(int) { unavailableMessage("check-output"); }
-			inline void inspect(std::string, int) { unavailableMessage("inspect"); }
+			inline void check_output(std::optional<int>) { unavailableMessage("check-output"); }
+			inline void inspect(std::string, std::optional<int>) { unavailableMessage("inspect"); }
 			inline void del() { unavailableMessage("del"); }
 			inline void export__() { unavailableMessage("export"); }
-			inline void _clock(int) { unavailableMessage("@clock"); }
-			inline void _per_step(int) { unavailableMessage("@per-step"); }
+			inline void _clock(std::optional<int>) { unavailableMessage("@clock"); }
+			inline void _per_step(std::optional<int>) { unavailableMessage("@per-step"); }
 			inline void __path() { unavailableMessage("path"); }
 			inline void __path(std::string) { unavailableMessage("path"); }
 			inline void clear() { unavailableMessage("clear"); }

@@ -24,10 +24,10 @@ namespace labbish {
 			return true;
 		}
 
-		int Interpreter::toInt(std::string str) {
+		std::optional<int> Interpreter::toInt(std::string str) {
 			if (!isNum(str)) {
 				writeError("NOT_NUM", str);
-				return NOT_NUM;
+				return std::nullopt;
 			}
 			try {
 				return std::stoi(str);
@@ -38,11 +38,11 @@ namespace labbish {
 			catch (const std::out_of_range&) {
 				writeError("OUT_OF_RANGE", str);
 			}
-			return NOT_NUM;
+			return std::nullopt;
 		}
 
-		std::vector<int> Interpreter::toInt(std::vector<std::string> strs) {
-			std::vector<int> ints;
+		std::vector<std::optional<int>> Interpreter::toInt(std::vector<std::string> strs) {
+			std::vector<std::optional<int>> ints;
 			for (std::string str : strs) {
 				ints.push_back(toInt(str));
 			}
@@ -115,7 +115,7 @@ namespace labbish {
 			return cmd;
 		}
 
-		void Interpreter::line(int count) {
+		void Interpreter::line(std::optional<int> count) {
 			if (!assertPositive(count)) return;
 			int before = (int)blocks.L.size();
 			for (int i = 0; i < count; i++) blocks.add({ Line(Line::LINE) });
@@ -123,7 +123,7 @@ namespace labbish {
 			if (count == 1) writeMessage("LINE", after - 1);
 			else writeMessage("LINES", before, after - 1);
 		}
-		void Interpreter::wline(int count) {
+		void Interpreter::wline(std::optional<int> count) {
 			if (!assertPositive(count)) return;
 			int before = (int)blocks.L.size();
 			for (int i = 0; i < count; i++) blocks.add({ Line(Line::WIDELINE) });
@@ -131,104 +131,105 @@ namespace labbish {
 			if (count == 1) writeMessage("WLINE", after - 1);
 			else writeMessage("WLINES", before, after - 1);
 		}
-		void Interpreter::N(int a, int b) {
+		void Interpreter::N(std::optional<int> a, std::optional<int> b) {
 			if (!assertInRange(a, blocks.L)) return;
 			if (!assertInRange(b, blocks.L)) return;
-			blocks.add({ BlockN({&(blocks.L[a])},{&(blocks.L[b])}) });
-			writeMessage("BLOCKN", (int)blocks.N.size() - 1, a, b);
+			blocks.add({ BlockN({&(blocks.L[*a])},{&(blocks.L[*b])}) });
+			writeMessage("BLOCKN", (int)blocks.N.size() - 1, *a, *b);
+			writeMessage("BLOCKN", (int)blocks.N.size() - 1, *a, *b);
 		}
-		void Interpreter::A(int a, int b, int c) {
-			if (!assertInRange(a, blocks.L)) return;
-			if (!assertInRange(b, blocks.L)) return;
-			if (!assertInRange(c, blocks.L)) return;
-			blocks.add({ BlockA({&(blocks.L[a]),&(blocks.L[b])},{&(blocks.L[c])}) });
-			writeMessage("BLOCKA", (int)blocks.A.size() - 1, a, b, c);
-		}
-		void Interpreter::R(int a, int b, int c) {
+		void Interpreter::A(std::optional<int> a, std::optional<int> b, std::optional<int> c) {
 			if (!assertInRange(a, blocks.L)) return;
 			if (!assertInRange(b, blocks.L)) return;
 			if (!assertInRange(c, blocks.L)) return;
-			blocks.add({ BlockR({&(blocks.L[a]),&(blocks.L[b])},{&(blocks.L[c])}) });
-			writeMessage("BLOCKR", (int)blocks.A.size() - 1, a, b, c);
+			blocks.add({ BlockA({&(blocks.L[*a]),&(blocks.L[*b])},{&(blocks.L[*c])}) });
+			writeMessage("BLOCKA", (int)blocks.A.size() - 1, *a, *b, *c);
 		}
-		void Interpreter::T(int a, int b) {
+		void Interpreter::R(std::optional<int> a, std::optional<int> b, std::optional<int> c) {
 			if (!assertInRange(a, blocks.L)) return;
 			if (!assertInRange(b, blocks.L)) return;
-			blocks.add({ BlockT({&(blocks.L[a])},{&(blocks.L[b])}) });
-			writeMessage("BLOCKT", (int)blocks.N.size() - 1, a, b);
+			if (!assertInRange(c, blocks.L)) return;
+			blocks.add({ BlockR({&(blocks.L[*a]),&(blocks.L[*b])},{&(blocks.L[*c])}) });
+			writeMessage("BLOCKR", (int)blocks.A.size() - 1, *a, *b, *c);
 		}
-		void Interpreter::C(std::array<int, 4> a, int b) {
+		void Interpreter::T(std::optional<int> a, std::optional<int> b) {
+			if (!assertInRange(a, blocks.L)) return;
+			if (!assertInRange(b, blocks.L)) return;
+			blocks.add({ BlockT({&(blocks.L[*a])},{&(blocks.L[*b])}) });
+			writeMessage("BLOCKT", (int)blocks.N.size() - 1, *a, *b);
+		}
+		void Interpreter::C(std::array<std::optional<int>, 4> a, std::optional<int> b) {
 			for (int i = 0; i < 4; i++) if (!assertInRange(a[i], blocks.L)) return;
 			if (!assertInRange(b, blocks.L)) return;
-			blocks.add({ BlockC({&(blocks.L[a[0]]),&(blocks.L[a[1]]),&(blocks.L[a[2]]),&(blocks.L[a[3]])},{&(blocks.L[b])}) });
-			writeMessage("BLOCKC", (int)blocks.C.size() - 1, a[0], a[1], a[2], a[3], b);
+			blocks.add({ BlockC({&(blocks.L[*a[0]]),&(blocks.L[*a[1]]),&(blocks.L[*a[2]]),&(blocks.L[*a[3]])},{&(blocks.L[*b])}) });
+			writeMessage("BLOCKC", (int)blocks.C.size() - 1, *a[0], *a[1], *a[2], *a[3], *b);
 		}
-		void Interpreter::P(int a, std::array<int, 4> b) {
+		void Interpreter::P(std::optional<int> a, std::array<std::optional<int>, 4> b) {
 			if (!assertInRange(a, blocks.L)) return;
 			for (int i = 0; i < 4; i++) if (!assertInRange(b[i], blocks.L)) return;
-			blocks.add({ BlockP({&(blocks.L[a])},{&(blocks.L[b[0]]),&(blocks.L[b[1]]),&(blocks.L[b[2]]),&(blocks.L[b[3]])}) });
-			writeMessage("BLOCKP", (int)blocks.P.size() - 1, a, b[0], b[1], b[2], b[3]);
+			blocks.add({ BlockP({&(blocks.L[*a])},{&(blocks.L[*b[0]]),&(blocks.L[*b[1]]),&(blocks.L[*b[2]]),&(blocks.L[*b[3]])}) });
+			writeMessage("BLOCKP", (int)blocks.P.size() - 1, *a, *b[0], *b[1], *b[2], *b[3]);
 		}
 		void Interpreter::check() {
 			writeMessage("CHECKS");
 			for (Line l : blocks.L) fprintf(out, "%s ", l.checkValue().c_str());
 			fprintf(out, "\n");
 		}
-		void Interpreter::check(int i) {
+		void Interpreter::check(std::optional<int> i) {
 			if (!assertInRange(i, blocks.L)) return;
-			writeMessage("CHECK", i, blocks.L[i].checkValue());
+			writeMessage("CHECK", i, blocks.L[*i].checkValue());
 		}
-		void Interpreter::set(int a, int value) {
+		void Interpreter::set(std::optional<int> a, std::optional<int> value) {
 			if (!assertInRange(a, blocks.L)) return;
 			if (!assertBit(value)) return;
-			blocks.L[a].set(value);
-			writeMessage("SET", a, value);
+			blocks.L[*a].set(*value);
+			writeMessage("SET", *a, *value);
 		}
-		void Interpreter::set(int a, std::array<int, 4> value) {
+		void Interpreter::set(std::optional<int> a, std::array<std::optional<int>, 4> value) {
 			if (!assertInRange(a, blocks.L)) return;
 			for (int i = 0; i < 4; i++) if (!assertBit(value[i])) return;
-			blocks.L[a].set(toBoolArray(value));
-			writeMessage("SET", a, value);
+			blocks.L[*a].set(toBoolArray(*value));
+			writeMessage("SET", *a, *value);
 		}
-		void Interpreter::input_(int a) {
+		void Interpreter::input_(std::optional<int> a) {
 			if (!assertInRange(a, blocks.L)) return;
-			blocks.addInput({ a });
-			writeMessage("INPUT:", a, (int)blocks.inputs.size() - 1);
+			blocks.addInput({ *a });
+			writeMessage("INPUT:", *a, (int)blocks.inputs.size() - 1);
 		}
-		void Interpreter::input(int a, int value) {
+		void Interpreter::input(std::optional<int> a, std::optional<int> value) {
 			if (!assertInRange(a, blocks.inputs)) return;
 			if (!assertBit(value)) return;
-			blocks.input(a, value);
-			writeMessage("INPUT", value, a);
+			blocks.input(*a, *value);
+			writeMessage("INPUT", *value, *a);
 		}
-		void Interpreter::input(int a, std::array<int, 4> value) {
+		void Interpreter::input(std::optional<int> a, std::array<std::optional<int>, 4> value) {
 			if (!assertInRange(a, blocks.inputs)) return;
 			for (int i = 0; i < 4; i++) if (!assertBit(value[i])) return;
-			blocks.input(a, toBoolArray(value));
-			writeMessage("INPUTW", value[0], value[1], value[2], value[3], a);
+			blocks.input(*a, toBoolArray(*value));
+			writeMessage("INPUTW", *value[0], *value[1], *value[2], *value[3], a);
 		}
-		void Interpreter::output_(int a) {
+		void Interpreter::output_(std::optional<int> a) {
 			if (!assertInRange(a, blocks.L)) return;
-			blocks.addOutput({ a });
-			writeMessage("OUTPUT:", a, (int)blocks.inputs.size() - 1);
+			blocks.addOutput({ *a });
+			writeMessage("OUTPUT:", *a, (int)blocks.inputs.size() - 1);
 		}
 		void Interpreter::output() {
 			writeMessage("OUTPUTS");
 			for (std::string l : blocks.output()) fprintf(out, "%s ", l.c_str());
 			fprintf(out, "\n");
 		}
-		void Interpreter::output(int i) {
+		void Interpreter::output(std::optional<int> i) {
 			if (!assertInRange(i, blocks.outputs)) return;
-			writeMessage("OUTPUT", i, blocks.output(i));
+			writeMessage("OUTPUT", *i, blocks.output(*i));
 		}
 		void Interpreter::tick() {
 			blocks.tick();
 			writeMessage("TICK");
 		}
-		void Interpreter::tick(int t) {
+		void Interpreter::tick(std::optional<int> t) {
 			if (!assertPositive(t)) return;
-			for (int i = 0; i < t; i++) blocks.tick();
-			writeMessage("TICKS", t);
+			for (int i = 0; i < *t; i++) blocks.tick();
+			writeMessage("TICKS", *t);
 		}
 		void Interpreter::tick_() {
 			blocks.tick();
@@ -236,19 +237,19 @@ namespace labbish {
 			for (Line l : blocks.L) if (Echo) fprintf(out, "%s ", l.checkValue().c_str());
 			if (Echo) fprintf(out, "\n");
 		}
-		void Interpreter::tick_(int t) {
+		void Interpreter::tick_(std::optional<int> t) {
 			if (!assertPositive(t)) return;
-			for (int i = 0; i < t; i++) {
+			for (int i = 0; i < *t; i++) {
 				blocks.tick();
 				writeMessage("TICKS!");
 				for (Line l : blocks.L) if (Echo) fprintf(out, "%s ", l.checkValue().c_str());
 				if (Echo) fprintf(out, "\n");
 			}
 		}
-		void Interpreter::speed(int v) {
+		void Interpreter::speed(std::optional<int> v) {
 			if (!assertPositive(v)) return;
-			blocks.speed = v;
-			writeMessage("SPEED", v);
+			blocks.speed = *v;
+			writeMessage("SPEED", *v);
 		}
 		void Interpreter::openInterface(std::string f, Interpreter* interpreter) {
 			std::ifstream fin;
@@ -290,8 +291,8 @@ namespace labbish {
 			}
 			if (Echo) fprintf(out, "\n");
 		}
-		void Interpreter::block(std::string name, std::vector<int> ios) {
-			std::vector<int> ins{}, outs{};
+		void Interpreter::block(std::string name, std::vector<std::optional<int>> ios) {
+			std::vector<std::optional<int>> ins{}, outs{};
 			if (!assertInMap(name, blocks.mods)) return;
 			blocks.add(Blocks(name));
 			Blocks& newBlock = blocks.Bs[blocks.Bs.size() - 1];
@@ -304,50 +305,50 @@ namespace labbish {
 			}
 			ins = subVec(ios, 0, (int)newBlock.inputs.size());
 			outs = subVec(ios, (int)newBlock.inputs.size(), (int)ios.size());
-			for (int i : ins) {
+			for (std::optional<int> i : ins) {
 				if (!assertInRange(i, blocks.L)) {
 					blocks.Bs.pop_back();
 					return;
 				}
-				newBlock.inputLines.push_back(&(blocks.L[i]));
+				newBlock.inputLines.push_back(&(blocks.L[*i]));
 			}
-			for (int o : outs) {
+			for (std::optional<int> o : outs) {
 				if (!assertInRange(o, blocks.L)) {
 					blocks.Bs.pop_back();
 					return;
 				}
-				newBlock.outputLines.push_back(&(blocks.L[o]));
+				newBlock.outputLines.push_back(&(blocks.L[*o]));
 			}
 			writeMessage("BLOCK1", (int)blocks.Bs.size() - 1, name.c_str());
-			for (int i : ins) {
+			for (int i : *ins) {
 				if (Echo) fprintf(out, "%d ", i);
 			}
 			writeMessage("BLOCK2");
-			for (int o : outs) {
+			for (int o : *outs) {
 				if (Echo) fprintf(out, "%d ", o);
 			}
 			writeMessage("BLOCK3");
 		}
-		void Interpreter::block_type(int a) {
+		void Interpreter::block_type(std::optional<int> a) {
 			if (!assertInRange(a, blocks.Bs)) return;
-			writeMessage("BLOCK_TYPE", a, blocks.Bs[a].type.c_str());
+			writeMessage("BLOCK_TYPE", *a, blocks.Bs[*a].type.c_str());
 		}
-		void Interpreter::exec(int a, std::string cmd) {
+		void Interpreter::exec(std::optional<int> a, std::string cmd) {
 			if (!assertInRange(a, blocks.Bs)) return;
-			Interpreter blockInterpreter(blocks.Bs[a], exepath, path, lang, Echo, out, debugTime, perStep);
+			Interpreter blockInterpreter(blocks.Bs[*a], exepath, path, lang, Echo, out, debugTime, perStep);
 			blockInterpreter.command(cmd);
 		}
-		void Interpreter::tag(int a) {
+		void Interpreter::tag(std::optional<int> a) {
 			if (!assertInRange(a, blocks.L)) return;
-			std::string I = (count(blocks.inputs.begin(), blocks.inputs.end(), a) != 0) ? "I" : "-";
-			std::string O = (count(blocks.outputs.begin(), blocks.outputs.end(), a) != 0) ? "O" : "-";
-			writeMessage("TAG", a);
+			std::string I = (count(blocks.inputs.begin(), blocks.inputs.end(), *a) != 0) ? "I" : "-";
+			std::string O = (count(blocks.outputs.begin(), blocks.outputs.end(), *a) != 0) ? "O" : "-";
+			writeMessage("TAG", *a);
 			writeMessage("TAG" + I + O);
 		}
-		void Interpreter::type(int a) {
+		void Interpreter::type(std::optional<int> a) {
 			if (!assertInRange(a, blocks.L)) return;
-			std::string W = (blocks.L[a].mode == Line::WIDELINE) ? "W" : "L";
-			writeMessage("TYPE", a);
+			std::string W = (blocks.L[*a].mode == Line::WIDELINE) ? "W" : "L";
+			writeMessage("TYPE", *a);
 			writeMessage("TYPE" + W);
 		}
 		void Interpreter::check_input() {
@@ -356,9 +357,9 @@ namespace labbish {
 				fprintf(out, "%d ", blocks.inputs[i]);
 			fprintf(out, "\n");
 		}
-		void Interpreter::check_input(int a) {
+		void Interpreter::check_input(std::optional<int> a) {
 			if (!assertInRange(a, blocks.inputs)) return;
-			writeMessage("CHECK_INPUT", a, blocks.inputs[a]);
+			writeMessage("CHECK_INPUT", *a, blocks.inputs[*a]);
 		}
 		void Interpreter::check_output() {
 			writeMessage("CHECK_OUTPUTS");
@@ -366,76 +367,76 @@ namespace labbish {
 				fprintf(out, "%d ", blocks.outputs[i]);
 			fprintf(out, "\n");
 		}
-		void Interpreter::check_output(int a) {
+		void Interpreter::check_output(std::optional<int> a) {
 			if (!assertInRange(a, blocks.outputs)) return;
-			writeMessage("CHECK_OUTPUT", a, blocks.outputs[a]);
+			writeMessage("CHECK_OUTPUT", *a, blocks.outputs[*a]);
 		}
-		void Interpreter::inspect(std::string type, int a) {
+		void Interpreter::inspect(std::string type, std::optional<int> a) {
 			bool b = 0;
 			if (type == "N") {
 				if (!assertInRange(a, blocks.N)) return;
-				b = blocks.N[a].check();
+				b = blocks.N[*a].check();
 			}
 			if (type == "A") {
 				if (!assertInRange(a, blocks.A)) return;
-				b = blocks.A[a].check();
+				b = blocks.A[*a].check();
 			}
 			if (type == "R") {
 				if (!assertInRange(a, blocks.R)) return;
-				b = blocks.R[a].check();
+				b = blocks.R[*a].check();
 			}
 			if (type == "T") {
 				if (!assertInRange(a, blocks.T)) return;
-				b = blocks.T[a].check();
+				b = blocks.T[*a].check();
 			}
 			if (type == "C") {
 				if (!assertInRange(a, blocks.C)) return;
-				b = blocks.C[a].check();
+				b = blocks.C[*a].check();
 			}
 			if (type == "P") {
 				if (!assertInRange(a, blocks.P)) return;
-				b = blocks.P[a].check();
+				b = blocks.P[*a].check();
 			}
 			if (type == "block") {
 				if (!assertInRange(a, blocks.Bs)) return;
-				b = blocks.Bs[a].check();
+				b = blocks.Bs[*a].check();
 			}
-			writeMessage("INSPECT", type.c_str(), a, b);
+			writeMessage("INSPECT", type.c_str(), *a, b);
 		}
-		void Interpreter::del(std::string type, int a) {
+		void Interpreter::del(std::string type, std::optional<int> a) {
 			if (type == "line") {
 				if (!assertInRange(a, blocks.L)) return;
-				blocks.L.erase(a);
+				blocks.L.erase(*a);
 			}
 			if (type == "N") {
 				if (!assertInRange(a, blocks.N)) return;
-				blocks.N.erase(a);
+				blocks.N.erase(*a);
 			}
 			if (type == "A") {
 				if (!assertInRange(a, blocks.A)) return;
-				blocks.A.erase(a);
+				blocks.A.erase(*a);
 			}
 			if (type == "R") {
 				if (!assertInRange(a, blocks.R)) return;
-				blocks.R.erase(a);
+				blocks.R.erase(*a);
 			}
 			if (type == "T") {
 				if (!assertInRange(a, blocks.T)) return;
-				blocks.T.erase(a);
+				blocks.T.erase(*a);
 			}
 			if (type == "C") {
 				if (!assertInRange(a, blocks.C)) return;
-				blocks.C.erase(a);
+				blocks.C.erase(*a);
 			}
 			if (type == "P") {
 				if (!assertInRange(a, blocks.P)) return;
-				blocks.P.erase(a);
+				blocks.P.erase(*a);
 			}
 			if (type == "block") {
 				if (!assertInRange(a, blocks.Bs)) return;
-				blocks.Bs.erase(a);
+				blocks.Bs.erase(*a);
 			}
-			writeMessage("DEL", type.c_str(), a);
+			writeMessage("DEL", type.c_str(), *a);
 		}
 		void Interpreter::export__() {
 			for (std::string line : blocks.exportBlocks()) fprintf(out, "%s\n", line.c_str());
@@ -443,17 +444,17 @@ namespace labbish {
 		void Interpreter::echo(std::string msg) {
 			fprintf(out, (msg + "\n").c_str());
 		}
-		void Interpreter::_echo(int echo) {
+		void Interpreter::_echo(std::optional<int> echo) {
 			if (!assertBit(echo)) return;
-			Echo = echo;
+			Echo = *echo;
 		}
-		void Interpreter::_clock(int time) {
+		void Interpreter::_clock(std::optional<int> time) {
 			if (!assertBit(time)) return;
-			debugTime = time;
+			debugTime = *time;
 		}
-		void Interpreter::_per_step(int step) {
+		void Interpreter::_per_step(std::optional<int> step) {
 			if (!assertBit(step)) return;
-			perStep = step;
+			perStep = *step;
 		}
 		void Interpreter::__path() {
 			writeMessage("PATH", path.c_str());
