@@ -167,6 +167,7 @@ namespace labbish {
 			virtual void tick(std::optional<int>);
 			virtual void tick_();
 			virtual void tick_(std::optional<int>);
+			virtual void speed();
 			virtual void speed(std::optional<int>);
 			virtual void openInterface(std::string, Interpreter*);
 			virtual void open(std::string);
@@ -220,6 +221,7 @@ namespace labbish {
 			inline void tick(std::optional<int>) { unavailableMessage("tick"); }
 			inline void tick_() { unavailableMessage("tick!"); }
 			inline void tick_(std::optional<int>) { unavailableMessage("tick!"); }
+			inline void speed() { unavailableMessage("speed"); }
 			inline void check_mods() { unavailableMessage("check-mods"); }
 			inline void tag(std::optional<int>) { unavailableMessage("tag"); }
 			inline void type(std::optional<int>) { unavailableMessage("type"); }

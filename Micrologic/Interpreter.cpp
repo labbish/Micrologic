@@ -246,6 +246,9 @@ namespace labbish {
 				if (Echo) fprintf(out, "\n");
 			}
 		}
+		void Interpreter::speed() {
+			writeMessage("SPEED_CHECK", blocks.speed);
+		}
 		void Interpreter::speed(std::optional<int> v) {
 			if (!assertPositive(v)) return;
 			blocks.speed = *v;
@@ -533,6 +536,7 @@ namespace labbish {
 			else if (args[0] == "tick" && args.size() == 2) tick(toInt(args[1]));
 			else if (args[0] == "tick!" && args.size() == 1) tick_();
 			else if (args[0] == "tick!" && args.size() == 2) tick_(toInt(args[1]));
+			else if (args[0] == "speed" && args.size() == 1) speed();
 			else if (args[0] == "speed" && args.size() == 2) speed(toInt(args[1]));
 			else if (args[0] == "open" && count(cmd.begin(), cmd.end(), '\"') >= 2) open(convertSlash(quotedPart(cmd)));
 			else if (args[0] == "open" && args.size() == 2) open(convertSlash(args[1]));

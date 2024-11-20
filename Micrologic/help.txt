@@ -42,6 +42,7 @@ tick                                                      Tick once.
 tick [TIMES]                                              Tick mutiple times.
 tick!                                                     Tick once, and output values of all lines after it.
 tick! [TIMES]                                             Tick mutiple times, and output values of all lines after every tick.
+speed                                                     Check current speed.
 speed [SPEED]                                             Set speed. The default speed is 1.
 path                                                      Check current path.
 path [PATH]                                               Set path of scripts. Use double quotation marks when the path name include spaces.
