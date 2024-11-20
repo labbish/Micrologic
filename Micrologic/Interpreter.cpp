@@ -66,17 +66,17 @@ namespace labbish {
 		}
 
 		std::string Interpreter::pathPart(std::string f) {
-			return f.substr(0, f.rfind("\\") + 1);
+			return f.substr(0, f.rfind(StandardSlash) + 1);
 		}
 
 		std::string Interpreter::addSlash(std::string p) {
-			if (p[p.size() - 1] != '\\') p = p + "\\";
+			if (p[p.size() - 1] != StandardSlash[0]) p = p + StandardSlash;
 			return p;
 		}
 
 		std::string Interpreter::convertSlash(std::string filename) {
 			for (int i = 0; i < filename.length(); i++) {
-				if (filename[i] == '/') filename[i] = '\\';
+				if (filename[i] == Slash[0]) filename[i] = StandardSlash[0];
 			}
 			return filename;
 		}
@@ -497,6 +497,7 @@ namespace labbish {
 			message::TimeDebugger timeDebugger;
 			timeDebugger.flush();
 
+			normalizeArg(cmdline);
 			std::string cmd = cutRedirection(cmdline).first;
 			std::vector<std::string> args = breakLine(cmd);
 
@@ -570,7 +571,7 @@ namespace labbish {
 		}
 
 		void Interpreter::writeDebug() {
-			FILE* file = _fsopen((exepath + "\\debug.log").c_str(), "w", _SH_DENYNO);
+			FILE* file = _fopen((exepath + StandardSlash + "debug.log").c_str(), "w");
 			if (file == nullptr) {
 				writeError("CANNOT_WRITE", "debug.log");
 			}

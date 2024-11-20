@@ -10,11 +10,10 @@
 #include <variant>
 #include <array>
 #include <cstdarg>
-#include <direct.h>
-#include <conio.h>
 #include "Blocks.h"
 #include "Messages.h"
 #include "TimeDebugger.h"
+#include "SystemAbstraction.h"
 
 namespace labbish {
 	namespace Micrologic {
@@ -116,8 +115,8 @@ namespace labbish {
 			std::string quotedPart(std::string);
 			std::string firstWord(std::string);
 			std::string pathPart(std::string);
-			std::string addSlash(std::string filename); //add backslash to the end if none
-			std::string convertSlash(std::string filename); //convert all slashes to backslashes
+			std::string addSlash(std::string filename); //add slash to the end if none
+			std::string convertSlash(std::string filename); //convert slashes
 			std::string subCommand(std::vector<std::string> cmd, size_t pos = 0, size_t len = -1);
 			std::pair<std::string, std::string> cutRedirection(std::string); //cut "command>file" to ("command","file")
 			std::vector<std::string> breakLine(std::string);

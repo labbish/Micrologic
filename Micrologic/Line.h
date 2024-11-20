@@ -8,7 +8,7 @@ namespace labbish {
 	namespace Micrologic {
 		class Line {
 		public:
-			const enum TYPE {
+			enum TYPE {
 				LINE = 0,
 				WIDELINE = 1
 			};
