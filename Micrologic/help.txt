@@ -60,7 +60,7 @@ check-output                                              Lists the line order n
 check-output [OUTPUT]                                     Lists the line order number of a designated output line.
 inspect [BLOCKTYPE] [BLOCK]                               Checks whether a block connects correct line type.
 del [BLOCKTYPE] [BLOCK]                                   Delete a designated block.
-del line [ALINE]                                          Delete a designated line. No bugs were found in tn test but you'd betterbe careful of those blocks without line connection.
+del line [ALINE]                                          Delete a designated line. No bugs were found in test but you'd betterbe careful of those blocks without line connection.
 export                                                    Export current blocks.
 echo [MESSAGE]                                            Outputs a message.
 @echo [SHOW]                                              Set whether to echo messages. Requires 0 or 1.
