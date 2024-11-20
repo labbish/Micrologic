@@ -589,7 +589,7 @@ namespace labbish {
 		std::vector<std::string> Interpreter::getHelp() {
 			std::vector<std::string> helps;
 			std::ifstream fin;
-			std::string f = exepath + "\\help.txt";
+			std::string f = exepath + StandardSlash + "help.txt";
 			fin.open(f, std::ios::in);
 			if (!assertGoodFile(fin, f)) return { "" };
 			char fhelp[1024] = "";
