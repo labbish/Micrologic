@@ -11,9 +11,7 @@ int main(int argc, const char* argv[]) {
 		Micrologic.Echo = Micrologic.command("open " + std::string(argv[1]));
 	}
 	while (true) {
-		printf(">>>");
-		std::string cmd;
-		std::getline(std::cin, cmd);
+		std::string cmd = read_command();
 		Micrologic.command(cmd);
 		if (Micrologic.Exit == 1) break;
 	}
