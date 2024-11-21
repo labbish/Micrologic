@@ -1,10 +1,8 @@
 # Micrologic
-The project aims to create a shell interpreter to run Micrologic.
+___Note: Although accidentally having a same name, there is no relationship between this project and [Micrologic Trip Units](https://www.se.com/us/en/product-range/7223-micrologic-trip-units/#overview).___
 
-A bit hard to use because of there aren't any gui.
+The project aims to create a shell interpreter to run Micrologic. You may check [help.txt](Micrologic/help.txt) for more information.
 
-There are a few error messages now.
-
-(It is recommanded to use with [Micrologic IDE](https://github.com/HZZcode/MicrologicIDE) for better editing and debugging.)
+A bit hard to use since there aren't any gui.
 
 Have fun.
