@@ -217,10 +217,26 @@ namespace labbish {
 			for (std::pair<std::string, std::string> mod : mods) {
 				commands.push_back(std::format("mod {} {}", mod.first, mod.second));
 			}
-			for (const Line& l : L) {
-				if (l.mode == Line::LINE) commands.push_back("line");
-				else commands.push_back("wline");
+
+			auto lineFormat = [](Line::TYPE type, int num) -> std::string {
+				std::string cmd;
+				if (type == Line::LINE) cmd = "line";
+				else cmd = "wline";
+				if (num == 1) return cmd;
+				else return std::format("{} {}", cmd, num);
+				};
+			int consecutive = 1;
+			for (int i = 0; i < L.size(); i++) {
+				if (i != L.size() - 1) {
+					if (L[i].mode == L[i + 1].mode) consecutive++;
+					else {
+						commands.push_back(lineFormat(L[i].mode, consecutive));
+						consecutive = 1;
+					}
+				}
+				else commands.push_back(lineFormat(L[i].mode, consecutive));
 			}
+
 			for (const BlockN& n : N) {
 				commands.push_back(std::format("N {} {}", to_string(findLine(n.inputLines[0])), to_string(findLine(n.outputLines[0]))));
 			}
