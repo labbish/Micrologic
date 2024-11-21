@@ -54,57 +54,8 @@ namespace labbish {
 			clearCurrentLine();
 		}
 
-		inline std::vector<std::string> exportStructure(const Blocks& blocks) {
-			std::vector<std::string> commands;
-			for (std::pair<std::string, std::string> mod : blocks.mods) {
-				commands.push_back(std::format("mod {} {}", mod.first, mod.second));
-			}
-
-			auto lineFormat = [](Line::TYPE type, int num) -> std::string {
-				std::string cmd;
-				if (type == Line::LINE) cmd = "line";
-				else cmd = "wline";
-				if (num == 1) return cmd;
-				else return std::format("{} {}", cmd, num);
-				};
-			int consecutive = 1;
-			for (int i = 0; i < blocks.L.size(); i++) {
-				if (i != blocks.L.size() - 1) {
-					if (blocks.L[i].mode == blocks.L[i + 1].mode) consecutive++;
-					else {
-						commands.push_back(lineFormat(blocks.L[i].mode, consecutive));
-						consecutive = 1;
-					}
-				}
-				else commands.push_back(lineFormat(blocks.L[i].mode, consecutive));
-			}
-
-			for (const BlockN& n : blocks.N) {
-				commands.push_back(std::format("N {} {}", to_string(blocks.findLine(n.inputLines[0])), to_string(blocks.findLine(n.outputLines[0]))));
-			}
-			for (const BlockA& a : blocks.A) {
-				commands.push_back(std::format("A {} {} {}", to_string(blocks.findLine(a.inputLines[0])), to_string(blocks.findLine(a.inputLines[1])), to_string(blocks.findLine(a.outputLines[0]))));
-			}
-			for (const BlockR& r : blocks.R) {
-				commands.push_back(std::format("R {} {} {}", to_string(blocks.findLine(r.inputLines[0])), to_string(blocks.findLine(r.inputLines[1])), to_string(blocks.findLine(r.outputLines[0]))));
-			}
-			for (const BlockT& t : blocks.T) {
-				commands.push_back(std::format("T {} {}", to_string(blocks.findLine(t.inputLines[0])), to_string(blocks.findLine(t.outputLines[0]))));
-			}
-			for (const BlockC& c : blocks.C) {
-				commands.push_back(std::format("C {} {} {} {} {}", to_string(blocks.findLine(c.inputLines[0])), to_string(blocks.findLine(c.inputLines[1])), to_string(blocks.findLine(c.inputLines[2])), to_string(blocks.findLine(c.inputLines[3])), to_string(blocks.findLine(c.outputLines[0]))));
-			}
-			for (const BlockP& p : blocks.P) {
-				commands.push_back(std::format("P {} {} {} {} {}", to_string(blocks.findLine(p.inputLines[0])), to_string(blocks.findLine(p.outputLines[0])), to_string(blocks.findLine(p.outputLines[1])), to_string(blocks.findLine(p.outputLines[2])), to_string(blocks.findLine(p.outputLines[3]))));
-			}
-			for (const Blocks& bs : blocks.Bs) {
-				std::string cmd = std::format("block {} ", bs.type);
-				for (int i = 0; i < bs.inputLines.size(); i++) cmd = cmd + std::format("{} ", to_string(blocks.findLine(bs.inputLines[i])));
-				for (int o = 0; o < bs.outputLines.size(); o++) cmd = cmd + std::format("{} ", to_string(blocks.findLine(bs.outputLines[o])));
-				commands.push_back(cmd);
-			}
-			return commands;
-		}
+		std::vector<std::string> exportStructure(const Blocks&);
+		std::vector<std::string> exportLineData(const Blocks&);
 
 		class Interpreter {
 		public:
@@ -250,6 +201,7 @@ namespace labbish {
 			virtual void inspect(std::string, int_);
 			virtual void del(std::string, int_);
 			virtual void export__();
+			virtual void export_all();
 			virtual void echo(std::string);
 			virtual void _echo(int_);
 			virtual void _clock(int_);
