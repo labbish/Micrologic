@@ -50,7 +50,7 @@ namespace labbish {
 			StableVector<BlockC> C;
 			StableVector<BlockP> P;
 			StableVector<Blocks> Bs;
-			int_ findLine(Line*);
+			int_ findLine(Line*)const;
 			void addInput(std::vector<int> inputs);
 			void addOutput(std::vector<int> outputs);
 			void input(int order, bool value);

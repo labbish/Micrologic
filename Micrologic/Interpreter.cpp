@@ -446,7 +446,7 @@ namespace labbish {
 			writeMessage("DEL", type.c_str(), *a);
 		}
 		void Interpreter::export__() {
-			std::vector<std::string> lines = blocks.exportBlocks();
+			std::vector<std::string> lines = exportStructure(blocks);
 			for (std::string line : lines) fprintf(out, "%s\n", line.c_str());
 		}
 		void Interpreter::echo(std::string msg) {

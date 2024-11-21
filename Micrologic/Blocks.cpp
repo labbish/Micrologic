@@ -86,7 +86,7 @@ namespace labbish {
 			return *this;
 		}
 
-		int_ Blocks::findLine(Line* l) {
+		int_ Blocks::findLine(Line* l) const {
 			for (int i = 0; i < L.size(); i++) {
 				if (l == &(L[i])) return i;
 			}
@@ -210,58 +210,6 @@ namespace labbish {
 			for (int i = 0; i < this->inputs.size(); i++) if (this->L[inputs[i]].mode != this->inputLines[i]->mode) return false;
 			for (int i = 0; i < this->outputs.size(); i++) if (this->L[outputs[i]].mode != this->outputLines[i]->mode) return false;
 			return true;
-		}
-
-		std::vector<std::string> Blocks::exportBlocks() {
-			std::vector<std::string> commands;
-			for (std::pair<std::string, std::string> mod : mods) {
-				commands.push_back(std::format("mod {} {}", mod.first, mod.second));
-			}
-
-			auto lineFormat = [](Line::TYPE type, int num) -> std::string {
-				std::string cmd;
-				if (type == Line::LINE) cmd = "line";
-				else cmd = "wline";
-				if (num == 1) return cmd;
-				else return std::format("{} {}", cmd, num);
-				};
-			int consecutive = 1;
-			for (int i = 0; i < L.size(); i++) {
-				if (i != L.size() - 1) {
-					if (L[i].mode == L[i + 1].mode) consecutive++;
-					else {
-						commands.push_back(lineFormat(L[i].mode, consecutive));
-						consecutive = 1;
-					}
-				}
-				else commands.push_back(lineFormat(L[i].mode, consecutive));
-			}
-
-			for (const BlockN& n : N) {
-				commands.push_back(std::format("N {} {}", to_string(findLine(n.inputLines[0])), to_string(findLine(n.outputLines[0]))));
-			}
-			for (const BlockA& a : A) {
-				commands.push_back(std::format("A {} {} {}", to_string(findLine(a.inputLines[0])), to_string(findLine(a.inputLines[1])), to_string(findLine(a.outputLines[0]))));
-			}
-			for (const BlockR& r : R) {
-				commands.push_back(std::format("R {} {} {}", to_string(findLine(r.inputLines[0])), to_string(findLine(r.inputLines[1])), to_string(findLine(r.outputLines[0]))));
-			}
-			for (const BlockT& t : T) {
-				commands.push_back(std::format("T {} {}", to_string(findLine(t.inputLines[0])), to_string(findLine(t.outputLines[0]))));
-			}
-			for (const BlockC& c : C) {
-				commands.push_back(std::format("C {} {} {} {} {}", to_string(findLine(c.inputLines[0])), to_string(findLine(c.inputLines[1])), to_string(findLine(c.inputLines[2])), to_string(findLine(c.inputLines[3])), to_string(findLine(c.outputLines[0]))));
-			}
-			for (const BlockP& p : P) {
-				commands.push_back(std::format("P {} {} {} {} {}", to_string(findLine(p.inputLines[0])), to_string(findLine(p.outputLines[0])), to_string(findLine(p.outputLines[1])), to_string(findLine(p.outputLines[2])), to_string(findLine(p.outputLines[3]))));
-			}
-			for (const Blocks& bs : Bs) {
-				std::string cmd = std::format("block {} ", bs.type);
-				for (int i = 0; i < bs.inputLines.size(); i++) cmd = cmd + std::format("{} ", to_string(findLine(bs.inputLines[i])));
-				for (int o = 0; o < bs.outputLines.size(); o++) cmd = cmd + std::format("{} ", to_string(findLine(bs.outputLines[o])));
-				commands.push_back(cmd);
-			}
-			return commands;
 		}
 	}
 }
