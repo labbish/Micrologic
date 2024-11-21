@@ -10,7 +10,6 @@
 #include <variant>
 #include <array>
 #include <cstdarg>
-#include <optional>
 #include "Blocks.h"
 #include "Messages.h"
 #include "TimeDebugger.h"
@@ -36,7 +35,7 @@ namespace labbish {
 			return ans;
 		}
 
-		inline bool assertPositive(std::optional<int> a) {
+		inline bool assertPositive(int_ a) {
 			if (a == std::nullopt) return false;
 			if (a <= 0) {
 				writeError("NOT_POSITIVE", *a);
@@ -44,7 +43,7 @@ namespace labbish {
 			}
 			return true;
 		}
-		inline bool assertBit(std::optional<int> a) {
+		inline bool assertBit(int_ a) {
 			if (a == std::nullopt) return false;
 			if (a != 0 && a != 1) {
 				writeError("NOT_BIT", *a);
@@ -53,7 +52,7 @@ namespace labbish {
 			return true;
 		}
 		template <typename T>
-		inline bool assertInRange(std::optional<int> i, std::vector<T> vec) {
+		inline bool assertInRange(int_ i, std::vector<T> vec) {
 			if (i == std::nullopt) return false;
 			if (i < 0 || i >= vec.size()) {
 				writeError("OUT_OF_RANGE", *i);
@@ -62,7 +61,7 @@ namespace labbish {
 			return true;
 		}
 		template <typename T>
-		inline bool assertInRange(std::optional<int> i, StableVector<T> vec) {
+		inline bool assertInRange(int_ i, StableVector<T> vec) {
 			if (i == std::nullopt) return false;
 			if (i < 0 || i >= vec.size()) {
 				writeError("OUT_OF_RANGE", *i);
@@ -101,7 +100,7 @@ namespace labbish {
 		}
 		inline void pause() {
 			printf("Click any key to continue...");
-			_getch();
+			(void)_getch();
 			clearCurrentLine();
 		}
 
@@ -125,9 +124,9 @@ namespace labbish {
 			void normalizeArg(std::string&);
 			void normalizeArgs(std::vector<std::string>&);
 			bool isNum(std::string);
-			std::optional<int> toInt(std::string);
-			std::vector<std::optional<int>> toInt(std::vector<std::string>);
-			std::array<bool, 4> toBoolArray(std::array<int, 4>);
+			int_ toInt(std::string);
+			std::vector<int_> toInt(std::vector<std::string>);
+			std::array<bool, Line::WlineSize> toBoolArray(std::array<int, 4>);
 
 			std::string quotedPart(std::string);
 			std::string firstWord(std::string);
@@ -146,51 +145,51 @@ namespace labbish {
 			virtual void redirect(std::string outfile);
 
 			virtual void end();
-			virtual void line(std::optional<int> = 1);
-			virtual void wline(std::optional<int> = 1);
-			virtual void N(std::optional<int>, std::optional<int>);
-			virtual void A(std::optional<int>, std::optional<int>, std::optional<int>);
-			virtual void R(std::optional<int>, std::optional<int>, std::optional<int>);
-			virtual void T(std::optional<int>, std::optional<int>);
-			virtual void C(std::array<std::optional<int>, 4>, std::optional<int>);
-			virtual void P(std::optional<int>, std::array<std::optional<int>, 4>);
+			virtual void line(int_ = 1);
+			virtual void wline(int_ = 1);
+			virtual void N(int_, int_);
+			virtual void A(int_, int_, int_);
+			virtual void R(int_, int_, int_);
+			virtual void T(int_, int_);
+			virtual void C(std::array<int_, Line::WlineSize>, int_);
+			virtual void P(int_, std::array<int_, Line::WlineSize>);
 			virtual void check();
-			virtual void check(std::optional<int>);
-			virtual void set(std::optional<int>, std::optional<int>);
-			virtual void set(std::optional<int>, std::array<std::optional<int>, 4>);
-			virtual void input_(std::optional<int>);
-			virtual void input(std::optional<int>, std::optional<int>);
-			virtual void input(std::optional<int>, std::array<std::optional<int>, 4>);
-			virtual void output_(std::optional<int>);
+			virtual void check(int_);
+			virtual void set(int_, int_);
+			virtual void set(int_, std::array<int_, Line::WlineSize>);
+			virtual void input_(int_);
+			virtual void input(int_, int_);
+			virtual void input(int_, std::array<int_, Line::WlineSize>);
+			virtual void output_(int_);
 			virtual void output();
-			virtual void output(std::optional<int>);
+			virtual void output(int_);
 			virtual void tick();
-			virtual void tick(std::optional<int>);
+			virtual void tick(int_);
 			virtual void tick_();
-			virtual void tick_(std::optional<int>);
+			virtual void tick_(int_);
 			virtual void speed();
-			virtual void speed(std::optional<int>);
+			virtual void speed(int_);
 			virtual void openInterface(std::string, Interpreter*);
 			virtual void open(std::string);
 			virtual void safe_open(std::string);
 			virtual void mod(std::string, std::string);
 			virtual void check_mods();
-			virtual void block(std::string, std::vector<std::optional<int>>);
-			virtual void block_type(std::optional<int>);
-			virtual void exec(std::optional<int>, std::string);
-			virtual void tag(std::optional<int>);
-			virtual void type(std::optional<int>);
+			virtual void block(std::string, std::vector<int_>);
+			virtual void block_type(int_);
+			virtual void exec(int_, std::string);
+			virtual void tag(int_);
+			virtual void type(int_);
 			virtual void check_input();
-			virtual void check_input(std::optional<int>);
+			virtual void check_input(int_);
 			virtual void check_output();
-			virtual void check_output(std::optional<int>);
-			virtual void inspect(std::string, std::optional<int>);
-			virtual void del(std::string, std::optional<int>);
+			virtual void check_output(int_);
+			virtual void inspect(std::string, int_);
+			virtual void del(std::string, int_);
 			virtual void export__();
 			virtual void echo(std::string);
-			virtual void _echo(std::optional<int>);
-			virtual void _clock(std::optional<int>);
-			virtual void _per_step(std::optional<int>);
+			virtual void _echo(int_);
+			virtual void _clock(int_);
+			virtual void _per_step(int_);
 			virtual void __path();
 			virtual void __path(std::string);
 			virtual void clear();
@@ -199,7 +198,7 @@ namespace labbish {
 			virtual void __lang(std::string);
 			virtual void neko();
 
-			bool command(std::string cmd);
+			void command(std::string cmd);
 		};
 
 		class SafeInterpreter :public Interpreter {
@@ -215,26 +214,26 @@ namespace labbish {
 			void unavailableMessage(std::string);
 			inline void end() override { unavailableMessage("end"); }
 			inline void check() override { unavailableMessage("check"); }
-			inline void check(std::optional<int>) override { unavailableMessage("check"); }
+			inline void check(int_) override { unavailableMessage("check"); }
 			inline void output() override { unavailableMessage("output"); }
-			inline void output(std::optional<int>) override { unavailableMessage("output"); }
+			inline void output(int_) override { unavailableMessage("output"); }
 			inline void tick() override { unavailableMessage("tick"); }
-			inline void tick(std::optional<int>) override { unavailableMessage("tick"); }
+			inline void tick(int_) override { unavailableMessage("tick"); }
 			inline void tick_() override { unavailableMessage("tick!"); }
-			inline void tick_(std::optional<int>) override { unavailableMessage("tick!"); }
+			inline void tick_(int_) override { unavailableMessage("tick!"); }
 			inline void speed() override { unavailableMessage("speed"); }
 			inline void check_mods() override { unavailableMessage("check-mods"); }
-			inline void tag(std::optional<int>) override { unavailableMessage("tag"); }
-			inline void type(std::optional<int>) override { unavailableMessage("type"); }
+			inline void tag(int_) override { unavailableMessage("tag"); }
+			inline void type(int_) override { unavailableMessage("type"); }
 			inline void check_input() override { unavailableMessage("check-input"); }
-			inline void check_input(std::optional<int>) override { unavailableMessage("check-input"); }
+			inline void check_input(int_) override { unavailableMessage("check-input"); }
 			inline void check_output() override { unavailableMessage("check-output"); }
-			inline void check_output(std::optional<int>) override { unavailableMessage("check-output"); }
-			inline void inspect(std::string, std::optional<int>) override { unavailableMessage("inspect"); }
-			inline void del(std::string, std::optional<int>) override { unavailableMessage("del"); }
+			inline void check_output(int_) override { unavailableMessage("check-output"); }
+			inline void inspect(std::string, int_) override { unavailableMessage("inspect"); }
+			inline void del(std::string, int_) override { unavailableMessage("del"); }
 			inline void export__() override { unavailableMessage("export"); }
-			inline void _clock(std::optional<int>) override { unavailableMessage("@clock"); }
-			inline void _per_step(std::optional<int>) override { unavailableMessage("@per-step"); }
+			inline void _clock(int_) override { unavailableMessage("@clock"); }
+			inline void _per_step(int_) override { unavailableMessage("@per-step"); }
 			inline void __path() override { unavailableMessage("path"); }
 			inline void __path(std::string) override { unavailableMessage("path"); }
 			inline void clear() override { unavailableMessage("clear"); }

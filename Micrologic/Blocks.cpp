@@ -86,11 +86,11 @@ namespace labbish {
 			return *this;
 		}
 
-		int Blocks::findLine(Line* l) {
+		int_ Blocks::findLine(Line* l) {
 			for (int i = 0; i < L.size(); i++) {
 				if (l == &(L[i])) return i;
 			}
-			return -1;
+			return std::nullopt;
 		}
 
 		void Blocks::add(std::vector<Line> L) {
@@ -137,7 +137,7 @@ namespace labbish {
 			for (int i = 0; i < speed; i++) {
 				for (int i = 0; i < inputLines.size(); i++) {
 					L[inputs[i]].nextValue = L[inputs[i]].value = inputLines[i]->value;
-					for (int j = 0; j < 4; j++) L[inputs[i]].nextWideValue[j] = L[inputs[i]].wideValue[j] = inputLines[i]->wideValue[j];
+					for (int j = 0; j < Line::WlineSize; j++) L[inputs[i]].nextWideValue[j] = L[inputs[i]].wideValue[j] = inputLines[i]->wideValue[j];
 				}
 				for (int i = 0; i < N.size(); i++) N[i].tick();
 				for (int i = 0; i < A.size(); i++) A[i].tick();
@@ -149,7 +149,7 @@ namespace labbish {
 				for (int i = 0; i < L.size(); i++) L[i].flush();
 				for (int i = 0; i < outputLines.size(); i++) {
 					outputLines[i]->nextValue = outputLines[i]->value = L[outputs[i]].value;
-					for (int j = 0; j < 4; j++) outputLines[i]->nextWideValue[j] = outputLines[i]->wideValue[j] = L[outputs[i]].wideValue[j];
+					for (int j = 0; j < Line::WlineSize; j++) outputLines[i]->nextWideValue[j] = outputLines[i]->wideValue[j] = L[outputs[i]].wideValue[j];
 				}
 			}
 		}
@@ -178,11 +178,11 @@ namespace labbish {
 
 		void Blocks::input(int order, bool value) {
 			this->L[inputs[order]].value = this->L[inputs[order]].nextValue = value;
-			for (int i = 0; i < 4; i++) this->L[inputs[order]].wideValue[i] = this->L[inputs[order]].nextWideValue[i] = value;
+			for (int i = 0; i < Line::WlineSize; i++) this->L[inputs[order]].wideValue[i] = this->L[inputs[order]].nextWideValue[i] = value;
 		}
 
-		void Blocks::input(int order, std::array<bool, 4> value) {
-			for (int i = 0; i < 4; i++) this->L[inputs[order]].wideValue[i] = this->L[inputs[order]].nextWideValue[i] = value[i];
+		void Blocks::input(int order, std::array<bool, Line::WlineSize> value) {
+			for (int i = 0; i < Line::WlineSize; i++) this->L[inputs[order]].wideValue[i] = this->L[inputs[order]].nextWideValue[i] = value[i];
 		}
 
 		std::string Blocks::output(int order) {
@@ -222,27 +222,27 @@ namespace labbish {
 				else commands.push_back("wline");
 			}
 			for (const BlockN& n : N) {
-				commands.push_back(std::format("N {} {}", findLine(n.inputLines[0]), findLine(n.outputLines[0])));
+				commands.push_back(std::format("N {} {}", to_string(findLine(n.inputLines[0])), to_string(findLine(n.outputLines[0]))));
 			}
 			for (const BlockA& a : A) {
-				commands.push_back(std::format("A {} {} {}", findLine(a.inputLines[0]), findLine(a.inputLines[1]), findLine(a.outputLines[0])));
+				commands.push_back(std::format("A {} {} {}", to_string(findLine(a.inputLines[0])), to_string(findLine(a.inputLines[1])), to_string(findLine(a.outputLines[0]))));
 			}
 			for (const BlockR& r : R) {
-				commands.push_back(std::format("R {} {} {}", findLine(r.inputLines[0]), findLine(r.inputLines[1]), findLine(r.outputLines[0])));
+				commands.push_back(std::format("R {} {} {}", to_string(findLine(r.inputLines[0])), to_string(findLine(r.inputLines[1])), to_string(findLine(r.outputLines[0]))));
 			}
 			for (const BlockT& t : T) {
-				commands.push_back(std::format("T {} {}", findLine(t.inputLines[0]), findLine(t.outputLines[0])));
+				commands.push_back(std::format("T {} {}", to_string(findLine(t.inputLines[0])), to_string(findLine(t.outputLines[0]))));
 			}
 			for (const BlockC& c : C) {
-				commands.push_back(std::format("C {} {} {} {} {}", findLine(c.inputLines[0]), findLine(c.inputLines[1]), findLine(c.inputLines[2]), findLine(c.inputLines[3]), findLine(c.outputLines[0])));
+				commands.push_back(std::format("C {} {} {} {} {}", to_string(findLine(c.inputLines[0])), to_string(findLine(c.inputLines[1])), to_string(findLine(c.inputLines[2])), to_string(findLine(c.inputLines[3])), to_string(findLine(c.outputLines[0]))));
 			}
 			for (const BlockP& p : P) {
-				commands.push_back(std::format("P {} {} {} {} {}", findLine(p.inputLines[0]), findLine(p.outputLines[0]), findLine(p.outputLines[1]), findLine(p.outputLines[2]), findLine(p.outputLines[3])));
+				commands.push_back(std::format("P {} {} {} {} {}", to_string(findLine(p.inputLines[0])), to_string(findLine(p.outputLines[0])), to_string(findLine(p.outputLines[1])), to_string(findLine(p.outputLines[2])), to_string(findLine(p.outputLines[3]))));
 			}
 			for (const Blocks& bs : Bs) {
 				std::string cmd = std::format("block {} ", bs.type);
-				for (int i = 0; i < bs.inputLines.size(); i++) cmd = cmd + std::format("{} ", findLine(bs.inputLines[i]));
-				for (int o = 0; o < bs.outputLines.size(); o++) cmd = cmd + std::format("{} ", findLine(bs.outputLines[o]));
+				for (int i = 0; i < bs.inputLines.size(); i++) cmd = cmd + std::format("{} ", to_string(findLine(bs.inputLines[i])));
+				for (int o = 0; o < bs.outputLines.size(); o++) cmd = cmd + std::format("{} ", to_string(findLine(bs.outputLines[o])));
 				commands.push_back(cmd);
 			}
 			return commands;

@@ -4,6 +4,7 @@
 #include <map>
 #include <set>
 #include <format>
+#include <optional>
 #include <algorithm>
 #include "BlockN.h"
 #include "BlockA.h"
@@ -15,6 +16,15 @@
 
 namespace labbish {
 	namespace Micrologic {
+		using int_ = std::optional<int>;
+
+		inline std::string to_string(int_ value) {
+			std::string ans;
+			if (value.has_value()) ans = std::to_string(*value);
+			else ans = "\033[31m?\033[0m";
+			return ans;
+		}
+
 		template <class T>
 		inline void clearContainer(T& container) {
 			T().swap(container);
@@ -40,11 +50,11 @@ namespace labbish {
 			StableVector<BlockC> C;
 			StableVector<BlockP> P;
 			StableVector<Blocks> Bs;
-			int findLine(Line*);
+			int_ findLine(Line*);
 			void addInput(std::vector<int> inputs);
 			void addOutput(std::vector<int> outputs);
 			void input(int order, bool value);
-			void input(int order, std::array<bool, 4> value);
+			void input(int order, std::array<bool, Line::WlineSize> value);
 			std::string output(int order);
 			std::vector<std::string> output();
 			bool isInput(int line);

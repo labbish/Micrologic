@@ -8,11 +8,12 @@ int main(int argc, const char* argv[]) {
 	std::string exepath = std::string(_getcwd(NULL, 0));
 	Interpreter Micrologic(blocks, exepath);
 	if (argc == 2) {
-		Micrologic.Echo = Micrologic.command("open " + std::string(argv[1]));
+		Micrologic.command("open " + std::string(argv[1]));
 	}
 	while (true) {
 		std::string cmd = read_command();
 		Micrologic.command(cmd);
 		if (Micrologic.Exit == 1) break;
 	}
+	return 0;
 }

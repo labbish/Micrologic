@@ -24,7 +24,7 @@ namespace labbish {
 			return true;
 		}
 
-		std::optional<int> Interpreter::toInt(std::string str) {
+		int_ Interpreter::toInt(std::string str) {
 			if (!isNum(str)) {
 				writeError("NOT_NUM", str);
 				return std::nullopt;
@@ -41,17 +41,17 @@ namespace labbish {
 			return std::nullopt;
 		}
 
-		std::vector<std::optional<int>> Interpreter::toInt(std::vector<std::string> strs) {
-			std::vector<std::optional<int>> ints;
+		std::vector<int_> Interpreter::toInt(std::vector<std::string> strs) {
+			std::vector<int_> ints;
 			for (std::string str : strs) {
 				ints.push_back(toInt(str));
 			}
 			return ints;
 		}
 
-		std::array<bool, 4> Interpreter::toBoolArray(std::array<int, 4> ints) {
-			std::array<bool, 4> bools{};
-			for (int i = 0; i < 4; i++) bools[i] = ints[i];
+		std::array<bool, Line::WlineSize> Interpreter::toBoolArray(std::array<int, Line::WlineSize> ints) {
+			std::array<bool, Line::WlineSize> bools{};
+			for (int i = 0; i < Line::WlineSize; i++) bools[i] = ints[i];
 			return bools;
 		}
 
@@ -118,7 +118,7 @@ namespace labbish {
 		void Interpreter::end() {
 			Exit = 1;
 		}
-		void Interpreter::line(std::optional<int> count) {
+		void Interpreter::line(int_ count) {
 			if (!assertPositive(count)) return;
 			int before = (int)blocks.L.size();
 			for (int i = 0; i < count; i++) blocks.add({ Line(Line::LINE) });
@@ -126,7 +126,7 @@ namespace labbish {
 			if (count == 1) writeMessage("LINE", after - 1);
 			else writeMessage("LINES", before, after - 1);
 		}
-		void Interpreter::wline(std::optional<int> count) {
+		void Interpreter::wline(int_ count) {
 			if (!assertPositive(count)) return;
 			int before = (int)blocks.L.size();
 			for (int i = 0; i < count; i++) blocks.add({ Line(Line::WIDELINE) });
@@ -134,42 +134,41 @@ namespace labbish {
 			if (count == 1) writeMessage("WLINE", after - 1);
 			else writeMessage("WLINES", before, after - 1);
 		}
-		void Interpreter::N(std::optional<int> a, std::optional<int> b) {
+		void Interpreter::N(int_ a, int_ b) {
 			if (!assertInRange(a, blocks.L)) return;
 			if (!assertInRange(b, blocks.L)) return;
 			blocks.add({ BlockN({&(blocks.L[*a])},{&(blocks.L[*b])}) });
 			writeMessage("BLOCKN", (int)blocks.N.size() - 1, *a, *b);
-			writeMessage("BLOCKN", (int)blocks.N.size() - 1, *a, *b);
 		}
-		void Interpreter::A(std::optional<int> a, std::optional<int> b, std::optional<int> c) {
+		void Interpreter::A(int_ a, int_ b, int_ c) {
 			if (!assertInRange(a, blocks.L)) return;
 			if (!assertInRange(b, blocks.L)) return;
 			if (!assertInRange(c, blocks.L)) return;
 			blocks.add({ BlockA({&(blocks.L[*a]),&(blocks.L[*b])},{&(blocks.L[*c])}) });
 			writeMessage("BLOCKA", (int)blocks.A.size() - 1, *a, *b, *c);
 		}
-		void Interpreter::R(std::optional<int> a, std::optional<int> b, std::optional<int> c) {
+		void Interpreter::R(int_ a, int_ b, int_ c) {
 			if (!assertInRange(a, blocks.L)) return;
 			if (!assertInRange(b, blocks.L)) return;
 			if (!assertInRange(c, blocks.L)) return;
 			blocks.add({ BlockR({&(blocks.L[*a]),&(blocks.L[*b])},{&(blocks.L[*c])}) });
-			writeMessage("BLOCKR", (int)blocks.A.size() - 1, *a, *b, *c);
+			writeMessage("BLOCKR", (int)blocks.R.size() - 1, *a, *b, *c);
 		}
-		void Interpreter::T(std::optional<int> a, std::optional<int> b) {
+		void Interpreter::T(int_ a, int_ b) {
 			if (!assertInRange(a, blocks.L)) return;
 			if (!assertInRange(b, blocks.L)) return;
 			blocks.add({ BlockT({&(blocks.L[*a])},{&(blocks.L[*b])}) });
-			writeMessage("BLOCKT", (int)blocks.N.size() - 1, *a, *b);
+			writeMessage("BLOCKT", (int)blocks.T.size() - 1, *a, *b);
 		}
-		void Interpreter::C(std::array<std::optional<int>, 4> a, std::optional<int> b) {
-			for (int i = 0; i < 4; i++) if (!assertInRange(a[i], blocks.L)) return;
+		void Interpreter::C(std::array<int_, Line::WlineSize> a, int_ b) {
+			for (int i = 0; i < Line::WlineSize; i++) if (!assertInRange(a[i], blocks.L)) return;
 			if (!assertInRange(b, blocks.L)) return;
 			blocks.add({ BlockC({&(blocks.L[*a[0]]),&(blocks.L[*a[1]]),&(blocks.L[*a[2]]),&(blocks.L[*a[3]])},{&(blocks.L[*b])}) });
 			writeMessage("BLOCKC", (int)blocks.C.size() - 1, *a[0], *a[1], *a[2], *a[3], *b);
 		}
-		void Interpreter::P(std::optional<int> a, std::array<std::optional<int>, 4> b) {
+		void Interpreter::P(int_ a, std::array<int_, Line::WlineSize> b) {
 			if (!assertInRange(a, blocks.L)) return;
-			for (int i = 0; i < 4; i++) if (!assertInRange(b[i], blocks.L)) return;
+			for (int i = 0; i < Line::WlineSize; i++) if (!assertInRange(b[i], blocks.L)) return;
 			blocks.add({ BlockP({&(blocks.L[*a])},{&(blocks.L[*b[0]]),&(blocks.L[*b[1]]),&(blocks.L[*b[2]]),&(blocks.L[*b[3]])}) });
 			writeMessage("BLOCKP", (int)blocks.P.size() - 1, *a, *b[0], *b[1], *b[2], *b[3]);
 		}
@@ -178,40 +177,40 @@ namespace labbish {
 			for (Line l : blocks.L) fprintf(out, "%s ", l.checkValue().c_str());
 			fprintf(out, "\n");
 		}
-		void Interpreter::check(std::optional<int> i) {
+		void Interpreter::check(int_ i) {
 			if (!assertInRange(i, blocks.L)) return;
 			writeMessage("CHECK", i, blocks.L[*i].checkValue());
 		}
-		void Interpreter::set(std::optional<int> a, std::optional<int> value) {
+		void Interpreter::set(int_ a, int_ value) {
 			if (!assertInRange(a, blocks.L)) return;
 			if (!assertBit(value)) return;
 			blocks.L[*a].set(*value);
 			writeMessage("SET", *a, *value);
 		}
-		void Interpreter::set(std::optional<int> a, std::array<std::optional<int>, 4> value) {
+		void Interpreter::set(int_ a, std::array<int_, Line::WlineSize> value) {
 			if (!assertInRange(a, blocks.L)) return;
-			for (int i = 0; i < 4; i++) if (!assertBit(value[i])) return;
+			for (int i = 0; i < Line::WlineSize; i++) if (!assertBit(value[i])) return;
 			blocks.L[*a].set(toBoolArray(*value));
 			writeMessage("SET", *a, *value);
 		}
-		void Interpreter::input_(std::optional<int> a) {
+		void Interpreter::input_(int_ a) {
 			if (!assertInRange(a, blocks.L)) return;
 			blocks.addInput({ *a });
 			writeMessage("INPUT:", *a, (int)blocks.inputs.size() - 1);
 		}
-		void Interpreter::input(std::optional<int> a, std::optional<int> value) {
+		void Interpreter::input(int_ a, int_ value) {
 			if (!assertInRange(a, blocks.inputs)) return;
 			if (!assertBit(value)) return;
 			blocks.input(*a, *value);
 			writeMessage("INPUT", *value, *a);
 		}
-		void Interpreter::input(std::optional<int> a, std::array<std::optional<int>, 4> value) {
+		void Interpreter::input(int_ a, std::array<int_, Line::WlineSize> value) {
 			if (!assertInRange(a, blocks.inputs)) return;
-			for (int i = 0; i < 4; i++) if (!assertBit(value[i])) return;
+			for (int i = 0; i < Line::WlineSize; i++) if (!assertBit(value[i])) return;
 			blocks.input(*a, toBoolArray(*value));
 			writeMessage("INPUTW", *value[0], *value[1], *value[2], *value[3], a);
 		}
-		void Interpreter::output_(std::optional<int> a) {
+		void Interpreter::output_(int_ a) {
 			if (!assertInRange(a, blocks.L)) return;
 			blocks.addOutput({ *a });
 			writeMessage("OUTPUT:", *a, (int)blocks.inputs.size() - 1);
@@ -221,7 +220,7 @@ namespace labbish {
 			for (std::string l : blocks.output()) fprintf(out, "%s ", l.c_str());
 			fprintf(out, "\n");
 		}
-		void Interpreter::output(std::optional<int> i) {
+		void Interpreter::output(int_ i) {
 			if (!assertInRange(i, blocks.outputs)) return;
 			writeMessage("OUTPUT", *i, blocks.output(*i));
 		}
@@ -229,7 +228,7 @@ namespace labbish {
 			blocks.tick();
 			writeMessage("TICK");
 		}
-		void Interpreter::tick(std::optional<int> t) {
+		void Interpreter::tick(int_ t) {
 			if (!assertPositive(t)) return;
 			for (int i = 0; i < *t; i++) blocks.tick();
 			writeMessage("TICKS", *t);
@@ -240,7 +239,7 @@ namespace labbish {
 			for (Line l : blocks.L) if (Echo) fprintf(out, "%s ", l.checkValue().c_str());
 			if (Echo) fprintf(out, "\n");
 		}
-		void Interpreter::tick_(std::optional<int> t) {
+		void Interpreter::tick_(int_ t) {
 			if (!assertPositive(t)) return;
 			for (int i = 0; i < *t; i++) {
 				blocks.tick();
@@ -252,7 +251,7 @@ namespace labbish {
 		void Interpreter::speed() {
 			writeMessage("SPEED_CHECK", blocks.speed);
 		}
-		void Interpreter::speed(std::optional<int> v) {
+		void Interpreter::speed(int_ v) {
 			if (!assertPositive(v)) return;
 			blocks.speed = *v;
 			writeMessage("SPEED", *v);
@@ -297,8 +296,8 @@ namespace labbish {
 			}
 			if (Echo) fprintf(out, "\n");
 		}
-		void Interpreter::block(std::string name, std::vector<std::optional<int>> ios) {
-			std::vector<std::optional<int>> ins{}, outs{};
+		void Interpreter::block(std::string name, std::vector<int_> ios) {
+			std::vector<int_> ins{}, outs{};
 			if (!assertInMap(name, blocks.mods)) return;
 			blocks.add(Blocks(name));
 			Blocks& newBlock = blocks.Bs[blocks.Bs.size() - 1];
@@ -311,14 +310,14 @@ namespace labbish {
 			}
 			ins = subVec(ios, 0, (int)newBlock.inputs.size());
 			outs = subVec(ios, (int)newBlock.inputs.size(), (int)ios.size());
-			for (std::optional<int> i : ins) {
+			for (int_ i : ins) {
 				if (!assertInRange(i, blocks.L)) {
 					blocks.Bs.pop_back();
 					return;
 				}
 				newBlock.inputLines.push_back(&(blocks.L[*i]));
 			}
-			for (std::optional<int> o : outs) {
+			for (int_ o : outs) {
 				if (!assertInRange(o, blocks.L)) {
 					blocks.Bs.pop_back();
 					return;
@@ -335,23 +334,23 @@ namespace labbish {
 			}
 			writeMessage("BLOCK3");
 		}
-		void Interpreter::block_type(std::optional<int> a) {
+		void Interpreter::block_type(int_ a) {
 			if (!assertInRange(a, blocks.Bs)) return;
 			writeMessage("BLOCK_TYPE", *a, blocks.Bs[*a].type.c_str());
 		}
-		void Interpreter::exec(std::optional<int> a, std::string cmd) {
+		void Interpreter::exec(int_ a, std::string cmd) {
 			if (!assertInRange(a, blocks.Bs)) return;
 			Interpreter blockInterpreter(blocks.Bs[*a], exepath, path, lang, Echo, out, debugTime, perStep);
 			blockInterpreter.command(cmd);
 		}
-		void Interpreter::tag(std::optional<int> a) {
+		void Interpreter::tag(int_ a) {
 			if (!assertInRange(a, blocks.L)) return;
 			std::string I = (count(blocks.inputs.begin(), blocks.inputs.end(), *a) != 0) ? "I" : "-";
 			std::string O = (count(blocks.outputs.begin(), blocks.outputs.end(), *a) != 0) ? "O" : "-";
 			writeMessage("TAG", *a);
 			writeMessage("TAG" + I + O);
 		}
-		void Interpreter::type(std::optional<int> a) {
+		void Interpreter::type(int_ a) {
 			if (!assertInRange(a, blocks.L)) return;
 			std::string W = (blocks.L[*a].mode == Line::WIDELINE) ? "W" : "L";
 			writeMessage("TYPE", *a);
@@ -363,7 +362,7 @@ namespace labbish {
 				fprintf(out, "%d ", blocks.inputs[i]);
 			fprintf(out, "\n");
 		}
-		void Interpreter::check_input(std::optional<int> a) {
+		void Interpreter::check_input(int_ a) {
 			if (!assertInRange(a, blocks.inputs)) return;
 			writeMessage("CHECK_INPUT", *a, blocks.inputs[*a]);
 		}
@@ -373,11 +372,11 @@ namespace labbish {
 				fprintf(out, "%d ", blocks.outputs[i]);
 			fprintf(out, "\n");
 		}
-		void Interpreter::check_output(std::optional<int> a) {
+		void Interpreter::check_output(int_ a) {
 			if (!assertInRange(a, blocks.outputs)) return;
 			writeMessage("CHECK_OUTPUT", *a, blocks.outputs[*a]);
 		}
-		void Interpreter::inspect(std::string type, std::optional<int> a) {
+		void Interpreter::inspect(std::string type, int_ a) {
 			bool b = 0;
 			if (type == "N") {
 				if (!assertInRange(a, blocks.N)) return;
@@ -409,7 +408,7 @@ namespace labbish {
 			}
 			writeMessage("INSPECT", type.c_str(), *a, b);
 		}
-		void Interpreter::del(std::string type, std::optional<int> a) {
+		void Interpreter::del(std::string type, int_ a) {
 			if (type == "line") {
 				if (!assertInRange(a, blocks.L)) return;
 				blocks.L.erase(*a);
@@ -445,20 +444,21 @@ namespace labbish {
 			writeMessage("DEL", type.c_str(), *a);
 		}
 		void Interpreter::export__() {
-			for (std::string line : blocks.exportBlocks()) fprintf(out, "%s\n", line.c_str());
+			std::vector<std::string> lines = blocks.exportBlocks();
+			for (std::string line : lines) fprintf(out, "%s\n", line.c_str());
 		}
 		void Interpreter::echo(std::string msg) {
 			fprintf(out, (msg + "\n").c_str());
 		}
-		void Interpreter::_echo(std::optional<int> echo) {
+		void Interpreter::_echo(int_ echo) {
 			if (!assertBit(echo)) return;
 			Echo = *echo;
 		}
-		void Interpreter::_clock(std::optional<int> time) {
+		void Interpreter::_clock(int_ time) {
 			if (!assertBit(time)) return;
 			debugTime = *time;
 		}
-		void Interpreter::_per_step(std::optional<int> step) {
+		void Interpreter::_per_step(int_ step) {
 			if (!assertBit(step)) return;
 			perStep = *step;
 		}
@@ -502,7 +502,7 @@ namespace labbish {
 			writeMessage("NEKO");
 		}
 
-		bool Interpreter::command(std::string cmdline) {
+		void Interpreter::command(std::string cmdline) {
 			message::TimeDebugger timeDebugger;
 			timeDebugger.flush();
 
@@ -577,7 +577,6 @@ namespace labbish {
 			if (out != stdout && out != defaultOut) {
 				fclose(out);
 			}
-			return Echo;
 		}
 
 		void Interpreter::writeDebug() {
