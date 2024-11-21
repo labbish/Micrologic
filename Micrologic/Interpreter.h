@@ -35,56 +35,6 @@ namespace labbish {
 			return ans;
 		}
 
-		inline bool assertPositive(int_ a) {
-			if (a == std::nullopt) return false;
-			if (a <= 0) {
-				writeError("NOT_POSITIVE", *a);
-				return false;
-			}
-			return true;
-		}
-		inline bool assertBit(int_ a) {
-			if (a == std::nullopt) return false;
-			if (a != 0 && a != 1) {
-				writeError("NOT_BIT", *a);
-				return false;
-			}
-			return true;
-		}
-		template <typename T>
-		inline bool assertInRange(int_ i, std::vector<T> vec) {
-			if (i == std::nullopt) return false;
-			if (i < 0 || i >= vec.size()) {
-				writeError("OUT_OF_RANGE", *i);
-				return false;
-			}
-			return true;
-		}
-		template <typename T>
-		inline bool assertInRange(int_ i, StableVector<T> vec) {
-			if (i == std::nullopt) return false;
-			if (i < 0 || i >= vec.size()) {
-				writeError("OUT_OF_RANGE", *i);
-				return false;
-			}
-			return true;
-		}
-		template <typename T, typename T1>
-		inline bool assertInMap(T t, std::map<T, T1> mp) {
-			if (mp.find(t) == mp.end()) {
-				writeError("NO_KEY", t);
-				return false;
-			}
-			return true;
-		}
-		inline bool assertGoodFile(std::ifstream& fin, const std::string& filename) {
-			if (!fin.good()) {
-				writeError("NO_FILE", filename);
-				return false;
-			}
-			return true;
-		}
-
 		template <typename T>
 		inline std::vector<T> subVec(const std::vector<T>& vec, int start, int end) {
 			if (start < 0 || end > vec.size() || start > end) {
@@ -106,6 +56,8 @@ namespace labbish {
 
 		class Interpreter {
 		public:
+			using Position = std::optional<std::pair<int, std::string>>; //(line count, file name)
+
 			bool Echo;
 			bool Exit = false;
 			std::string lang;
@@ -116,9 +68,69 @@ namespace labbish {
 			bool perStep;
 			FILE* out;
 			FILE* defaultOut;
+			Position position;
 
-			Interpreter(Blocks& blocks, std::string exepath, std::string path = "", std::string lang = "en_us", bool Echo = true, FILE* defaultOut = stdout, bool debugTime = false, bool perStep = false)
-				:blocks(blocks), exepath(exepath), path(path), lang(lang), Echo(Echo), debugTime(debugTime), perStep(perStep), defaultOut(defaultOut), out(defaultOut) {
+			Interpreter(Blocks& blocks, std::string exepath, std::string path = "",
+				std::string lang = "en_us", bool Echo = true, FILE* defaultOut = stdout,
+				bool debugTime = false, bool perStep = false, Position position = std::nullopt)
+				:blocks(blocks), exepath(exepath), path(path), lang(lang), Echo(Echo), debugTime(debugTime),
+				perStep(perStep), defaultOut(defaultOut), out(defaultOut), position(position) {
+			}
+
+			template<typename... Args>
+			inline const void writeError(std::string error, Args... args) {
+				if (position.has_value())
+					message::ErrorMsg::no_prefix() << std::format("At line {}, file \"{}\"", position->first, position->second);
+				Micrologic::writeError(error, args...);
+			}
+			inline bool assertPositive(int_ a) {
+				if (a == std::nullopt) return false;
+				if (a <= 0) {
+					writeError("NOT_POSITIVE", *a);
+					return false;
+				}
+				return true;
+			}
+			inline bool assertBit(int_ a) {
+				if (a == std::nullopt) return false;
+				if (a != 0 && a != 1) {
+					writeError("NOT_BIT", *a);
+					return false;
+				}
+				return true;
+			}
+			template <typename T>
+			inline bool assertInRange(int_ i, std::vector<T> vec) {
+				if (i == std::nullopt) return false;
+				if (i < 0 || i >= vec.size()) {
+					writeError("OUT_OF_RANGE", *i);
+					return false;
+				}
+				return true;
+			}
+			template <typename T>
+			inline bool assertInRange(int_ i, StableVector<T> vec) {
+				if (i == std::nullopt) return false;
+				if (i < 0 || i >= vec.size()) {
+					writeError("OUT_OF_RANGE", *i);
+					return false;
+				}
+				return true;
+			}
+			template <typename T, typename T1>
+			inline bool assertInMap(T t, std::map<T, T1> mp) {
+				if (mp.find(t) == mp.end()) {
+					writeError("NO_KEY", t);
+					return false;
+				}
+				return true;
+			}
+			inline bool assertGoodFile(std::ifstream& fin, const std::string& filename) {
+				if (!fin.good()) {
+					writeError("NO_FILE", filename);
+					return false;
+				}
+				return true;
 			}
 
 			void normalizeArg(std::string&);

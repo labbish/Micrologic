@@ -278,11 +278,13 @@ namespace labbish {
 		void Interpreter::open(std::string f) {
 			Interpreter tempInterpreter = Interpreter(*this);
 			tempInterpreter.defaultOut = out;
+			tempInterpreter.position = { 0, f };
 			openInterface(f, &tempInterpreter);
 		}
 		void Interpreter::safe_open(std::string f) {
 			SafeInterpreter tempInterpreter = SafeInterpreter(*this);
 			tempInterpreter.defaultOut = out;
+			tempInterpreter.position = { 0, f };
 			openInterface(f, &tempInterpreter);
 		}
 		void Interpreter::mod(std::string name, std::string file) {
@@ -512,6 +514,8 @@ namespace labbish {
 
 			std::string outfile = cutRedirection(cmdline).second;
 			redirect(outfile);
+
+			if (position.has_value()) position->first++;
 
 			if (args.size() == 0) {}
 			else if (args[0] == "end" && args.size() == 1) end();
