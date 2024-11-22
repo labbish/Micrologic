@@ -198,6 +198,8 @@ namespace labbish {
 		void Interpreter::N(int_ a, int_ b) {
 			if (!assertInRange(a, blocks.L)) return;
 			if (!assertInRange(b, blocks.L)) return;
+			if (!assertLineType(a, Line::LINE)) return;
+			if (!assertLineType(b, Line::LINE)) return;
 			blocks.add({ BlockN({&(blocks.L[*a])},{&(blocks.L[*b])}) });
 			writeMessage("BLOCKN", (int)blocks.N.size() - 1, *a, *b);
 		}
@@ -205,6 +207,9 @@ namespace labbish {
 			if (!assertInRange(a, blocks.L)) return;
 			if (!assertInRange(b, blocks.L)) return;
 			if (!assertInRange(c, blocks.L)) return;
+			if (!assertLineType(a, Line::LINE)) return;
+			if (!assertLineType(b, Line::LINE)) return;
+			if (!assertLineType(c, Line::LINE)) return;
 			blocks.add({ BlockA({&(blocks.L[*a]),&(blocks.L[*b])},{&(blocks.L[*c])}) });
 			writeMessage("BLOCKA", (int)blocks.A.size() - 1, *a, *b, *c);
 		}
@@ -212,24 +217,32 @@ namespace labbish {
 			if (!assertInRange(a, blocks.L)) return;
 			if (!assertInRange(b, blocks.L)) return;
 			if (!assertInRange(c, blocks.L)) return;
+			if (!assertLineType(a, Line::LINE)) return;
+			if (!assertLineType(b, Line::LINE)) return;
+			if (!assertLineType(c, Line::LINE)) return;
 			blocks.add({ BlockR({&(blocks.L[*a]),&(blocks.L[*b])},{&(blocks.L[*c])}) });
 			writeMessage("BLOCKR", (int)blocks.R.size() - 1, *a, *b, *c);
 		}
 		void Interpreter::T(int_ a, int_ b) {
 			if (!assertInRange(a, blocks.L)) return;
 			if (!assertInRange(b, blocks.L)) return;
+			if (!assertSameLineType(a, b)) return;
 			blocks.add({ BlockT({&(blocks.L[*a])},{&(blocks.L[*b])}) });
 			writeMessage("BLOCKT", (int)blocks.T.size() - 1, *a, *b);
 		}
 		void Interpreter::C(std::array<int_, 4> a, int_ b) {
 			for (int i = 0; i < 4; i++) if (!assertInRange(a[i], blocks.L)) return;
+			for (int i = 0; i < 4; i++) if (!assertLineType(a[i], Line::LINE)) return;
 			if (!assertInRange(b, blocks.L)) return;
+			if (!assertLineType(b, Line::WIDELINE)) return;
 			blocks.add({ BlockC({&(blocks.L[*a[0]]),&(blocks.L[*a[1]]),&(blocks.L[*a[2]]),&(blocks.L[*a[3]])},{&(blocks.L[*b])}) });
 			writeMessage("BLOCKC", (int)blocks.C.size() - 1, *a[0], *a[1], *a[2], *a[3], *b);
 		}
 		void Interpreter::P(int_ a, std::array<int_, 4> b) {
 			if (!assertInRange(a, blocks.L)) return;
+			if (!assertLineType(a, Line::WIDELINE)) return;
 			for (int i = 0; i < 4; i++) if (!assertInRange(b[i], blocks.L)) return;
+			for (int i = 0; i < 4; i++) if (!assertLineType(b[i], Line::LINE)) return;
 			blocks.add({ BlockP({&(blocks.L[*a])},{&(blocks.L[*b[0]]),&(blocks.L[*b[1]]),&(blocks.L[*b[2]]),&(blocks.L[*b[3]])}) });
 			writeMessage("BLOCKP", (int)blocks.P.size() - 1, *a, *b[0], *b[1], *b[2], *b[3]);
 		}
@@ -245,12 +258,14 @@ namespace labbish {
 		void Interpreter::set(int_ a, int_ value) {
 			if (!assertInRange(a, blocks.L)) return;
 			if (!assertBit(value)) return;
+			if (!assertLineType(a, Line::LINE)) return;
 			blocks.L[*a].set(*value);
 			writeMessage("SET", *a, *value);
 		}
 		void Interpreter::set(int_ a, std::array<int_, 4> value) {
 			if (!assertInRange(a, blocks.L)) return;
 			for (int i = 0; i < 4; i++) if (!assertBit(value[i])) return;
+			if (!assertLineType(a, Line::WIDELINE)) return;
 			blocks.L[*a].set(toBoolArray(*value));
 			writeMessage("SET", *a, *value);
 		}
@@ -378,10 +393,18 @@ namespace labbish {
 					blocks.Bs.pop_back();
 					return;
 				}
+				if (assertLineType(i, newBlock.L[newBlock.inputLines.size()].mode)) {
+					blocks.Bs.pop_back();
+					return;
+				}
 				newBlock.inputLines.push_back(&(blocks.L[*i]));
 			}
 			for (int_ o : outs) {
 				if (!assertInRange(o, blocks.L)) {
+					blocks.Bs.pop_back();
+					return;
+				}
+				if (assertLineType(o, newBlock.L[newBlock.inputLines.size() + newBlock.outputLines.size()].mode)) {
 					blocks.Bs.pop_back();
 					return;
 				}
@@ -438,38 +461,6 @@ namespace labbish {
 		void Interpreter::check_output(int_ a) {
 			if (!assertInRange(a, blocks.outputs)) return;
 			writeMessage("CHECK_OUTPUT", *a, blocks.outputs[*a]);
-		}
-		void Interpreter::inspect(std::string type, int_ a) {
-			bool b = 0;
-			if (type == "N") {
-				if (!assertInRange(a, blocks.N)) return;
-				b = blocks.N[*a].check();
-			}
-			if (type == "A") {
-				if (!assertInRange(a, blocks.A)) return;
-				b = blocks.A[*a].check();
-			}
-			if (type == "R") {
-				if (!assertInRange(a, blocks.R)) return;
-				b = blocks.R[*a].check();
-			}
-			if (type == "T") {
-				if (!assertInRange(a, blocks.T)) return;
-				b = blocks.T[*a].check();
-			}
-			if (type == "C") {
-				if (!assertInRange(a, blocks.C)) return;
-				b = blocks.C[*a].check();
-			}
-			if (type == "P") {
-				if (!assertInRange(a, blocks.P)) return;
-				b = blocks.P[*a].check();
-			}
-			if (type == "block") {
-				if (!assertInRange(a, blocks.Bs)) return;
-				b = blocks.Bs[*a].check();
-			}
-			writeMessage("INSPECT", type.c_str(), *a, b);
 		}
 		void Interpreter::del(std::string type, int_ a) {
 			if (type == "line") {
@@ -627,7 +618,6 @@ namespace labbish {
 			else if (args[0] == "check-input" && args.size() == 2) check_input(toInt(args[1]));
 			else if (args[0] == "check-output" && args.size() == 1) check_output();
 			else if (args[0] == "check-output" && args.size() == 2) check_output(toInt(args[1]));
-			else if (args[0] == "inspect" && args.size() == 3) inspect(args[1], toInt(args[2]));
 			else if (args[0] == "del" && args.size() == 3) del(args[1], toInt(args[2]));
 			else if (args[0] == "export" && args.size() == 1) export__();
 			else if (args[0] == "export-all" && args.size() == 1) export_all();

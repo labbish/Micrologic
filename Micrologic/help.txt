@@ -59,16 +59,15 @@ check-input                                               Lists the line order n
 check-input [INPUT]                                       Lists the line order number of a designated input line.
 check-output                                              Lists the line order numbers of output lines.
 check-output [OUTPUT]                                     Lists the line order number of a designated output line.
-inspect [BLOCKTYPE] [BLOCK]                               Checks whether a block connects correct line type.
 del [BLOCKTYPE] [BLOCK]                                   Delete a designated block.
-del line [ALINE]                                          Delete a designated line. No bugs were found in test but you'd betterbe careful of those blocks without line connection.
+del line [ALINE]                                          Delete a designated line. No bugs were found in test but you'd better be careful of those blocks without line connection.
 export                                                    Export current blocks and line structures.
 export-all                                                Export current blocks, line structures, and values of lines.
 echo [MESSAGE]                                            Outputs a message.
 @echo [SHOW]                                              Set whether to echo messages. Requires 0 or 1.
 @clock [SHOW]                                             Set whether to show time of command running. Requires 0 or 1.
 @pre-tick [SHOW]                                          Set whether to run file step by step. Requires 0 or 1.
-clear                                                     Clear the interpreter' data and restart.
+clear                                                     Clear the interpreter's data and restart.
 help                                                      Show help.
 help [COMMAND]                                            Show help for a designated command.
 lang list                                                 list all avilable languages. 

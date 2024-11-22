@@ -25,7 +25,6 @@ namespace labbish {
 			}
 			return ans;
 		}
-
 		template <typename T>
 		inline std::vector<T> operator*(std::vector<std::optional<T>> vec) {
 			std::vector<T> ans;
@@ -135,6 +134,23 @@ namespace labbish {
 				}
 				return true;
 			}
+			inline bool assertLineType(int_ i, Line::TYPE type) {
+				if (i == std::nullopt) return false;
+				const Line& l = blocks.L[*i];
+				if (l.mode != type) {
+					writeError("LINE_TYPE", *i, to_string(type));
+					return false;
+				}
+				return true;
+			}
+			inline bool assertSameLineType(int_ i, int_ j) {
+				if (i == std::nullopt || j == std::nullopt) return false;
+				if (blocks.L[*i].mode != blocks.L[*j].mode) {
+					writeError("SAME_TYPE", *i, *j);
+					return false;
+				}
+				return true;
+			}
 
 			void normalizeArg(std::string&);
 			void normalizeArgs(std::vector<std::string>&);
@@ -198,7 +214,6 @@ namespace labbish {
 			virtual void check_input(int_);
 			virtual void check_output();
 			virtual void check_output(int_);
-			virtual void inspect(std::string, int_);
 			virtual void del(std::string, int_);
 			virtual void export__();
 			virtual void export_all();
@@ -245,7 +260,6 @@ namespace labbish {
 			inline void check_input(int_) override { unavailableMessage("check-input"); }
 			inline void check_output() override { unavailableMessage("check-output"); }
 			inline void check_output(int_) override { unavailableMessage("check-output"); }
-			inline void inspect(std::string, int_) override { unavailableMessage("inspect"); }
 			inline void del(std::string, int_) override { unavailableMessage("del"); }
 			inline void export__() override { unavailableMessage("export"); }
 			inline void _clock(int_) override { unavailableMessage("@clock"); }

@@ -27,5 +27,10 @@ namespace labbish {
 			void flush();
 			std::string checkValue();
 		};
+
+		inline std::string to_string(Line::TYPE type) {
+			if (type == Line::LINE) return "line";
+			else return "wide line";
+		}
 	}
 }

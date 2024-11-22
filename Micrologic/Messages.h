@@ -65,6 +65,8 @@ namespace labbish {
 			{ "NOT_BIT", "Should be bit: \"{}\"" },
 			{ "OUT_OF_RANGE", "Number out of range: {}" },
 			{ "LINE_COUNT", "Incorrect line count" },
+			{ "LINE_TYPE", "Type of line No.{} should be {}" },
+			{ "SAME_TYPE", "Type of line No.{} and line No.{} should be the same" },
 			{ "CANNOT_OPEN", "Error opening {}" },
 			{ "CANNOT_WRITE", "Error writing {}" },
 			{ "SAFE_MODE", "Command \"{}\" is unavailable when opening file in safe mode" },
