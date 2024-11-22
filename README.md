@@ -3,6 +3,6 @@ ___Note: Although accidentally having a same name, there is no relationship betw
 
 The project aims to create a shell interpreter to run Micrologic. You may check [help.txt](Micrologic/help.txt) for more information.
 
-A bit hard to use since there aren't any gui.
+A bit hard to use since there isn't any gui.
 
 Have fun.
