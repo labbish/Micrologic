@@ -54,7 +54,7 @@ namespace labbish {
 			void addInput(std::vector<int> inputs);
 			void addOutput(std::vector<int> outputs);
 			void input(int order, bool value);
-			void input(int order, std::array<bool, Line::WlineSize> value);
+			void input(int order, std::array<bool, 4> value);
 			std::string output(int order);
 			std::vector<std::string> output();
 			bool isInput(int line);

@@ -5,7 +5,7 @@ namespace labbish {
 		Line::Line(TYPE mode) {
 			this->mode = mode;
 			this->value = this->nextValue = 0;
-			for (int i = 0; i < WlineSize; i++) this->wideValue[i] = this->nextWideValue[i] = 0;
+			for (int i = 0; i < 4; i++) this->wideValue[i] = this->nextWideValue[i] = 0;
 		}
 
 		Line::Line(const Line& other) {
@@ -58,15 +58,15 @@ namespace labbish {
 			this->value = this->nextValue = value;
 		}
 
-		void Line::set(std::array<bool, WlineSize> wideValue) {
-			for (int i = 0; i < WlineSize; i++) this->wideValue[i] = this->nextWideValue[i] = wideValue[i];
-			for (int i = 0; i < WlineSize; i++) printf("%d ", wideValue[i]);
+		void Line::set(std::array<bool, 4> wideValue) {
+			for (int i = 0; i < 4; i++) this->wideValue[i] = this->nextWideValue[i] = wideValue[i];
+			for (int i = 0; i < 4; i++) printf("%d ", wideValue[i]);
 			printf("\n");
 		}
 
 		void Line::flush() {
 			this->value = this->nextValue;
-			for (int i = 0; i < WlineSize; i++) this->wideValue[i] = this->nextWideValue[i];
+			for (int i = 0; i < 4; i++) this->wideValue[i] = this->nextWideValue[i];
 		}
 
 		std::string Line::checkValue() {

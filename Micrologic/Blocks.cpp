@@ -137,7 +137,7 @@ namespace labbish {
 			for (int i = 0; i < speed; i++) {
 				for (int i = 0; i < inputLines.size(); i++) {
 					L[inputs[i]].nextValue = L[inputs[i]].value = inputLines[i]->value;
-					for (int j = 0; j < Line::WlineSize; j++) L[inputs[i]].nextWideValue[j] = L[inputs[i]].wideValue[j] = inputLines[i]->wideValue[j];
+					for (int j = 0; j < 4; j++) L[inputs[i]].nextWideValue[j] = L[inputs[i]].wideValue[j] = inputLines[i]->wideValue[j];
 				}
 				for (int i = 0; i < N.size(); i++) N[i].tick();
 				for (int i = 0; i < A.size(); i++) A[i].tick();
@@ -149,7 +149,7 @@ namespace labbish {
 				for (int i = 0; i < L.size(); i++) L[i].flush();
 				for (int i = 0; i < outputLines.size(); i++) {
 					outputLines[i]->nextValue = outputLines[i]->value = L[outputs[i]].value;
-					for (int j = 0; j < Line::WlineSize; j++) outputLines[i]->nextWideValue[j] = outputLines[i]->wideValue[j] = L[outputs[i]].wideValue[j];
+					for (int j = 0; j < 4; j++) outputLines[i]->nextWideValue[j] = outputLines[i]->wideValue[j] = L[outputs[i]].wideValue[j];
 				}
 			}
 		}
@@ -178,11 +178,11 @@ namespace labbish {
 
 		void Blocks::input(int order, bool value) {
 			this->L[inputs[order]].value = this->L[inputs[order]].nextValue = value;
-			for (int i = 0; i < Line::WlineSize; i++) this->L[inputs[order]].wideValue[i] = this->L[inputs[order]].nextWideValue[i] = value;
+			for (int i = 0; i < 4; i++) this->L[inputs[order]].wideValue[i] = this->L[inputs[order]].nextWideValue[i] = value;
 		}
 
-		void Blocks::input(int order, std::array<bool, Line::WlineSize> value) {
-			for (int i = 0; i < Line::WlineSize; i++) this->L[inputs[order]].wideValue[i] = this->L[inputs[order]].nextWideValue[i] = value[i];
+		void Blocks::input(int order, std::array<bool, 4> value) {
+			for (int i = 0; i < 4; i++) this->L[inputs[order]].wideValue[i] = this->L[inputs[order]].nextWideValue[i] = value[i];
 		}
 
 		std::string Blocks::output(int order) {

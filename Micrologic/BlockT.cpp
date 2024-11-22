@@ -8,7 +8,7 @@ namespace labbish {
 
 		void BlockT::tick() {
 			this->outputLines[0]->nextValue = this->inputLines[0]->value;
-			for (int i = 0; i < Line::WlineSize; i++) this->outputLines[0]->nextWideValue[i] = this->inputLines[0]->wideValue[i];
+			for (int i = 0; i < 4; i++) this->outputLines[0]->nextWideValue[i] = this->inputLines[0]->wideValue[i];
 		}
 	}
 }

@@ -141,7 +141,7 @@ namespace labbish {
 			bool isNum(std::string);
 			int_ toInt(std::string);
 			std::vector<int_> toInt(std::vector<std::string>);
-			std::array<bool, Line::WlineSize> toBoolArray(std::array<int, 4>);
+			std::array<bool, 4> toBoolArray(std::array<int, 4>);
 
 			std::string quotedPart(std::string);
 			std::string firstWord(std::string);
@@ -166,15 +166,15 @@ namespace labbish {
 			virtual void A(int_, int_, int_);
 			virtual void R(int_, int_, int_);
 			virtual void T(int_, int_);
-			virtual void C(std::array<int_, Line::WlineSize>, int_);
-			virtual void P(int_, std::array<int_, Line::WlineSize>);
+			virtual void C(std::array<int_, 4>, int_);
+			virtual void P(int_, std::array<int_, 4>);
 			virtual void check();
 			virtual void check(int_);
 			virtual void set(int_, int_);
-			virtual void set(int_, std::array<int_, Line::WlineSize>);
+			virtual void set(int_, std::array<int_, 4>);
 			virtual void input_(int_);
 			virtual void input(int_, int_);
-			virtual void input(int_, std::array<int_, Line::WlineSize>);
+			virtual void input(int_, std::array<int_, 4>);
 			virtual void output_(int_);
 			virtual void output();
 			virtual void output(int_);

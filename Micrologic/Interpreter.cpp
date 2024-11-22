@@ -110,9 +110,9 @@ namespace labbish {
 			return ints;
 		}
 
-		std::array<bool, Line::WlineSize> Interpreter::toBoolArray(std::array<int, Line::WlineSize> ints) {
-			std::array<bool, Line::WlineSize> bools{};
-			for (int i = 0; i < Line::WlineSize; i++) bools[i] = ints[i];
+		std::array<bool, 4> Interpreter::toBoolArray(std::array<int, 4> ints) {
+			std::array<bool, 4> bools{};
+			for (int i = 0; i < 4; i++) bools[i] = ints[i];
 			return bools;
 		}
 
@@ -221,15 +221,15 @@ namespace labbish {
 			blocks.add({ BlockT({&(blocks.L[*a])},{&(blocks.L[*b])}) });
 			writeMessage("BLOCKT", (int)blocks.T.size() - 1, *a, *b);
 		}
-		void Interpreter::C(std::array<int_, Line::WlineSize> a, int_ b) {
-			for (int i = 0; i < Line::WlineSize; i++) if (!assertInRange(a[i], blocks.L)) return;
+		void Interpreter::C(std::array<int_, 4> a, int_ b) {
+			for (int i = 0; i < 4; i++) if (!assertInRange(a[i], blocks.L)) return;
 			if (!assertInRange(b, blocks.L)) return;
 			blocks.add({ BlockC({&(blocks.L[*a[0]]),&(blocks.L[*a[1]]),&(blocks.L[*a[2]]),&(blocks.L[*a[3]])},{&(blocks.L[*b])}) });
 			writeMessage("BLOCKC", (int)blocks.C.size() - 1, *a[0], *a[1], *a[2], *a[3], *b);
 		}
-		void Interpreter::P(int_ a, std::array<int_, Line::WlineSize> b) {
+		void Interpreter::P(int_ a, std::array<int_, 4> b) {
 			if (!assertInRange(a, blocks.L)) return;
-			for (int i = 0; i < Line::WlineSize; i++) if (!assertInRange(b[i], blocks.L)) return;
+			for (int i = 0; i < 4; i++) if (!assertInRange(b[i], blocks.L)) return;
 			blocks.add({ BlockP({&(blocks.L[*a])},{&(blocks.L[*b[0]]),&(blocks.L[*b[1]]),&(blocks.L[*b[2]]),&(blocks.L[*b[3]])}) });
 			writeMessage("BLOCKP", (int)blocks.P.size() - 1, *a, *b[0], *b[1], *b[2], *b[3]);
 		}
@@ -248,9 +248,9 @@ namespace labbish {
 			blocks.L[*a].set(*value);
 			writeMessage("SET", *a, *value);
 		}
-		void Interpreter::set(int_ a, std::array<int_, Line::WlineSize> value) {
+		void Interpreter::set(int_ a, std::array<int_, 4> value) {
 			if (!assertInRange(a, blocks.L)) return;
-			for (int i = 0; i < Line::WlineSize; i++) if (!assertBit(value[i])) return;
+			for (int i = 0; i < 4; i++) if (!assertBit(value[i])) return;
 			blocks.L[*a].set(toBoolArray(*value));
 			writeMessage("SET", *a, *value);
 		}
@@ -265,9 +265,9 @@ namespace labbish {
 			blocks.input(*a, *value);
 			writeMessage("INPUT", *value, *a);
 		}
-		void Interpreter::input(int_ a, std::array<int_, Line::WlineSize> value) {
+		void Interpreter::input(int_ a, std::array<int_, 4> value) {
 			if (!assertInRange(a, blocks.inputs)) return;
-			for (int i = 0; i < Line::WlineSize; i++) if (!assertBit(value[i])) return;
+			for (int i = 0; i < 4; i++) if (!assertBit(value[i])) return;
 			blocks.input(*a, toBoolArray(*value));
 			writeMessage("INPUTW", *value[0], *value[1], *value[2], *value[3], a);
 		}
