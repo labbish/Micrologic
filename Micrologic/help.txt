@@ -29,12 +29,14 @@ T [ALINE] [ALINE]                                         Creates an block T. It
 C [LINE] [LINE] [LINE] [LINE] [WLINE]                     Creates an block C. It is used to combine 4 lines into a wide line.
 P [WLINE] [LINE] [LINE] [LINE] [LINE]                     Creates an block P. It is used to split 1 wide line into 4 lines.
 set [LINE] [VALUE]                                        Set the value of a designated line.
+set [WLINE] [WVALUE]                                      Set the value of a designated wline.
 set [WLINE] [VALUE] [VALUE] [VALUE] [VALUE]               Set the value of the 4 digits of a designated wline.
 check                                                     Outputs values of all lines in order.
 check [ALINE]                                             Outputs value of a designated line.
 input: [ALINE]                                            Set a designated line as an input line.
-input [INPUT] [LINE]                                      Set the value of a designated input line.
-input [INPUT] [LINE] [LINE] [LINE] [LINE]                 Set the value of a designated input wline.
+input [INPUT] [VALUE]                                     Set the value of a designated input line.
+input [INPUT] [WVALUE]                                    Set the value of a designated input wline.
+input [INPUT] [VALUE] [VALUE] [VALUE] [VALUE]             Set the value of the 4 digits of a designated input wline.
 output: [ALINE]                                           Set a designated line as an output line.
 output                                                    Output the value of all lines.
 output [OUTPUT]                                           Output the value of a designated output wline.

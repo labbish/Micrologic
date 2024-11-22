@@ -85,6 +85,10 @@ namespace labbish {
 			return true;
 		}
 
+		int_ Interpreter::toInt(char c) {
+			std::string str(1, c);
+			return toInt(str);
+		}
 		int_ Interpreter::toInt(std::string str) {
 			if (!isNum(str)) {
 				writeError("NOT_NUM", str);
@@ -267,7 +271,7 @@ namespace labbish {
 			for (int i = 0; i < 4; i++) if (!assertBit(value[i])) return;
 			if (!assertLineType(a, Line::WIDELINE)) return;
 			blocks.L[*a].set(toBoolArray(*value));
-			writeMessage("SET", *a, *value);
+			writeMessage("SETW", *a, *value[0], *value[1], *value[2], *value[3]);
 		}
 		void Interpreter::input_(int_ a) {
 			if (!assertInRange(a, blocks.L)) return;
@@ -393,7 +397,7 @@ namespace labbish {
 					blocks.Bs.pop_back();
 					return;
 				}
-				if (assertLineType(i, newBlock.L[newBlock.inputLines.size()].mode)) {
+				if (!assertLineType(i, newBlock.L[newBlock.inputLines.size()].mode)) {
 					blocks.Bs.pop_back();
 					return;
 				}
@@ -404,7 +408,7 @@ namespace labbish {
 					blocks.Bs.pop_back();
 					return;
 				}
-				if (assertLineType(o, newBlock.L[newBlock.inputLines.size() + newBlock.outputLines.size()].mode)) {
+				if (!assertLineType(o, newBlock.L[newBlock.inputLines.size() + newBlock.outputLines.size()].mode)) {
 					blocks.Bs.pop_back();
 					return;
 				}
@@ -589,9 +593,11 @@ namespace labbish {
 			else if (args[0] == "P" && args.size() == 6) P(toInt(args[1]), { toInt(args[2]), toInt(args[3]), toInt(args[4]), toInt(args[5]) });
 			else if (args[0] == "check" && args.size() == 1) check();
 			else if (args[0] == "check" && args.size() == 2) check(toInt(args[1]));
+			else if (args[0] == "set" && args.size() == 3 && args[2].length() == 4) set(toInt(args[1]), { toInt(args[2][0]), toInt(args[2][1]), toInt(args[2][2]), toInt(args[2][3]) });
 			else if (args[0] == "set" && args.size() == 3) set(toInt(args[1]), toInt(args[2]));
 			else if (args[0] == "set" && args.size() == 6) set(toInt(args[1]), { toInt(args[2]), toInt(args[3]), toInt(args[4]), toInt(args[5]) });
 			else if (args[0] == "input:" && args.size() == 2) input_(toInt(args[1]));
+			else if (args[0] == "input" && args.size() == 3 && args[2].length() == 4) input(toInt(args[1]), { toInt(args[2][0]), toInt(args[2][1]), toInt(args[2][2]), toInt(args[2][3]) });
 			else if (args[0] == "input" && args.size() == 3) input(toInt(args[1]), toInt(args[2]));
 			else if (args[0] == "input" && args.size() == 6) input(toInt(args[1]), { toInt(args[2]), toInt(args[3]), toInt(args[4]), toInt(args[5]) });
 			else if (args[0] == "output:" && args.size() == 2) output_(toInt(args[1]));

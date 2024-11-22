@@ -155,6 +155,7 @@ namespace labbish {
 			void normalizeArg(std::string&);
 			void normalizeArgs(std::vector<std::string>&);
 			bool isNum(std::string);
+			int_ toInt(char);
 			int_ toInt(std::string);
 			std::vector<int_> toInt(std::vector<std::string>);
 			std::array<bool, 4> toBoolArray(std::array<int, 4>);
