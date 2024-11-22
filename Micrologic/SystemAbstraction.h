@@ -20,6 +20,7 @@ inline std::string read_command() {
 	std::getline(std::cin, cmd);
 	return cmd;
 }
+#define clear_screen() system("cls")
 
 #else
 
@@ -39,5 +40,6 @@ inline std::string read_command() {
 	add_history(cmd.c_str());
 	return cmd;
 }
+#define clear_screen() system("clear")
 
 #endif // _WIN32

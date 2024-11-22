@@ -60,8 +60,6 @@ namespace labbish {
 
 		void Line::set(std::array<bool, 4> wideValue) {
 			for (int i = 0; i < 4; i++) this->wideValue[i] = this->nextWideValue[i] = wideValue[i];
-			for (int i = 0; i < 4; i++) printf("%d ", wideValue[i]);
-			printf("\n");
 		}
 
 		void Line::flush() {
