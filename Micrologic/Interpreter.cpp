@@ -503,13 +503,13 @@ namespace labbish {
 		}
 		void Interpreter::export__() {
 			std::vector<std::string> lines = exportStructure(blocks);
-			for (std::string line : lines) fprintf(out, "%s\n", line.c_str());
+			for (std::string line : lines) fprintf(out, "%s\n", filterFileANSI(line).c_str());
 		}
 		void Interpreter::export_all() {
 			std::vector<std::string> lines = exportStructure(blocks);
-			for (std::string line : lines) fprintf(out, "%s\n", line.c_str());
+			for (std::string line : lines) fprintf(out, "%s\n", filterFileANSI(line).c_str());
 			lines = exportLineData(blocks);
-			for (std::string line : lines) fprintf(out, "%s\n", line.c_str());
+			for (std::string line : lines) fprintf(out, "%s\n", filterFileANSI(line).c_str());
 		}
 		void Interpreter::echo(std::string msg) {
 			fprintf(out, (msg + "\n").c_str());

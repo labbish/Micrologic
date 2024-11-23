@@ -72,7 +72,6 @@ namespace labbish {
 			void tick();
 			void clear();
 			bool check();
-			std::vector<std::string> exportBlocks();
 		};
 	}
 }

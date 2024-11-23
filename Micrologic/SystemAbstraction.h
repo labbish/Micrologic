@@ -23,7 +23,6 @@ inline std::string read_command() {
 #define clear_screen() system("cls")
 
 #else
-
 //Linux
 #include <ncurses.h>
 #include <unistd.h>

@@ -79,12 +79,35 @@ namespace labbish {
 				perStep(perStep), defaultOut(defaultOut), out(defaultOut), position(position) {
 			}
 
+			inline const std::string filterANSI(std::string str) {
+				std::string result;
+				bool escape = false;
+				for (char c : str) {
+					if (c == '\033') {
+						escape = true;
+					}
+					else if (escape && c == 'm') {
+						escape = false;
+						continue;
+					}
+					if (!escape) {
+						result += c;
+					}
+				}
+				return result;
+			} //erase all ANSI escape code
+			inline const std::string filterFileANSI(std::string str) {
+				if (out != stdout) return filterANSI(str);
+				else return str;
+			}
+
 			template<typename... Args>
 			inline const void writeError(std::string error, Args... args) {
 				if (position.has_value())
 					message::ErrorMsg::no_prefix() << std::format("At line {}, file \"{}\"", position->first, position->second);
 				Micrologic::writeError(error, args...);
 			}
+
 			inline bool assertPositive(int_ a) {
 				if (a == std::nullopt) return false;
 				if (a <= 0) {
