@@ -73,11 +73,15 @@ namespace labbish {
 			return commands;
 		}
 
+		bool Interpreter::isdirty(char c) {
+			return c == '\t' || c == '\n' || c == '\r' || c == '\f' || c == '\v';
+		}
+		bool Interpreter::isspace(char c) {
+			return c == ' ' || isdirty(c);
+		}
+
 		void Interpreter::normalizeArg(std::string& str) {
-			auto isdirty = [](char c) {
-				return c == '\t' || c == '\n' || c == '\r' || c == '\f' || c == '\v';
-				};
-			str.erase(std::remove_if(str.begin(), str.end(), isdirty), str.end());
+			str.erase(std::remove_if(str.begin(), str.end(), [this](char c) { return this->isdirty(c); }), str.end());
 		} // delete all dirty chars
 
 		void Interpreter::normalizeArgs(std::vector<std::string>& strs) {
@@ -164,9 +168,17 @@ namespace labbish {
 			return combineLine(subcmd);
 		}
 
+		std::string Interpreter::trimSpace(std::string cmd) {
+			if (cmd == "") return cmd;
+			while (isspace(cmd[0])) cmd.erase(0, 1);
+			if (cmd == "") return cmd;
+			while (isspace(cmd[cmd.length() - 1])) cmd.erase(cmd.length() - 1, 1);
+			return cmd;
+		}
+
 		std::pair<std::string, std::string> Interpreter::cutRedirection(std::string cmd) {
 			size_t pos = cmd.rfind(">");
-			if (pos != std::string::npos) return { cmd.substr(0, pos), cmd.substr(pos + 1) };
+			if (pos != std::string::npos) return { cmd.substr(0, pos), trimSpace(cmd.substr(pos + 1)) };
 			else return { cmd, "" };
 		}
 

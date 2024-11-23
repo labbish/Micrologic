@@ -175,6 +175,8 @@ namespace labbish {
 				return true;
 			}
 
+			bool isdirty(char);
+			bool isspace(char);
 			void normalizeArg(std::string&);
 			void normalizeArgs(std::vector<std::string>&);
 			bool isNum(std::string);
@@ -190,6 +192,7 @@ namespace labbish {
 			std::string convertSlash(std::string filename); //convert slashes
 			std::string subCommand(std::vector<std::string> cmd, size_t pos = 0, size_t len = -1);
 			std::pair<std::string, std::string> cutRedirection(std::string); //cut "command>file" to ("command","file")
+			std::string trimSpace(std::string);
 			std::vector<std::string> breakLine(std::string);
 			std::string combineLine(std::vector<std::string>);
 
