@@ -366,7 +366,7 @@ namespace labbish {
 			if (Echo) fprintf(out, "\n");
 		}
 		void Interpreter::open(std::string f) {
-			Interpreter tempInterpreter = Interpreter(*this);
+			SubInterpreter tempInterpreter = SubInterpreter(*this);
 			tempInterpreter.defaultOut = out;
 			tempInterpreter.position = { 0, f };
 			openInterface(f, &tempInterpreter);
@@ -724,7 +724,9 @@ namespace labbish {
 			}
 		}
 
-		SafeInterpreter::SafeInterpreter(const Interpreter& father) :Interpreter(father) {}
+		void SubInterpreter::unavailableMessage(std::string cmd) {
+			writeError("SUB_MODE", cmd);
+		}
 
 		void SafeInterpreter::unavailableMessage(std::string cmd) {
 			writeError("SAFE_MODE", cmd);

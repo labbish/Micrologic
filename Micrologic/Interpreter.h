@@ -258,10 +258,20 @@ namespace labbish {
 			void command(std::string cmd);
 		};
 
-		class SafeInterpreter :public Interpreter {
+		class SubInterpreter :public Interpreter {
 		public:
 			using Interpreter::Interpreter;
-			SafeInterpreter(const Interpreter&);
+			SubInterpreter(const Interpreter& father) :Interpreter(father) {}
+
+			void unavailableMessage(std::string);
+			inline void qSave() override { unavailableMessage("qsave"); }
+			inline void qLoad() override { unavailableMessage("qload"); }
+		};
+
+		class SafeInterpreter :public SubInterpreter {
+		public:
+			using SubInterpreter::SubInterpreter;
+			SafeInterpreter(const Interpreter& father) :SubInterpreter(father) {}
 
 			inline void open(std::string f) {
 				safe_open(f);
@@ -291,8 +301,6 @@ namespace labbish {
 			inline void del(std::string, int_) override { unavailableMessage("del"); }
 			inline void export__() override { unavailableMessage("export"); }
 			inline void export_all() override { unavailableMessage("export-all"); }
-			inline void qSave() override { unavailableMessage("qsave"); }
-			inline void qLoad() override { unavailableMessage("qload"); }
 			inline void _clock(int_) override { unavailableMessage("@clock"); }
 			inline void _per_step(int_) override { unavailableMessage("@per-step"); }
 			inline void __path() override { unavailableMessage("path"); }
