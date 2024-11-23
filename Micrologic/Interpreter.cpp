@@ -2,8 +2,10 @@
 
 namespace labbish {
 	namespace Micrologic {
-		std::vector<std::string> exportStructure(const Blocks& blocks) {
+		std::vector<std::string> exportStructure(const Blocks& blocks, std::optional<std::string> path) {
 			std::vector<std::string> commands{};
+
+			if (path != std::nullopt) commands.push_back(std::format("path {}", *path));
 			for (std::pair<std::string, std::string> mod : blocks.mods) {
 				commands.push_back(std::format("mod {} {}", mod.first, mod.second));
 			}
@@ -51,6 +53,14 @@ namespace labbish {
 				for (int o = 0; o < bs.outputLines.size(); o++) cmd = cmd + std::format("{} ", to_string(blocks.findLine(bs.outputLines[o])));
 				commands.push_back(cmd);
 			}
+
+			for (int i : blocks.inputs) {
+				commands.push_back(std::format("input: {}", i));
+			}
+			for (int o : blocks.outputs) {
+				commands.push_back(std::format("output: {}", o));
+			}
+
 			return commands;
 		}
 
@@ -502,14 +512,31 @@ namespace labbish {
 			writeMessage("DEL", type.c_str(), *a);
 		}
 		void Interpreter::export__() {
-			std::vector<std::string> lines = exportStructure(blocks);
+			std::vector<std::string> lines = exportStructure(blocks, path);
 			for (std::string line : lines) fprintf(out, "%s\n", filterFileANSI(line).c_str());
 		}
 		void Interpreter::export_all() {
-			std::vector<std::string> lines = exportStructure(blocks);
+			std::vector<std::string> lines = exportStructure(blocks, path);
 			for (std::string line : lines) fprintf(out, "%s\n", filterFileANSI(line).c_str());
 			lines = exportLineData(blocks);
 			for (std::string line : lines) fprintf(out, "%s\n", filterFileANSI(line).c_str());
+		}
+		void Interpreter::qSave() {
+			std::string save = exepath + StandardSlash + "quick_load.mcl";
+			FILE* fout = fopen(save.c_str(), "w");
+			if (fout == NULL) {
+				writeError("CANNOT_WRITE", save);
+				return;
+			}
+			for (std::string line : exportStructure(blocks, path)) fprintf(fout, "%s\n", filterFileANSI(line).c_str());
+			for (std::string line : exportLineData(blocks)) fprintf(fout, "%s\n", filterFileANSI(line).c_str());
+			fclose(fout);
+			writeMessage("QSAVE");
+		}
+		void Interpreter::qLoad() {
+			std::string save = exepath + StandardSlash + "quick_load.mcl";
+			open(save);
+			writeMessage("QLOAD");
 		}
 		void Interpreter::echo(std::string msg) {
 			fprintf(out, (msg + "\n").c_str());
@@ -627,6 +654,8 @@ namespace labbish {
 			else if (args[0] == "del" && args.size() == 3) del(args[1], toInt(args[2]));
 			else if (args[0] == "export" && args.size() == 1) export__();
 			else if (args[0] == "export-all" && args.size() == 1) export_all();
+			else if (args[0] == "qsave" && args.size() == 1) qSave();
+			else if (args[0] == "qload" && args.size() == 1) qLoad();
 			else if (args[0] == "echo" && args.size() > 1) echo(cmd.substr(5, cmd.size()));
 			else if (args[0] == "@echo" && args.size() == 2) _echo(toInt(args[1]));
 			else if (args[0] == "@clock" && args.size() == 2) _clock(toInt(args[1]));
@@ -691,9 +720,7 @@ namespace labbish {
 			else if (outfile != "") {
 				FILE* fout = fopen(outfile.c_str(), "a");
 				if (fout == NULL) writeError("CANNOT_WRITE", outfile);
-				else {
-					out = fout;
-				}
+				else out = fout;
 			}
 		}
 

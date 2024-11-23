@@ -53,7 +53,7 @@ namespace labbish {
 			clearCurrentLine();
 		}
 
-		std::vector<std::string> exportStructure(const Blocks&);
+		std::vector<std::string> exportStructure(const Blocks&, std::optional<std::string> path = std::nullopt);
 		std::vector<std::string> exportLineData(const Blocks&);
 
 		class Interpreter {
@@ -241,6 +241,8 @@ namespace labbish {
 			virtual void del(std::string, int_);
 			virtual void export__();
 			virtual void export_all();
+			virtual void qSave();
+			virtual void qLoad();
 			virtual void echo(std::string);
 			virtual void _echo(int_);
 			virtual void _clock(int_);
