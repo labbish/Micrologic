@@ -280,6 +280,8 @@ namespace labbish {
 			inline void tick_(int_) override { unavailableMessage("tick!"); }
 			inline void speed() override { unavailableMessage("speed"); }
 			inline void check_mods() override { unavailableMessage("check-mods"); }
+			inline void block_type(int_) override { unavailableMessage("block-type"); }
+			inline void exec(int_, std::string) override { unavailableMessage("exec"); }
 			inline void tag(int_) override { unavailableMessage("tag"); }
 			inline void type(int_) override { unavailableMessage("type"); }
 			inline void check_input() override { unavailableMessage("check-input"); }
@@ -288,6 +290,9 @@ namespace labbish {
 			inline void check_output(int_) override { unavailableMessage("check-output"); }
 			inline void del(std::string, int_) override { unavailableMessage("del"); }
 			inline void export__() override { unavailableMessage("export"); }
+			inline void export_all() override { unavailableMessage("export-all"); }
+			inline void qSave() override { unavailableMessage("qsave"); }
+			inline void qLoad() override { unavailableMessage("qload"); }
 			inline void _clock(int_) override { unavailableMessage("@clock"); }
 			inline void _per_step(int_) override { unavailableMessage("@per-step"); }
 			inline void __path() override { unavailableMessage("path"); }
@@ -296,6 +301,7 @@ namespace labbish {
 			inline void help() override { unavailableMessage("help"); }
 			inline void help(std::string) override { unavailableMessage("help"); }
 			inline void __lang(std::string) override { unavailableMessage("lang"); }
+			inline void neko() override {}
 		};
 	}
 }
