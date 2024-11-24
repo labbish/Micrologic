@@ -258,6 +258,7 @@ namespace labbish::Micrologic {
 		virtual void help();
 		virtual void help(std::string);
 		virtual void __lang(std::string);
+		virtual void version();
 		virtual void neko();
 
 		void command(std::string cmd);
@@ -314,6 +315,7 @@ namespace labbish::Micrologic {
 		inline void help() override { unavailableMessage("help"); }
 		inline void help(std::string) override { unavailableMessage("help"); }
 		inline void __lang(std::string) override { unavailableMessage("lang"); }
+		inline void version() override { unavailableMessage("version"); }
 		inline void neko() override {}
 	};
 }

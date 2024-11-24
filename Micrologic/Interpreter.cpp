@@ -615,6 +615,9 @@ namespace labbish::Micrologic {
 		}
 		writeError("NO_LANG", lang);
 	}
+	void Interpreter::version() {
+		writeMessage("VERSION", to_string(RepoInfo::Version).c_str());
+	}
 	void Interpreter::neko() {
 		writeMessage("NEKO");
 	}
@@ -693,6 +696,7 @@ namespace labbish::Micrologic {
 		else if (args[0] == "help" && args.size() == 1) help();
 		else if (args[0] == "help" && args.size() == 2) help(args[1]);
 		else if (args[0] == "lang" && args.size() == 2) __lang(args[1]);
+		else if (args[0] == "version" && args.size() == 1) version();
 		else if (args[0] == "neko" && args.size() == 1) neko();
 		else writeError("NO_CMD", cmd);
 		writeDebug();
@@ -747,7 +751,13 @@ namespace labbish::Micrologic {
 		auto jsonErrorHandler = [this](const std::string& owner, const std::string& repo) {
 			writeError("UPDATE_PARSE");
 			};
-		//std::string;
+		std::optional<std::string> latest = UpdateChecker::getLatestReleaseName(RepoInfo::Author, RepoInfo::Name,
+			webErrorHandler, jsonErrorHandler);
+		if (latest != std::nullopt) {
+			if (RepoInfo::Version != VersionInfo(*latest))
+				writeMessage("NEW_VER", to_string(VersionInfo(*latest)).c_str(),
+					RepoInfo::Author.c_str(), RepoInfo::Name.c_str());
+		}
 	}
 
 	void Interpreter::redirect(std::string outfile) {

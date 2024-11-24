@@ -47,12 +47,16 @@ namespace labbish {
 			return true;
 		}
 
-		friend std::ostream& operator<<(std::ostream& os, const VersionInfo& version) {
-			os << "v";
+		friend inline std::string to_string(const VersionInfo& version) {
+			std::string str = "v";
 			for (int i = 0; i < version.version.size(); i++) {
-				os << version.version[i];
-				if (i != version.version.size() - 1) os << ".";
+				str = str + std::to_string(version.version[i]);
+				if (i != version.version.size() - 1) str = str + ".";
 			}
+			return str;
+		}
+		friend inline std::ostream& operator<<(std::ostream& os, const VersionInfo& version) {
+			os << to_string(version);
 			return os;
 		}
 	};
