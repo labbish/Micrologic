@@ -168,17 +168,30 @@ namespace labbish {
 			return combineLine(subcmd);
 		}
 
-		std::string Interpreter::trimSpace(std::string cmd) {
+		std::string Interpreter::trim(std::string cmd) {
 			if (cmd == "") return cmd;
 			while (isspace(cmd[0])) cmd.erase(0, 1);
 			if (cmd == "") return cmd;
 			while (isspace(cmd[cmd.length() - 1])) cmd.erase(cmd.length() - 1, 1);
+			if (cmd.length() >= 2) {
+				if (cmd[0] == '\"' && cmd[cmd.length() - 1] == '\"') {
+					cmd.erase(0, 1);
+					cmd.erase(cmd.length() - 1, 1);
+				}
+			}
 			return cmd;
 		}
 
 		std::pair<std::string, std::string> Interpreter::cutRedirection(std::string cmd) {
-			size_t pos = cmd.rfind(">");
-			if (pos != std::string::npos) return { cmd.substr(0, pos), trimSpace(cmd.substr(pos + 1)) };
+			size_t pos;
+			if (cmd == "") return { "", "" };
+			if (cmd[cmd.length() - 1] != '\"') pos = cmd.rfind(">");
+			else {
+				size_t quote_pos2 = cmd.rfind("\"", cmd.length() - 1);
+				size_t quote_pos1 = cmd.rfind("\"", quote_pos2 - 1);
+				pos = cmd.rfind(">", quote_pos1);
+			}
+			if (pos != std::string::npos) return { cmd.substr(0, pos), trim(cmd.substr(pos + 1)) };
 			else return { cmd, "" };
 		}
 
@@ -359,18 +372,19 @@ namespace labbish {
 			writeMessage("SPEED", *v);
 		}
 		void Interpreter::openInterface(std::string f, Interpreter* interpreter) {
+			std::string f1 = f;
 			std::ifstream fin;
-			fin.open(f, std::ios::in);
-			std::string nextPath = pathPart(f);
+			fin.open(f1, std::ios::in);
+			std::string nextPath = pathPart(f1);
 			if (!fin.good()) {
-				f = path + f;
-				fin.open(f, std::ios::in);
-				nextPath = pathPart(f);
+				f1 = path + f1;
+				fin.open(f1, std::ios::in);
+				nextPath = pathPart(f1);
 			}
 			if (nextPath != "") interpreter->path = path = nextPath;
 			char fcmd[256] = "";
 			if (!assertGoodFile(fin, f)) return;
-			writeMessage("OPEN", f.c_str());
+			writeMessage("OPEN", f1.c_str());
 			while (fin.getline(fcmd, 256)) {
 				if (perStep) pause();
 				interpreter->command(fcmd);
