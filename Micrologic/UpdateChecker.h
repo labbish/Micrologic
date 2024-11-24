@@ -26,6 +26,7 @@ namespace labbish::Micrologic::UpdateChecker {
 				curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, WriteCallback);
 				curl_easy_setopt(curl, CURLOPT_WRITEDATA, &readBuffer);
 				curl_easy_setopt(curl, CURLOPT_USERAGENT, "libcurl-agent/1.0");
+				curl_easy_setopt(curl, CURLOPT_TIMEOUT, 5);
 				res = curl_easy_perform(curl);
 				curl_easy_cleanup(curl);
 			}
