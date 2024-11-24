@@ -2,13 +2,11 @@
 
 #include "Block.h"
 
-namespace labbish {
-	namespace Micrologic {
-		class BlockT :public Block {
-		public:
-			using Block::Block;
-			bool check();
-			void tick();
-		};
-	}
+namespace labbish::Micrologic {
+	class BlockT :public Block {
+	public:
+		using Block::Block;
+		bool check();
+		void tick();
+	};
 }
