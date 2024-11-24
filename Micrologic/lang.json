@@ -1,5 +1,7 @@
 {
   "en_us": {
+    "NEW_VER": "Found new version: %s.\nSee https://github.com/%s/%s/releases for release.\nTo avoid update check, create file \"%s.no_update_check\".\n\n",
+
     "LINE": "No.%d line added.\n",
     "LINES": "No.%d~%d line added.\n",
     "WLINE": "No.%d wide line added.\n",
@@ -54,9 +56,12 @@
     "CLEAR": "Cleared.\n",
     "LANG": "Set language to %s.\n",
     "LANG_LIST": "All languages: ",
+    "VERSION": "Current version is %s. \n",
     "NEKO": "Meow~Have a nice day~\n"
   },
   "zh_cn": {
+    "NEW_VER": "发现新版本：%s。\n在https://github.com/%s/%s/releases查看更新。\n\n",
+
     "LINE": "添加了第%d条线。\n",
     "LINES": "添加了第%d~%d条线。\n",
     "WLINE": "添加了第%d条宽线。\n",
@@ -111,6 +116,7 @@
     "CLEAR": "已清空。\n",
     "LANG": "将语言设为%s。\n",
     "LANG_LIST": "所有语言：",
+    "VERSION": "当前版本为%s。\n",
     "NEKO": "喵呜~今天也是美好的一天喵~\n"
   }
 }

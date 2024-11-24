@@ -7,6 +7,7 @@ int main(int argc, const char* argv[]) {
 	Blocks blocks;
 	std::string exepath(_getcwd(NULL, 0));
 	Interpreter Micrologic(blocks, exepath);
+	Micrologic.checkUpdate();
 	if (argc == 2) {
 		Micrologic.command("open " + std::string(argv[1]));
 	}
