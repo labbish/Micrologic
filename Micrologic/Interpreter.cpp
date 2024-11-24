@@ -745,6 +745,7 @@ namespace labbish::Micrologic {
 	}
 
 	void Interpreter::checkUpdate() {
+		if (std::filesystem::exists(std::filesystem::path(exepath) / ".no_update_check")) return;
 		auto webErrorHandler = [this](const std::string& owner, const std::string& repo) {
 			writeError("UPDATE_GET", owner, repo);
 			};
@@ -759,7 +760,7 @@ namespace labbish::Micrologic {
 		if (latest != std::nullopt) {
 			if (RepoInfo::Version != VersionInfo(*latest))
 				writeMessage("NEW_VER", to_string(VersionInfo(*latest)).c_str(),
-					RepoInfo::Author.c_str(), RepoInfo::Name.c_str());
+					RepoInfo::Author.c_str(), RepoInfo::Name.c_str(), (exepath + StandardSlash).c_str());
 		}
 	}
 

@@ -10,6 +10,7 @@
 #include <variant>
 #include <array>
 #include <cstdarg>
+#include <filesystem>
 #include "Blocks.h"
 #include "Messages.h"
 #include "RepoInfo.h"

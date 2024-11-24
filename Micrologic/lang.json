@@ -1,6 +1,6 @@
 {
   "en_us": {
-    "NEW_VER": "Found new version: %s.\nSee https://github.com/%s/%s/releases for release.\n\n",
+    "NEW_VER": "Found new version: %s.\nSee https://github.com/%s/%s/releases for release.\nTo avoid update check, create file \"%s.no_update_check\".\n\n",
 
     "LINE": "No.%d line added.\n",
     "LINES": "No.%d~%d line added.\n",
