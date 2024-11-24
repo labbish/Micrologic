@@ -5,7 +5,7 @@ namespace labbish {
 		std::vector<std::string> exportStructure(const Blocks& blocks, std::optional<std::string> path) {
 			std::vector<std::string> commands{};
 
-			if (path != std::nullopt) commands.push_back(std::format("path {}", *path));
+			if (path != std::nullopt) commands.push_back(std::format("path \"{}\"", *path));
 			for (std::pair<std::string, std::string> mod : blocks.mods) {
 				commands.push_back(std::format("mod {} {}", mod.first, mod.second));
 			}
@@ -149,6 +149,7 @@ namespace labbish {
 		}
 
 		std::string Interpreter::addSlash(std::string p) {
+			if (p == "") return "";
 			if (p[p.size() - 1] != StandardSlash[0]) p = p + StandardSlash;
 			return p;
 		}
