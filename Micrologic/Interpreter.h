@@ -53,7 +53,7 @@ namespace labbish {
 			clearCurrentLine();
 		}
 
-		std::vector<std::string> exportStructure(const Blocks&);
+		std::vector<std::string> exportStructure(const Blocks&, std::optional<std::string> path = std::nullopt);
 		std::vector<std::string> exportLineData(const Blocks&);
 
 		class Interpreter {
@@ -79,12 +79,35 @@ namespace labbish {
 				perStep(perStep), defaultOut(defaultOut), out(defaultOut), position(position) {
 			}
 
+			inline const std::string filterANSI(std::string str) {
+				std::string result;
+				bool escape = false;
+				for (char c : str) {
+					if (c == '\033') {
+						escape = true;
+					}
+					else if (escape && c == 'm') {
+						escape = false;
+						continue;
+					}
+					if (!escape) {
+						result += c;
+					}
+				}
+				return result;
+			} //erase all ANSI escape code
+			inline const std::string filterFileANSI(std::string str) {
+				if (out != stdout) return filterANSI(str);
+				else return str;
+			}
+
 			template<typename... Args>
 			inline const void writeError(std::string error, Args... args) {
 				if (position.has_value())
 					message::ErrorMsg::no_prefix() << std::format("At line {}, file \"{}\"", position->first, position->second);
 				Micrologic::writeError(error, args...);
 			}
+
 			inline bool assertPositive(int_ a) {
 				if (a == std::nullopt) return false;
 				if (a <= 0) {
@@ -152,6 +175,8 @@ namespace labbish {
 				return true;
 			}
 
+			bool isdirty(char);
+			bool isspace(char);
 			void normalizeArg(std::string&);
 			void normalizeArgs(std::vector<std::string>&);
 			bool isNum(std::string);
@@ -167,6 +192,7 @@ namespace labbish {
 			std::string convertSlash(std::string filename); //convert slashes
 			std::string subCommand(std::vector<std::string> cmd, size_t pos = 0, size_t len = -1);
 			std::pair<std::string, std::string> cutRedirection(std::string); //cut "command>file" to ("command","file")
+			std::string trim(std::string); //trim extra space and quotation marks
 			std::vector<std::string> breakLine(std::string);
 			std::string combineLine(std::vector<std::string>);
 
@@ -218,6 +244,8 @@ namespace labbish {
 			virtual void del(std::string, int_);
 			virtual void export__();
 			virtual void export_all();
+			virtual void qSave();
+			virtual void qLoad();
 			virtual void echo(std::string);
 			virtual void _echo(int_);
 			virtual void _clock(int_);
@@ -233,10 +261,20 @@ namespace labbish {
 			void command(std::string cmd);
 		};
 
-		class SafeInterpreter :public Interpreter {
+		class SubInterpreter :public Interpreter {
 		public:
 			using Interpreter::Interpreter;
-			SafeInterpreter(const Interpreter&);
+			SubInterpreter(const Interpreter& father) :Interpreter(father) {}
+
+			void unavailableMessage(std::string);
+			inline void qSave() override { unavailableMessage("qsave"); }
+			inline void qLoad() override { unavailableMessage("qload"); }
+		};
+
+		class SafeInterpreter :public SubInterpreter {
+		public:
+			using SubInterpreter::SubInterpreter;
+			SafeInterpreter(const Interpreter& father) :SubInterpreter(father) {}
 
 			inline void open(std::string f) {
 				safe_open(f);
@@ -255,6 +293,8 @@ namespace labbish {
 			inline void tick_(int_) override { unavailableMessage("tick!"); }
 			inline void speed() override { unavailableMessage("speed"); }
 			inline void check_mods() override { unavailableMessage("check-mods"); }
+			inline void block_type(int_) override { unavailableMessage("block-type"); }
+			inline void exec(int_, std::string) override { unavailableMessage("exec"); }
 			inline void tag(int_) override { unavailableMessage("tag"); }
 			inline void type(int_) override { unavailableMessage("type"); }
 			inline void check_input() override { unavailableMessage("check-input"); }
@@ -263,6 +303,7 @@ namespace labbish {
 			inline void check_output(int_) override { unavailableMessage("check-output"); }
 			inline void del(std::string, int_) override { unavailableMessage("del"); }
 			inline void export__() override { unavailableMessage("export"); }
+			inline void export_all() override { unavailableMessage("export-all"); }
 			inline void _clock(int_) override { unavailableMessage("@clock"); }
 			inline void _per_step(int_) override { unavailableMessage("@per-step"); }
 			inline void __path() override { unavailableMessage("path"); }
@@ -271,6 +312,7 @@ namespace labbish {
 			inline void help() override { unavailableMessage("help"); }
 			inline void help(std::string) override { unavailableMessage("help"); }
 			inline void __lang(std::string) override { unavailableMessage("lang"); }
+			inline void neko() override {}
 		};
 	}
 }

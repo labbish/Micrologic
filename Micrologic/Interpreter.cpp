@@ -2,8 +2,10 @@
 
 namespace labbish {
 	namespace Micrologic {
-		std::vector<std::string> exportStructure(const Blocks& blocks) {
+		std::vector<std::string> exportStructure(const Blocks& blocks, std::optional<std::string> path) {
 			std::vector<std::string> commands{};
+
+			if (path != std::nullopt) commands.push_back(std::format("path {}", *path));
 			for (std::pair<std::string, std::string> mod : blocks.mods) {
 				commands.push_back(std::format("mod {} {}", mod.first, mod.second));
 			}
@@ -51,6 +53,14 @@ namespace labbish {
 				for (int o = 0; o < bs.outputLines.size(); o++) cmd = cmd + std::format("{} ", to_string(blocks.findLine(bs.outputLines[o])));
 				commands.push_back(cmd);
 			}
+
+			for (int i : blocks.inputs) {
+				commands.push_back(std::format("input: {}", i));
+			}
+			for (int o : blocks.outputs) {
+				commands.push_back(std::format("output: {}", o));
+			}
+
 			return commands;
 		}
 
@@ -63,11 +73,15 @@ namespace labbish {
 			return commands;
 		}
 
+		bool Interpreter::isdirty(char c) {
+			return c == '\t' || c == '\n' || c == '\r' || c == '\f' || c == '\v';
+		}
+		bool Interpreter::isspace(char c) {
+			return c == ' ' || isdirty(c);
+		}
+
 		void Interpreter::normalizeArg(std::string& str) {
-			auto isdirty = [](char c) {
-				return c == '\t' || c == '\n' || c == '\r' || c == '\f' || c == '\v';
-				};
-			str.erase(std::remove_if(str.begin(), str.end(), isdirty), str.end());
+			str.erase(std::remove_if(str.begin(), str.end(), [this](char c) { return this->isdirty(c); }), str.end());
 		} // delete all dirty chars
 
 		void Interpreter::normalizeArgs(std::vector<std::string>& strs) {
@@ -154,9 +168,30 @@ namespace labbish {
 			return combineLine(subcmd);
 		}
 
+		std::string Interpreter::trim(std::string cmd) {
+			if (cmd == "") return cmd;
+			while (isspace(cmd[0])) cmd.erase(0, 1);
+			if (cmd == "") return cmd;
+			while (isspace(cmd[cmd.length() - 1])) cmd.erase(cmd.length() - 1, 1);
+			if (cmd.length() >= 2) {
+				if (cmd[0] == '\"' && cmd[cmd.length() - 1] == '\"') {
+					cmd.erase(0, 1);
+					cmd.erase(cmd.length() - 1, 1);
+				}
+			}
+			return cmd;
+		}
+
 		std::pair<std::string, std::string> Interpreter::cutRedirection(std::string cmd) {
-			size_t pos = cmd.rfind(">");
-			if (pos != std::string::npos) return { cmd.substr(0, pos), cmd.substr(pos + 1) };
+			size_t pos;
+			if (cmd == "") return { "", "" };
+			if (cmd[cmd.length() - 1] != '\"') pos = cmd.rfind(">");
+			else {
+				size_t quote_pos2 = cmd.rfind("\"", cmd.length() - 1);
+				size_t quote_pos1 = cmd.rfind("\"", quote_pos2 - 1);
+				pos = cmd.rfind(">", quote_pos1);
+			}
+			if (pos != std::string::npos) return { cmd.substr(0, pos), trim(cmd.substr(pos + 1)) };
 			else return { cmd, "" };
 		}
 
@@ -337,18 +372,19 @@ namespace labbish {
 			writeMessage("SPEED", *v);
 		}
 		void Interpreter::openInterface(std::string f, Interpreter* interpreter) {
+			std::string f1 = f;
 			std::ifstream fin;
-			fin.open(f, std::ios::in);
-			std::string nextPath = pathPart(f);
+			fin.open(f1, std::ios::in);
+			std::string nextPath = pathPart(f1);
 			if (!fin.good()) {
-				f = path + f;
-				fin.open(f, std::ios::in);
-				nextPath = pathPart(f);
+				f1 = path + f1;
+				fin.open(f1, std::ios::in);
+				nextPath = pathPart(f1);
 			}
 			if (nextPath != "") interpreter->path = path = nextPath;
 			char fcmd[256] = "";
 			if (!assertGoodFile(fin, f)) return;
-			writeMessage("OPEN", f.c_str());
+			writeMessage("OPEN", f1.c_str());
 			while (fin.getline(fcmd, 256)) {
 				if (perStep) pause();
 				interpreter->command(fcmd);
@@ -356,7 +392,7 @@ namespace labbish {
 			if (Echo) fprintf(out, "\n");
 		}
 		void Interpreter::open(std::string f) {
-			Interpreter tempInterpreter = Interpreter(*this);
+			SubInterpreter tempInterpreter = SubInterpreter(*this);
 			tempInterpreter.defaultOut = out;
 			tempInterpreter.position = { 0, f };
 			openInterface(f, &tempInterpreter);
@@ -502,14 +538,31 @@ namespace labbish {
 			writeMessage("DEL", type.c_str(), *a);
 		}
 		void Interpreter::export__() {
-			std::vector<std::string> lines = exportStructure(blocks);
-			for (std::string line : lines) fprintf(out, "%s\n", line.c_str());
+			std::vector<std::string> lines = exportStructure(blocks, path);
+			for (std::string line : lines) fprintf(out, "%s\n", filterFileANSI(line).c_str());
 		}
 		void Interpreter::export_all() {
-			std::vector<std::string> lines = exportStructure(blocks);
-			for (std::string line : lines) fprintf(out, "%s\n", line.c_str());
+			std::vector<std::string> lines = exportStructure(blocks, path);
+			for (std::string line : lines) fprintf(out, "%s\n", filterFileANSI(line).c_str());
 			lines = exportLineData(blocks);
-			for (std::string line : lines) fprintf(out, "%s\n", line.c_str());
+			for (std::string line : lines) fprintf(out, "%s\n", filterFileANSI(line).c_str());
+		}
+		void Interpreter::qSave() {
+			std::string save = exepath + StandardSlash + "quick_load.mcl";
+			FILE* fout = fopen(save.c_str(), "w");
+			if (fout == NULL) {
+				writeError("CANNOT_WRITE", save);
+				return;
+			}
+			for (std::string line : exportStructure(blocks, path)) fprintf(fout, "%s\n", filterFileANSI(line).c_str());
+			for (std::string line : exportLineData(blocks)) fprintf(fout, "%s\n", filterFileANSI(line).c_str());
+			fclose(fout);
+			writeMessage("QSAVE");
+		}
+		void Interpreter::qLoad() {
+			std::string save = exepath + StandardSlash + "quick_load.mcl";
+			open(save);
+			writeMessage("QLOAD");
 		}
 		void Interpreter::echo(std::string msg) {
 			fprintf(out, (msg + "\n").c_str());
@@ -627,6 +680,8 @@ namespace labbish {
 			else if (args[0] == "del" && args.size() == 3) del(args[1], toInt(args[2]));
 			else if (args[0] == "export" && args.size() == 1) export__();
 			else if (args[0] == "export-all" && args.size() == 1) export_all();
+			else if (args[0] == "qsave" && args.size() == 1) qSave();
+			else if (args[0] == "qload" && args.size() == 1) qLoad();
 			else if (args[0] == "echo" && args.size() > 1) echo(cmd.substr(5, cmd.size()));
 			else if (args[0] == "@echo" && args.size() == 2) _echo(toInt(args[1]));
 			else if (args[0] == "@clock" && args.size() == 2) _clock(toInt(args[1]));
@@ -691,13 +746,13 @@ namespace labbish {
 			else if (outfile != "") {
 				FILE* fout = fopen(outfile.c_str(), "a");
 				if (fout == NULL) writeError("CANNOT_WRITE", outfile);
-				else {
-					out = fout;
-				}
+				else out = fout;
 			}
 		}
 
-		SafeInterpreter::SafeInterpreter(const Interpreter& father) :Interpreter(father) {}
+		void SubInterpreter::unavailableMessage(std::string cmd) {
+			writeError("SUB_MODE", cmd);
+		}
 
 		void SafeInterpreter::unavailableMessage(std::string cmd) {
 			writeError("SAFE_MODE", cmd);

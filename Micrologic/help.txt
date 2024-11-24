@@ -65,6 +65,8 @@ del [BLOCKTYPE] [BLOCK]                                   Delete a designated bl
 del line [ALINE]                                          Delete a designated line. No bugs were found in test but you'd better be careful of those blocks without line connection.
 export                                                    Export current blocks and line structures.
 export-all                                                Export current blocks, line structures, and values of lines.
+qsave                                                     Quick save.
+qload                                                     Quick load.
 echo [MESSAGE]                                            Outputs a message.
 @echo [SHOW]                                              Set whether to echo messages. Requires 0 or 1.
 @clock [SHOW]                                             Set whether to show time of command running. Requires 0 or 1.
