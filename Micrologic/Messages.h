@@ -71,6 +71,8 @@ namespace labbish::Micrologic {
 		{ "SUB_MODE", "Command \"{}\" is unavailable when opening file" },
 		{ "SAFE_MODE", "Command \"{}\" is unavailable when opening file in safe mode" },
 		{ "SAFE_REDIRECT", "Output redirection to files is unavailable when opening file in safe mode" },
+		{ "UPDATE_GET", "Error opening github repo: \"{}/{}\"" },
+		{ "UPDATE_PARSE", "Error parsing release info" },
 	};
 
 	template<typename... Args>

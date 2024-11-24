@@ -12,9 +12,10 @@
 #include <cstdarg>
 #include "Blocks.h"
 #include "Messages.h"
+#include "RepoInfo.h"
 #include "TimeDebugger.h"
-#include "SystemAbstraction.h"
 #include "UpdateChecker.h"
+#include "SystemAbstraction.h"
 
 namespace labbish::Micrologic {
 	template <typename T, size_t size>
@@ -199,6 +200,7 @@ namespace labbish::Micrologic {
 		void writeDebug();
 		std::vector<std::string> getHelp();
 		void writeMessage(std::string message, ...);
+		void checkUpdate();
 
 		virtual void redirect(std::string outfile);
 

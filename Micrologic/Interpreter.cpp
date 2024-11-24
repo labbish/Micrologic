@@ -740,6 +740,16 @@ namespace labbish::Micrologic {
 		}
 	}
 
+	void Interpreter::checkUpdate() {
+		auto webErrorHandler = [this](const std::string& owner, const std::string& repo) {
+			writeError("UPDATE_GET", owner, repo);
+			};
+		auto jsonErrorHandler = [this](const std::string& owner, const std::string& repo) {
+			writeError("UPDATE_PARSE");
+			};
+		//std::string;
+	}
+
 	void Interpreter::redirect(std::string outfile) {
 		out = defaultOut;
 		if (outfile == "stdout") out = stdout;
