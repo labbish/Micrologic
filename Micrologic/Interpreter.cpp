@@ -751,6 +751,9 @@ namespace labbish::Micrologic {
 		auto jsonErrorHandler = [this](const std::string& owner, const std::string& repo) {
 			writeError("UPDATE_PARSE");
 			};
+		auto timeoutHandler = [this](const std::string& owner, const std::string& repo) {
+			writeError("TIMEOUT");
+			};
 		std::optional<std::string> latest = UpdateChecker::getLatestReleaseName(RepoInfo::Author, RepoInfo::Name,
 			webErrorHandler, jsonErrorHandler);
 		if (latest != std::nullopt) {

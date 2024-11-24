@@ -73,6 +73,7 @@ namespace labbish::Micrologic {
 		{ "SAFE_REDIRECT", "Output redirection to files is unavailable when opening file in safe mode" },
 		{ "UPDATE_GET", "Error opening github repo: \"{}/{}\"" },
 		{ "UPDATE_PARSE", "Error parsing release info" },
+		{ "TIMEOUT", "Update check timeout" },
 	};
 
 	template<typename... Args>
