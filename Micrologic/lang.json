@@ -1,6 +1,8 @@
 {
   "en_us": {
-    "NEW_VER": "Found new version: %s.\nSee https://github.com/%s/%s/releases for release.\nTo avoid update check, create file \"%s.no_update_check\".\n\n",
+    "NEW_VER": "Found new version: %s.\n",
+    "NEW_VER_LINK": "See https://github.com/%s/%s/releases for release.\n",
+    "NEW_VER_AVOID": "To avoid update check, create file \"%s.no_update_check\".\n",
 
     "LINE": "No.%d line added.\n",
     "LINES": "No.%d~%d line added.\n",
@@ -60,7 +62,9 @@
     "NEKO": "Meow~Have a nice day~\n"
   },
   "zh_cn": {
-    "NEW_VER": "发现新版本：%s。\n在https://github.com/%s/%s/releases查看更新。\n\n",
+    "NEW_VER": "发现新版本：%s。\n",
+    "NEW_VER_LINK": "在https://github.com/%s/%s/releases查看更新。\n",
+    "NEW_VER_AVOID": "创建文件\"%s.no_update_check\"以关闭自动更新。\n",
 
     "LINE": "添加了第%d条线。\n",
     "LINES": "添加了第%d~%d条线。\n",

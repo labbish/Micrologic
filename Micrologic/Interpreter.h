@@ -73,6 +73,7 @@ namespace labbish::Micrologic {
 		FILE* out;
 		FILE* defaultOut;
 		Position position;
+		std::optional<VersionInfo> latest = std::nullopt; //nullopt if already newest or has already show message
 
 		Interpreter(Blocks& blocks, std::string exepath, std::string path = "",
 			std::string lang = "en_us", bool Echo = true, FILE* defaultOut = stdout,
@@ -201,7 +202,11 @@ namespace labbish::Micrologic {
 		void writeDebug();
 		std::vector<std::string> getHelp();
 		void writeMessage(std::string message, ...);
+		void writeConsoleMessage(std::string message, ...);
+
 		void checkUpdate();
+		void showUpdateMessage(); //Note: assumes that latest is not nullopt
+		void flushUpdateMessage();
 
 		virtual void redirect(std::string outfile);
 

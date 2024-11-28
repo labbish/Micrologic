@@ -613,7 +613,7 @@ namespace labbish::Micrologic {
 			}
 			fprintf(out, "\n");
 		}
-		writeError("NO_LANG", lang);
+		else writeError("NO_LANG", lang);
 	}
 	void Interpreter::version() {
 		writeMessage("VERSION", to_string(RepoInfo::Version).c_str());
@@ -743,6 +743,14 @@ namespace labbish::Micrologic {
 			va_end(args);
 		}
 	}
+	void Interpreter::writeConsoleMessage(std::string message, ...) {
+		if (Echo) {
+			va_list args;
+			va_start(args, message);
+			vprintf(getMessage(lang, message).c_str(), args);
+			va_end(args);
+		}
+	}
 
 	void Interpreter::checkUpdate() {
 		if (std::filesystem::exists(std::filesystem::path(exepath) / ".no_update_check")) return;
@@ -758,9 +766,20 @@ namespace labbish::Micrologic {
 		std::optional<std::string> latest = UpdateChecker::getLatestReleaseName(RepoInfo::Author, RepoInfo::Name,
 			webErrorHandler, jsonErrorHandler);
 		if (latest != std::nullopt) {
-			if (RepoInfo::Version != VersionInfo(*latest))
-				writeMessage("NEW_VER", to_string(VersionInfo(*latest)).c_str(),
-					RepoInfo::Author.c_str(), RepoInfo::Name.c_str(), (exepath + StandardSlash).c_str());
+			if (RepoInfo::Version != VersionInfo(*latest)) this->latest = VersionInfo(*latest);
+		}
+	}
+	void Interpreter::showUpdateMessage() {
+		printf("\033[1;36m");
+		writeConsoleMessage("NEW_VER", to_string(*latest).c_str());
+		writeConsoleMessage("NEW_VER_LINK", RepoInfo::Author.c_str(), RepoInfo::Name.c_str());
+		writeConsoleMessage("NEW_VER_AVOID", (exepath + StandardSlash).c_str());
+		printf("\033[0m");
+	}
+	void Interpreter::flushUpdateMessage() {
+		if (latest != std::nullopt) {
+			showUpdateMessage();
+			latest = std::nullopt;
 		}
 	}
 
