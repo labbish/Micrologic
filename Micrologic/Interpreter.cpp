@@ -778,10 +778,6 @@ namespace labbish::Micrologic {
 		std::regex html(R"(<(.*?)>)");
 		content = std::regex_replace(content, html, "");
 
-		//remove issue number
-		std::regex issue(R"(#\s*\d+|\(\s*#\s*\d+\s*\))");
-		content = std::regex_replace(content, issue, "");
-
 		//remove last line (NOTES)
 		size_t lastNewlinePos = content.find_last_of('\n');
 		if (lastNewlinePos != std::string::npos) content.erase(lastNewlinePos);
