@@ -11,6 +11,7 @@
 #include <array>
 #include <cstdarg>
 #include <filesystem>
+#include <regex>
 #include "Blocks.h"
 #include "Messages.h"
 #include "RepoInfo.h"
@@ -74,6 +75,7 @@ namespace labbish::Micrologic {
 		FILE* defaultOut;
 		Position position;
 		std::optional<VersionInfo> latest = std::nullopt; //nullopt if already newest or has already show message
+		std::optional<std::string> latestContent = std::nullopt;
 
 		Interpreter(Blocks& blocks, std::string exepath, std::string path = "",
 			std::string lang = "en_us", bool Echo = true, FILE* defaultOut = stdout,
@@ -205,7 +207,9 @@ namespace labbish::Micrologic {
 		void writeConsoleMessage(std::string message, ...);
 
 		void checkUpdate();
+		std::string formatUpdateContent(std::string);
 		void showUpdateMessage(); //Note: assumes that latest is not nullopt
+		void showUpdateContent();
 		void flushUpdateMessage();
 
 		virtual void redirect(std::string outfile);

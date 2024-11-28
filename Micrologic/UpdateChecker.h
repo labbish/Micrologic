@@ -62,4 +62,22 @@ namespace labbish::Micrologic::UpdateChecker {
 			return std::nullopt;
 		}
 	}
+	inline std::optional<std::string> getLatestReleaseContent(const std::string& owner, const std::string& repo,
+		const std::function<void(const std::string&, const std::string&)>& webErrorHandler
+		= [](const std::string&, const std::string&) {},
+		const std::function<void(const std::string&, const std::string&)>& jsonErrorHandler
+		= [](const std::string&, const std::string&) {},
+		const std::function<void(const std::string&, const std::string&)>& timeoutHandler
+		= [](const std::string&, const std::string&) {}) {
+		try {
+			std::optional<std::string> releaseInfo = getLatestRelease(owner, repo, webErrorHandler, timeoutHandler);
+			if (releaseInfo == std::nullopt) return std::nullopt;
+			nlohmann::json releaseJson = nlohmann::json::parse(*releaseInfo);
+			return releaseJson["body"].get<std::string>();
+		}
+		catch (...) {
+			jsonErrorHandler(owner, repo);
+			return std::nullopt;
+		}
+	}
 }

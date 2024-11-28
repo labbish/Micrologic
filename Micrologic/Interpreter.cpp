@@ -765,9 +765,33 @@ namespace labbish::Micrologic {
 			};
 		std::optional<std::string> latest = UpdateChecker::getLatestReleaseName(RepoInfo::Author, RepoInfo::Name,
 			webErrorHandler, jsonErrorHandler);
-		if (latest != std::nullopt) {
-			if (RepoInfo::Version != VersionInfo(*latest)) this->latest = VersionInfo(*latest);
-		}
+		std::optional<std::string> content = UpdateChecker::getLatestReleaseContent(RepoInfo::Author, RepoInfo::Name,
+			webErrorHandler, jsonErrorHandler);
+		if (latest != std::nullopt)
+			if (RepoInfo::Version != VersionInfo(*latest)) {
+				this->latest = VersionInfo(*latest);
+				if (content != std::nullopt) latestContent = formatUpdateContent(*content);
+			}
+	}
+	std::string Interpreter::formatUpdateContent(std::string content) {
+		//remove HTML
+		std::regex html(R"(<(.*?)>)");
+		content = std::regex_replace(content, html, "");
+
+		//remove issue number
+		std::regex issue(R"(#\s*\d+|\(\s*#\s*\d+\s*\))");
+		content = std::regex_replace(content, issue, "");
+
+		//remove last line (NOTES)
+		size_t lastNewlinePos = content.find_last_of('\n');
+		if (lastNewlinePos != std::string::npos) content.erase(lastNewlinePos);
+		else content.clear();
+
+		//remove empty line
+		std::regex empty(R"(^\s*$)");
+		content = std::regex_replace(content, empty, "");
+
+		return content;
 	}
 	void Interpreter::showUpdateMessage() {
 		printf("\033[1;36m");
@@ -776,9 +800,15 @@ namespace labbish::Micrologic {
 		writeConsoleMessage("NEW_VER_AVOID", (exepath + StandardSlash).c_str());
 		printf("\033[0m");
 	}
+	void Interpreter::showUpdateContent() {
+		printf("\033[36m");
+		writeConsoleMessage("NEW_VER_CONTENT", latestContent->c_str());
+		printf("\033[0m");
+	}
 	void Interpreter::flushUpdateMessage() {
 		if (latest != std::nullopt) {
 			showUpdateMessage();
+			showUpdateContent();
 			latest = std::nullopt;
 		}
 	}
