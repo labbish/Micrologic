@@ -613,7 +613,7 @@ namespace labbish::Micrologic {
 			}
 			fprintf(out, "\n");
 		}
-		else writeError("NO_LANG", lang);
+		else writeError("NO_LANG", lan);
 	}
 	void Interpreter::version() {
 		writeMessage("VERSION", to_string(RepoInfo::Version).c_str());
