@@ -28,7 +28,7 @@ namespace labbish::Micrologic::UpdateChecker {
 				curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, WriteCallback);
 				curl_easy_setopt(curl, CURLOPT_WRITEDATA, &readBuffer);
 				curl_easy_setopt(curl, CURLOPT_USERAGENT, "libcurl-agent/1.0");
-				curl_easy_setopt(curl, CURLOPT_TIMEOUT, 5);
+				curl_easy_setopt(curl, CURLOPT_TIMEOUT, 10);
 				res = curl_easy_perform(curl);
 				curl_easy_cleanup(curl);
 				if (res == CURLE_OPERATION_TIMEDOUT) {
@@ -56,6 +56,24 @@ namespace labbish::Micrologic::UpdateChecker {
 			if (releaseInfo == std::nullopt) return std::nullopt;
 			nlohmann::json releaseJson = nlohmann::json::parse(*releaseInfo);
 			return releaseJson["name"].get<std::string>();
+		}
+		catch (...) {
+			jsonErrorHandler(owner, repo);
+			return std::nullopt;
+		}
+	}
+	inline std::optional<std::string> getLatestReleaseContent(const std::string& owner, const std::string& repo,
+		const std::function<void(const std::string&, const std::string&)>& webErrorHandler
+		= [](const std::string&, const std::string&) {},
+		const std::function<void(const std::string&, const std::string&)>& jsonErrorHandler
+		= [](const std::string&, const std::string&) {},
+		const std::function<void(const std::string&, const std::string&)>& timeoutHandler
+		= [](const std::string&, const std::string&) {}) {
+		try {
+			std::optional<std::string> releaseInfo = getLatestRelease(owner, repo, webErrorHandler, timeoutHandler);
+			if (releaseInfo == std::nullopt) return std::nullopt;
+			nlohmann::json releaseJson = nlohmann::json::parse(*releaseInfo);
+			return releaseJson["body"].get<std::string>();
 		}
 		catch (...) {
 			jsonErrorHandler(owner, repo);
