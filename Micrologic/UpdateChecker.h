@@ -30,12 +30,27 @@ namespace labbish::Micrologic::UpdateChecker {
 				curl_easy_setopt(curl, CURLOPT_USERAGENT, "libcurl-agent/1.0");
 				curl_easy_setopt(curl, CURLOPT_TIMEOUT, 5);
 				curl_easy_setopt(curl, CURLOPT_CONNECTTIMEOUT, 5);
+				curl_easy_setopt(curl, CURLOPT_ACCEPTTIMEOUT_MS, 5000);
 				curl_easy_setopt(curl, CURLOPT_LOW_SPEED_LIMIT, 10);
-				curl_easy_setopt(curl, CURLOPT_LOW_SPEED_TIME, 30);
+				curl_easy_setopt(curl, CURLOPT_LOW_SPEED_TIME, 15);
+				curl_easy_setopt(curl, CURLOPT_DNS_CACHE_TIMEOUT, 5);
+				curl_easy_setopt(curl, CURLOPT_SERVER_RESPONSE_TIMEOUT, 5);
 
 				res = curl_easy_perform(curl);
 				curl_easy_cleanup(curl);
 				if (res == CURLE_OPERATION_TIMEDOUT) {
+					double totalTime, connectTime, namelookupTime, pretransferTime, startTransferTime;
+					/*curl_easy_getinfo(curl, CURLINFO_TOTAL_TIME, &totalTime);
+					curl_easy_getinfo(curl, CURLINFO_CONNECT_TIME, &connectTime);
+					curl_easy_getinfo(curl, CURLINFO_NAMELOOKUP_TIME, &namelookupTime);
+					curl_easy_getinfo(curl, CURLINFO_PRETRANSFER_TIME, &pretransferTime);
+					curl_easy_getinfo(curl, CURLINFO_STARTTRANSFER_TIME, &startTransferTime);
+					std::clog << "Total Time: " << totalTime << " seconds\n";
+					std::clog << "DNS Time: " << namelookupTime << " seconds\n";
+					std::clog << "Connect Time: " << connectTime << " seconds\n";
+					std::clog << "Pretransfer Time: " << pretransferTime << " seconds\n";
+					std::clog << "Start Transfer Time: " << startTransferTime << " seconds\n";*/
+
 					timeoutHandler(owner, repo);
 					return std::nullopt;
 				}
@@ -48,39 +63,42 @@ namespace labbish::Micrologic::UpdateChecker {
 			return std::nullopt;
 		}
 	}
-	inline std::optional<std::string> getLatestReleaseName(const std::string& owner, const std::string& repo,
+	inline std::string currentOwner, currentRepo;
+	inline std::optional<std::string> latestRelease;
+	inline void storeLatestRelease(const std::string& owner, const std::string& repo,
 		const std::function<void(const std::string&, const std::string&)>& webErrorHandler
-		= [](const std::string&, const std::string&) {},
-		const std::function<void(const std::string&, const std::string&)>& jsonErrorHandler
 		= [](const std::string&, const std::string&) {},
 		const std::function<void(const std::string&, const std::string&)>& timeoutHandler
 		= [](const std::string&, const std::string&) {}) {
+		currentOwner = owner;
+		currentRepo = repo;
+		latestRelease = getLatestRelease(owner, repo, webErrorHandler, timeoutHandler);
+	}
+	inline std::optional<std::string> getLatestReleaseName(
+		const std::function<void(const std::string&, const std::string&)>& jsonErrorHandler
+		= [](const std::string&, const std::string&) {}) {
 		try {
-			std::optional<std::string> releaseInfo = getLatestRelease(owner, repo, webErrorHandler, timeoutHandler);
+			std::optional<std::string> releaseInfo = latestRelease;
 			if (releaseInfo == std::nullopt) return std::nullopt;
 			nlohmann::json releaseJson = nlohmann::json::parse(*releaseInfo);
 			return releaseJson["name"].get<std::string>();
 		}
 		catch (...) {
-			jsonErrorHandler(owner, repo);
+			jsonErrorHandler(currentOwner, currentRepo);
 			return std::nullopt;
 		}
 	}
-	inline std::optional<std::string> getLatestReleaseContent(const std::string& owner, const std::string& repo,
-		const std::function<void(const std::string&, const std::string&)>& webErrorHandler
-		= [](const std::string&, const std::string&) {},
+	inline std::optional<std::string> getLatestReleaseContent(
 		const std::function<void(const std::string&, const std::string&)>& jsonErrorHandler
-		= [](const std::string&, const std::string&) {},
-		const std::function<void(const std::string&, const std::string&)>& timeoutHandler
 		= [](const std::string&, const std::string&) {}) {
 		try {
-			std::optional<std::string> releaseInfo = getLatestRelease(owner, repo, webErrorHandler, timeoutHandler);
+			std::optional<std::string> releaseInfo = latestRelease;
 			if (releaseInfo == std::nullopt) return std::nullopt;
 			nlohmann::json releaseJson = nlohmann::json::parse(*releaseInfo);
 			return releaseJson["body"].get<std::string>();
 		}
 		catch (...) {
-			jsonErrorHandler(owner, repo);
+			jsonErrorHandler(currentOwner, currentRepo);
 			return std::nullopt;
 		}
 	}

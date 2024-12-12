@@ -784,10 +784,9 @@ namespace labbish::Micrologic {
 		auto timeoutHandler = [this](const std::string& owner, const std::string& repo) {
 			writeError("TIMEOUT");
 			};
-		std::optional<std::string> latest = UpdateChecker::getLatestReleaseName(RepoInfo::Owner, RepoInfo::Name,
-			webErrorHandler, jsonErrorHandler);
-		std::optional<std::string> content = UpdateChecker::getLatestReleaseContent(RepoInfo::Owner, RepoInfo::Name,
-			webErrorHandler, jsonErrorHandler);
+		UpdateChecker::storeLatestRelease(RepoInfo::Owner, RepoInfo::Name, webErrorHandler, timeoutHandler);
+		std::optional<std::string> latest = UpdateChecker::getLatestReleaseName(jsonErrorHandler);
+		std::optional<std::string> content = UpdateChecker::getLatestReleaseContent(jsonErrorHandler);
 		if (latest != std::nullopt)
 			if (RepoInfo::Version != VersionInfo(*latest)) {
 				this->latest = VersionInfo(*latest);
