@@ -8,7 +8,7 @@ namespace labbish::Micrologic {
 	struct RepoInfo {
 		static const std::string Name;
 		static const std::string Owner;
-		static const std::unordered_set<std::wstring> Contributors;
+		static const std::vector<std::wstring> Contributors;
 		static const VersionInfo Version;
 	};
 }

@@ -633,7 +633,7 @@ namespace labbish::Micrologic {
 		writeConsoleMessage("CREDITS1", RepoInfo::Name.c_str(), to_string(RepoInfo::Version).c_str());
 		writeConsoleMessage("CREDITS2", RepoInfo::Owner.c_str());
 		writeConsoleMessage("CREDITS3");
-		for (const std::wstring& contributor : RepoInfo::Contributors) wprintf(L"%ls  ", contributor.c_str());
+		for (const std::wstring& contributor : RepoInfo::Contributors) printf("%ls  ", contributor.c_str());
 		fprintf(out, "\n");
 	}
 	void Interpreter::neko() {

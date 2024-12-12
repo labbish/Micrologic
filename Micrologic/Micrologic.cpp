@@ -12,7 +12,7 @@ int main(int argc, const char* argv[]) {
 	Blocks blocks;
 	std::string exepath(_getcwd(NULL, 0));
 	Interpreter Micrologic(blocks, exepath);
-	std::thread updateThread(checkUpdateInThread, std::ref(Micrologic));
+	std::jthread updateThread(checkUpdateInThread, std::ref(Micrologic));
 	if (argc == 2) {
 		Micrologic.command("open " + std::string(argv[1]));
 	}
@@ -22,6 +22,5 @@ int main(int argc, const char* argv[]) {
 		Micrologic.command(cmd);
 		if (Micrologic.Exit == 1) break;
 	}
-	updateThread.join();
 	return 0;
 }
