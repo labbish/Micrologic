@@ -381,7 +381,7 @@ namespace labbish::Micrologic {
 			fin.open(f1, std::ios::in);
 			nextPath = pathPart(f1);
 		}
-		if (nextPath != "") interpreter->path = path = nextPath;
+		if (nextPath != "") interpreter->path = nextPath;
 		char fcmd[256] = "";
 		if (!assertGoodFile(fin, f)) return;
 		writeMessage("OPEN", f1.c_str());
@@ -389,6 +389,7 @@ namespace labbish::Micrologic {
 			if (perStep) pause();
 			interpreter->command(fcmd);
 		}
+		path = interpreter->path;
 		if (Echo) fprintf(out, "\n");
 	}
 	void Interpreter::open(std::string f) {
@@ -547,8 +548,16 @@ namespace labbish::Micrologic {
 		lines = exportLineData(blocks);
 		for (std::string line : lines) fprintf(out, "%s\n", filterFileANSI(line).c_str());
 	}
-	void Interpreter::qSave() {
-		std::string save = exepath + StandardSlash + "quick_load.mcl";
+	void Interpreter::qSave(int_ index) {
+		if (!assertInRange(index, 0, 10)) return;
+		std::string saveDirectory = std::format("{}{}{}", exepath, StandardSlash, QuickSaveDirectory);
+		std::string save = std::format("{}{}slot_{}.mcl", saveDirectory, StandardSlash, *index);
+		bool exist = std::filesystem::exists(saveDirectory);
+		if (!exist) exist = std::filesystem::create_directories(saveDirectory);
+		if (!exist) {
+			writeError("CANNOT_CREATE", saveDirectory);
+			return;
+		}
 		FILE* fout = fopen(save.c_str(), "w");
 		if (fout == NULL) {
 			writeError("CANNOT_WRITE", save);
@@ -559,8 +568,10 @@ namespace labbish::Micrologic {
 		fclose(fout);
 		writeMessage("QSAVE");
 	}
-	void Interpreter::qLoad() {
-		std::string save = exepath + StandardSlash + "quick_load.mcl";
+	void Interpreter::qLoad(int_ index) {
+		if (!assertInRange(index, 0, 10)) return;
+		std::string saveDirectory = std::format("{}{}{}", exepath, StandardSlash, QuickSaveDirectory);
+		std::string save = std::format("{}{}slot_{}.mcl", saveDirectory, StandardSlash, *index);
 		open(save);
 		writeMessage("QLOAD");
 	}
@@ -684,7 +695,9 @@ namespace labbish::Micrologic {
 		else if (args[0] == "export" && args.size() == 1) export__();
 		else if (args[0] == "export-all" && args.size() == 1) export_all();
 		else if (args[0] == "qsave" && args.size() == 1) qSave();
+		else if (args[0] == "qsave" && args.size() == 2) qSave(toInt(args[1]));
 		else if (args[0] == "qload" && args.size() == 1) qLoad();
+		else if (args[0] == "qload" && args.size() == 2) qLoad(toInt(args[1]));
 		else if (args[0] == "echo" && args.size() > 1) echo(cmd.substr(5, cmd.size()));
 		else if (args[0] == "@echo" && args.size() == 2) _echo(toInt(args[1]));
 		else if (args[0] == "@clock" && args.size() == 2) _clock(toInt(args[1]));

@@ -76,6 +76,7 @@ namespace labbish::Micrologic {
 		Position position;
 		std::optional<VersionInfo> latest = std::nullopt; //nullopt if already newest or has already show message
 		std::optional<std::string> latestContent = std::nullopt;
+		const std::string QuickSaveDirectory = "quick_save";
 
 		Interpreter(Blocks& blocks, std::string exepath, std::string path = "",
 			std::string lang = "en_us", bool Echo = true, FILE* defaultOut = stdout,
@@ -129,23 +130,17 @@ namespace labbish::Micrologic {
 			}
 			return true;
 		}
-		template <typename T>
-		inline bool assertInRange(int_ i, std::vector<T> vec) {
+		inline bool assertInRange(int_ i, size_t min, size_t max) {
 			if (i == std::nullopt) return false;
-			if (i < 0 || i >= vec.size()) {
+			if (i < min && i > max) {
 				writeError("OUT_OF_RANGE", *i);
 				return false;
 			}
 			return true;
 		}
-		template <typename T>
-		inline bool assertInRange(int_ i, StableVector<T> vec) {
-			if (i == std::nullopt) return false;
-			if (i < 0 || i >= vec.size()) {
-				writeError("OUT_OF_RANGE", *i);
-				return false;
-			}
-			return true;
+		template <typename vecT>
+		inline bool assertInRange(int_ i, vecT vec) {
+			return assertInRange(i, 0, vec.size() - 1);
 		}
 		template <typename T, typename T1>
 		inline bool assertInMap(T t, std::map<T, T1> mp) {
@@ -256,8 +251,8 @@ namespace labbish::Micrologic {
 		virtual void del(std::string, int_);
 		virtual void export__();
 		virtual void export_all();
-		virtual void qSave();
-		virtual void qLoad();
+		virtual void qSave(int_ = 0);
+		virtual void qLoad(int_ = 0);
 		virtual void echo(std::string);
 		virtual void _echo(int_);
 		virtual void _clock(int_);
@@ -280,8 +275,8 @@ namespace labbish::Micrologic {
 		SubInterpreter(const Interpreter& father) :Interpreter(father) {}
 
 		void unavailableMessage(std::string);
-		inline void qSave() override { unavailableMessage("qsave"); }
-		inline void qLoad() override { unavailableMessage("qload"); }
+		inline void qSave(int_) override { unavailableMessage("qsave"); }
+		inline void qLoad(int_) override { unavailableMessage("qload"); }
 	};
 
 	class SafeInterpreter :public SubInterpreter {

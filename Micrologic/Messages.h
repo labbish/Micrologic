@@ -67,6 +67,7 @@ namespace labbish::Micrologic {
 		{ "LINE_TYPE", "Type of line No.{} should be {}" },
 		{ "SAME_TYPE", "Type of line No.{} and line No.{} should be the same" },
 		{ "CANNOT_OPEN", "Error opening \"{}\"" },
+		{ "CANNOT_CREATE", "Error creating \"{}\"" },
 		{ "CANNOT_WRITE", "Error writing \"{}\"" },
 		{ "SUB_MODE", "Command \"{}\" is unavailable when opening file" },
 		{ "SAFE_MODE", "Command \"{}\" is unavailable when opening file in safe mode" },
