@@ -629,6 +629,13 @@ namespace labbish::Micrologic {
 	void Interpreter::version() {
 		writeMessage("VERSION", to_string(RepoInfo::Version).c_str());
 	}
+	void Interpreter::credits() {
+		writeConsoleMessage("CREDITS1", RepoInfo::Name.c_str(), to_string(RepoInfo::Version).c_str());
+		writeConsoleMessage("CREDITS2", RepoInfo::Owner.c_str());
+		writeConsoleMessage("CREDITS3");
+		for (const std::wstring& contributor : RepoInfo::Contributors) wprintf(L"%ls  ", contributor.c_str());
+		fprintf(out, "\n");
+	}
 	void Interpreter::neko() {
 		writeMessage("NEKO");
 	}
@@ -710,6 +717,7 @@ namespace labbish::Micrologic {
 		else if (args[0] == "help" && args.size() == 2) help(args[1]);
 		else if (args[0] == "lang" && args.size() == 2) __lang(args[1]);
 		else if (args[0] == "version" && args.size() == 1) version();
+		else if (args[0] == "credits" && args.size() == 1) credits();
 		else if (args[0] == "neko" && args.size() == 1) neko();
 		else writeError("NO_CMD", cmd);
 		writeDebug();
@@ -776,9 +784,9 @@ namespace labbish::Micrologic {
 		auto timeoutHandler = [this](const std::string& owner, const std::string& repo) {
 			writeError("TIMEOUT");
 			};
-		std::optional<std::string> latest = UpdateChecker::getLatestReleaseName(RepoInfo::Author, RepoInfo::Name,
+		std::optional<std::string> latest = UpdateChecker::getLatestReleaseName(RepoInfo::Owner, RepoInfo::Name,
 			webErrorHandler, jsonErrorHandler);
-		std::optional<std::string> content = UpdateChecker::getLatestReleaseContent(RepoInfo::Author, RepoInfo::Name,
+		std::optional<std::string> content = UpdateChecker::getLatestReleaseContent(RepoInfo::Owner, RepoInfo::Name,
 			webErrorHandler, jsonErrorHandler);
 		if (latest != std::nullopt)
 			if (RepoInfo::Version != VersionInfo(*latest)) {
@@ -805,7 +813,7 @@ namespace labbish::Micrologic {
 	void Interpreter::showUpdateMessage() {
 		printf("\033[1;36m");
 		writeConsoleMessage("NEW_VER", to_string(*latest).c_str());
-		writeConsoleMessage("NEW_VER_LINK", RepoInfo::Author.c_str(), RepoInfo::Name.c_str());
+		writeConsoleMessage("NEW_VER_LINK", RepoInfo::Owner.c_str(), RepoInfo::Name.c_str());
 		writeConsoleMessage("NEW_VER_AVOID", (exepath + StandardSlash).c_str());
 		printf("\033[0m");
 	}
@@ -826,7 +834,7 @@ namespace labbish::Micrologic {
 		out = defaultOut;
 		if (outfile == "stdout") out = stdout;
 		else if (outfile != "") {
-			FILE* fout = fopen(outfile.c_str(), "a");
+			FILE* fout = _fopen(outfile.c_str(), "a");
 			if (fout == NULL) writeError("CANNOT_WRITE", outfile);
 			else out = fout;
 		}

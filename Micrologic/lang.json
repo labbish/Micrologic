@@ -60,6 +60,9 @@
     "LANG": "Set language to %s.\n",
     "LANG_LIST": "All languages: ",
     "VERSION": "Current version is %s. \n",
+    "CREDITS1": "%s %s ",
+    "CREDITS2": "by %s\n",
+    "CREDITS3": "Contributors: ",
     "NEKO": "Meow~Have a nice day~\n"
   },
   "zh_cn": {
