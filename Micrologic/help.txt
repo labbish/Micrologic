@@ -76,4 +76,5 @@ help                                                      Show help.
 help [COMMAND]                                            Show help for a designated command.
 lang list                                                 list all avilable languages. 
 lang [LANGUAGE]                                           Change language.
+credits                                                   Show software credits.
 version                                                   Show current version.
