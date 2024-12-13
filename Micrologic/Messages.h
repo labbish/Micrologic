@@ -58,6 +58,7 @@ namespace labbish::Micrologic {
 		{ "NO_MSG", "Message not found: \"{}\".\"{}\"" },
 		{ "NO_KEY", "Key not found: \"{}\"" },
 		{ "NO_FILE", "File not found: \"{}\"" },
+		{ "NO_HELP", "Help message not found: \"{}\"" },
 		{ "NO_CMD", "No such command or incorrect argument count: \"{}\"" },
 		{ "NOT_NUM", "Not a num: \"{}\"" },
 		{ "NOT_POSITIVE", "Should be positive: {}" },

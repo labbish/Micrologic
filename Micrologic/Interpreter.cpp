@@ -608,9 +608,14 @@ namespace labbish::Micrologic {
 		}
 	}
 	void Interpreter::help(std::string cmd) {
+		bool found = false;
 		for (std::string l : getHelp()) {
-			if (firstWord(l) == cmd) fprintf(out, (l + "\n").c_str());
+			if (firstWord(l) == cmd) {
+				fprintf(out, (l + "\n").c_str());
+				found = true;
+			}
 		}
+		if (!found) writeError("NO_HELP", cmd);
 	}
 	void Interpreter::__lang(std::string lan) {
 		if (hasLanguage(lan)) {
@@ -630,10 +635,10 @@ namespace labbish::Micrologic {
 		writeMessage("VERSION", to_string(RepoInfo::Version).c_str());
 	}
 	void Interpreter::credits() {
-		writeConsoleMessage("CREDITS1", RepoInfo::Name.c_str(), to_string(RepoInfo::Version).c_str());
-		writeConsoleMessage("CREDITS2", RepoInfo::Owner.c_str());
-		writeConsoleMessage("CREDITS3");
-		for (const std::wstring& contributor : RepoInfo::Contributors) printf("%ls  ", contributor.c_str());
+		writeMessage("CREDITS1", RepoInfo::Name.c_str(), to_string(RepoInfo::Version).c_str());
+		writeMessage("CREDITS2", RepoInfo::Owner.c_str());
+		writeMessage("CREDITS3");
+		for (const std::wstring& contributor : RepoInfo::Contributors) fprintf(out, "%ls  ", contributor.c_str());
 		fprintf(out, "\n");
 	}
 	void Interpreter::neko() {
