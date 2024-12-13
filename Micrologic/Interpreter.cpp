@@ -599,8 +599,9 @@ namespace labbish::Micrologic {
 	}
 	void Interpreter::clear() {
 		clear_screen();
-		writeMessage("CLEAR");
 		blocks.clear();
+		Neko::nekoStage = 0;
+		writeMessage("CLEAR");
 	}
 	void Interpreter::help() {
 		for (std::string l : getHelp()) {
@@ -615,7 +616,8 @@ namespace labbish::Micrologic {
 				found = true;
 			}
 		}
-		if (!found) writeError("NO_HELP", cmd);
+		if (cmd == "neko") Neko::nekoError();
+		else if (!found) writeError("NO_HELP", cmd);
 	}
 	void Interpreter::__lang(std::string lan) {
 		if (hasLanguage(lan)) {
@@ -629,6 +631,7 @@ namespace labbish::Micrologic {
 			}
 			fprintf(out, "\n");
 		}
+		else if (lan == "neko") Neko::nekoError();
 		else writeError("NO_LANG", lan);
 	}
 	void Interpreter::version() {

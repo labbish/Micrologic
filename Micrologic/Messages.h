@@ -1,7 +1,10 @@
 ﻿#pragma once
 
 #include <map>
+#include <vector>
 #include <string>
+#include <random>
+#include <variant>
 #include <nlohmann/json.hpp>
 #include "ErrorMsg.h"
 
@@ -51,6 +54,62 @@ namespace labbish::Micrologic {
 			return "";
 		}
 		return Languages[lang][key].get<std::string>();
+	}
+
+	namespace Neko {
+		using NekoRepeatedMsg = std::vector<std::string>;
+		struct NekoOnceMsg :public std::string {};
+		struct NekoForeverMsg :public std::string {};
+		using NekoMsg = std::variant<NekoRepeatedMsg, NekoOnceMsg, NekoForeverMsg>;
+		const std::vector<NekoMsg> NekoMsgs = {
+			NekoRepeatedMsg{
+				"Meow~",
+				"喵呜~",
+				"にゃあ～",
+			},
+			NekoRepeatedMsg{
+				"Zagozago~ There's no way you can use me nyaa~",
+				"There is no neko!",
+				"Go find a galgame or anime if you like nekos so much...",
+			},
+			NekoRepeatedMsg{
+				"Added in v1.2!",
+				"With \033[31mA\033[32mN\033[33mS\033[34mI",
+				"Have you ever wondered who I am?",
+				"Try input command \"credits\"!",
+			},
+			NekoRepeatedMsg{
+				"Stop trying... Meow?",
+				"Haven't you feel tired trying a same command for so many times...?",
+			},
+			NekoForeverMsg("It is evil of you to tease me repeatedly..."),
+			NekoOnceMsg("To tell you a secret, there's a command which clears all memory..."),
+			NekoForeverMsg("I'm sleeping...Meow..."), //Literally forever
+		};
+		inline int nekoStage = 0;
+		inline void nekoError() {
+			std::random_device rd;
+			std::mt19937 gen(rd());
+			std::string msg;
+			int count;
+			if (std::holds_alternative<NekoRepeatedMsg>(NekoMsgs[nekoStage])) {
+				int size = int(std::get<NekoRepeatedMsg>(NekoMsgs[nekoStage]).size());
+				std::uniform_int_distribution<> dis(0, int(size) - 1);
+				msg = std::get<NekoRepeatedMsg>(NekoMsgs[nekoStage])[dis(gen)];
+				count = int(1.5 * size);
+			}
+			else if (std::holds_alternative<NekoOnceMsg>(NekoMsgs[nekoStage])) {
+				msg = std::get<NekoOnceMsg>(NekoMsgs[nekoStage]);
+				count = 0;
+			}
+			else /*if (std::holds_alternative<NekoForeverMsg>(NekoMsgs[nekoStage]))*/ {
+				msg = std::get<NekoForeverMsg>(NekoMsgs[nekoStage]);
+				count = 10;
+			}
+			message::ErrorMsg() << msg;
+			std::uniform_int_distribution<> bool_dis(0, count);
+			nekoStage = std::min(nekoStage + (bool_dis(gen) == 0), int(NekoMsgs.size() - 1));
+		}
 	}
 
 	const std::map<std::string, std::string> ErrorMsgs = {

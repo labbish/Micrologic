@@ -39,18 +39,6 @@ namespace labbish::Micrologic::UpdateChecker {
 				res = curl_easy_perform(curl);
 				curl_easy_cleanup(curl);
 				if (res == CURLE_OPERATION_TIMEDOUT) {
-					/*double totalTime, connectTime, namelookupTime, pretransferTime, startTransferTime;
-					curl_easy_getinfo(curl, CURLINFO_TOTAL_TIME, &totalTime);
-					curl_easy_getinfo(curl, CURLINFO_CONNECT_TIME, &connectTime);
-					curl_easy_getinfo(curl, CURLINFO_NAMELOOKUP_TIME, &namelookupTime);
-					curl_easy_getinfo(curl, CURLINFO_PRETRANSFER_TIME, &pretransferTime);
-					curl_easy_getinfo(curl, CURLINFO_STARTTRANSFER_TIME, &startTransferTime);
-					std::clog << "Total Time: " << totalTime << " seconds\n";
-					std::clog << "DNS Time: " << namelookupTime << " seconds\n";
-					std::clog << "Connect Time: " << connectTime << " seconds\n";
-					std::clog << "Pretransfer Time: " << pretransferTime << " seconds\n";
-					std::clog << "Start Transfer Time: " << startTransferTime << " seconds\n";*/
-
 					timeoutHandler(owner, repo);
 					return std::nullopt;
 				}
