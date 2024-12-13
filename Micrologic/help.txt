@@ -65,8 +65,8 @@ del [BLOCKTYPE] [BLOCK]                                   Delete a designated bl
 del line [ALINE]                                          Delete a designated line. No bugs were found in test but you'd better be careful of those blocks without line connection.
 export                                                    Export current blocks and line structures.
 export-all                                                Export current blocks, line structures, and values of lines.
-qsave                                                     Quick save.
-qload                                                     Quick load.
+qsave [SLOT]                                              Quick save to a designated slot (range from 0 to 10). Saves to slot 0 as default.
+qload [SLOT]                                              Quick load from a designated slot (range from 0 to 10). Loads from slot 0 as default.
 echo [MESSAGE]                                            Outputs a message.
 @echo [SHOW]                                              Set whether to echo messages. Requires 0 or 1.
 @clock [SHOW]                                             Set whether to show time of command running. Requires 0 or 1.
@@ -76,4 +76,5 @@ help                                                      Show help.
 help [COMMAND]                                            Show help for a designated command.
 lang list                                                 list all avilable languages. 
 lang [LANGUAGE]                                           Change language.
+credits                                                   Show software credits.
 version                                                   Show current version.

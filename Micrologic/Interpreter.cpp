@@ -381,7 +381,7 @@ namespace labbish::Micrologic {
 			fin.open(f1, std::ios::in);
 			nextPath = pathPart(f1);
 		}
-		if (nextPath != "") interpreter->path = path = nextPath;
+		if (nextPath != "") interpreter->path = nextPath;
 		char fcmd[256] = "";
 		if (!assertGoodFile(fin, f)) return;
 		writeMessage("OPEN", f1.c_str());
@@ -389,6 +389,7 @@ namespace labbish::Micrologic {
 			if (perStep) pause();
 			interpreter->command(fcmd);
 		}
+		path = interpreter->path;
 		if (Echo) fprintf(out, "\n");
 	}
 	void Interpreter::open(std::string f) {
@@ -547,8 +548,16 @@ namespace labbish::Micrologic {
 		lines = exportLineData(blocks);
 		for (std::string line : lines) fprintf(out, "%s\n", filterFileANSI(line).c_str());
 	}
-	void Interpreter::qSave() {
-		std::string save = exepath + StandardSlash + "quick_load.mcl";
+	void Interpreter::qSave(int_ index) {
+		if (!assertInRange(index, 0, 10)) return;
+		std::string saveDirectory = std::format("{}{}{}", exepath, StandardSlash, QuickSaveDirectory);
+		std::string save = std::format("{}{}slot_{}.mcl", saveDirectory, StandardSlash, *index);
+		bool exist = std::filesystem::exists(saveDirectory);
+		if (!exist) exist = std::filesystem::create_directories(saveDirectory);
+		if (!exist) {
+			writeError("CANNOT_CREATE", saveDirectory);
+			return;
+		}
 		FILE* fout = fopen(save.c_str(), "w");
 		if (fout == NULL) {
 			writeError("CANNOT_WRITE", save);
@@ -559,8 +568,10 @@ namespace labbish::Micrologic {
 		fclose(fout);
 		writeMessage("QSAVE");
 	}
-	void Interpreter::qLoad() {
-		std::string save = exepath + StandardSlash + "quick_load.mcl";
+	void Interpreter::qLoad(int_ index) {
+		if (!assertInRange(index, 0, 10)) return;
+		std::string saveDirectory = std::format("{}{}{}", exepath, StandardSlash, QuickSaveDirectory);
+		std::string save = std::format("{}{}slot_{}.mcl", saveDirectory, StandardSlash, *index);
 		open(save);
 		writeMessage("QLOAD");
 	}
@@ -588,8 +599,9 @@ namespace labbish::Micrologic {
 	}
 	void Interpreter::clear() {
 		clear_screen();
-		writeMessage("CLEAR");
 		blocks.clear();
+		Neko::nekoStage = 0;
+		writeMessage("CLEAR");
 	}
 	void Interpreter::help() {
 		for (std::string l : getHelp()) {
@@ -597,9 +609,15 @@ namespace labbish::Micrologic {
 		}
 	}
 	void Interpreter::help(std::string cmd) {
+		bool found = false;
 		for (std::string l : getHelp()) {
-			if (firstWord(l) == cmd) fprintf(out, (l + "\n").c_str());
+			if (firstWord(l) == cmd) {
+				fprintf(out, (l + "\n").c_str());
+				found = true;
+			}
 		}
+		if (cmd == "neko") Neko::nekoError();
+		else if (!found) writeError("NO_HELP", cmd);
 	}
 	void Interpreter::__lang(std::string lan) {
 		if (hasLanguage(lan)) {
@@ -613,10 +631,18 @@ namespace labbish::Micrologic {
 			}
 			fprintf(out, "\n");
 		}
+		else if (lan == "neko") Neko::nekoError();
 		else writeError("NO_LANG", lan);
 	}
 	void Interpreter::version() {
 		writeMessage("VERSION", to_string(RepoInfo::Version).c_str());
+	}
+	void Interpreter::credits() {
+		writeMessage("CREDITS1", RepoInfo::Name.c_str(), to_string(RepoInfo::Version).c_str());
+		writeMessage("CREDITS2", RepoInfo::Owner.c_str());
+		writeMessage("CREDITS3");
+		for (const std::wstring& contributor : RepoInfo::Contributors) fprintf(out, "%ls  ", contributor.c_str());
+		fprintf(out, "\n");
 	}
 	void Interpreter::neko() {
 		writeMessage("NEKO");
@@ -684,7 +710,9 @@ namespace labbish::Micrologic {
 		else if (args[0] == "export" && args.size() == 1) export__();
 		else if (args[0] == "export-all" && args.size() == 1) export_all();
 		else if (args[0] == "qsave" && args.size() == 1) qSave();
+		else if (args[0] == "qsave" && args.size() == 2) qSave(toInt(args[1]));
 		else if (args[0] == "qload" && args.size() == 1) qLoad();
+		else if (args[0] == "qload" && args.size() == 2) qLoad(toInt(args[1]));
 		else if (args[0] == "echo" && args.size() > 1) echo(cmd.substr(5, cmd.size()));
 		else if (args[0] == "@echo" && args.size() == 2) _echo(toInt(args[1]));
 		else if (args[0] == "@clock" && args.size() == 2) _clock(toInt(args[1]));
@@ -697,6 +725,7 @@ namespace labbish::Micrologic {
 		else if (args[0] == "help" && args.size() == 2) help(args[1]);
 		else if (args[0] == "lang" && args.size() == 2) __lang(args[1]);
 		else if (args[0] == "version" && args.size() == 1) version();
+		else if (args[0] == "credits" && args.size() == 1) credits();
 		else if (args[0] == "neko" && args.size() == 1) neko();
 		else writeError("NO_CMD", cmd);
 		writeDebug();
@@ -763,10 +792,9 @@ namespace labbish::Micrologic {
 		auto timeoutHandler = [this](const std::string& owner, const std::string& repo) {
 			writeError("TIMEOUT");
 			};
-		std::optional<std::string> latest = UpdateChecker::getLatestReleaseName(RepoInfo::Author, RepoInfo::Name,
-			webErrorHandler, jsonErrorHandler);
-		std::optional<std::string> content = UpdateChecker::getLatestReleaseContent(RepoInfo::Author, RepoInfo::Name,
-			webErrorHandler, jsonErrorHandler);
+		UpdateChecker::storeLatestRelease(RepoInfo::Owner, RepoInfo::Name, webErrorHandler, timeoutHandler);
+		std::optional<std::string> latest = UpdateChecker::getLatestReleaseName(jsonErrorHandler);
+		std::optional<std::string> content = UpdateChecker::getLatestReleaseContent(jsonErrorHandler);
 		if (latest != std::nullopt)
 			if (RepoInfo::Version != VersionInfo(*latest)) {
 				this->latest = VersionInfo(*latest);
@@ -792,7 +820,7 @@ namespace labbish::Micrologic {
 	void Interpreter::showUpdateMessage() {
 		printf("\033[1;36m");
 		writeConsoleMessage("NEW_VER", to_string(*latest).c_str());
-		writeConsoleMessage("NEW_VER_LINK", RepoInfo::Author.c_str(), RepoInfo::Name.c_str());
+		writeConsoleMessage("NEW_VER_LINK", RepoInfo::Owner.c_str(), RepoInfo::Name.c_str());
 		writeConsoleMessage("NEW_VER_AVOID", (exepath + StandardSlash).c_str());
 		printf("\033[0m");
 	}
@@ -813,7 +841,7 @@ namespace labbish::Micrologic {
 		out = defaultOut;
 		if (outfile == "stdout") out = stdout;
 		else if (outfile != "") {
-			FILE* fout = fopen(outfile.c_str(), "a");
+			FILE* fout = _fopen(outfile.c_str(), "a");
 			if (fout == NULL) writeError("CANNOT_WRITE", outfile);
 			else out = fout;
 		}
