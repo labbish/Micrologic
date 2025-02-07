@@ -84,18 +84,7 @@ namespace labbish::Micrologic {
 	} // delete all dirty chars
 
 	void Interpreter::normalizeArgs(std::vector<std::string>& strs) {
-		for (int i = 0; i < strs.size(); i++) {
-			normalizeArg(strs[i]);
-		}
-	}
-
-	bool Interpreter::isNum(std::string str) {
-		if (str == "") return false;
-		for (int i = 0; i < str.length(); i++) {
-			char c = str[i];
-			if ((c < '0' || c > '9') && !(i == 0 && c == '-')) return false;
-		}
-		return true;
+		std::for_each(strs.begin(), strs.end(), [this](std::string& str) {normalizeArg(str); });
 	}
 
 	int_ Interpreter::toInt(char c) {
@@ -103,10 +92,6 @@ namespace labbish::Micrologic {
 		return toInt(str);
 	}
 	int_ Interpreter::toInt(std::string str) {
-		if (!isNum(str)) {
-			writeError("NOT_NUM", str);
-			return std::nullopt;
-		}
 		try {
 			return std::stoi(str);
 		}
@@ -121,20 +106,19 @@ namespace labbish::Micrologic {
 
 	std::vector<int_> Interpreter::toInt(std::vector<std::string> strs) {
 		std::vector<int_> ints;
-		for (std::string str : strs) {
-			ints.push_back(toInt(str));
-		}
+		std::transform(strs.begin(), strs.end(), std::back_inserter(ints),
+			[this](const std::string& str) { return toInt(str); });
 		return ints;
 	}
 
 	std::array<bool, 4> Interpreter::toBoolArray(std::array<int, 4> ints) {
 		std::array<bool, 4> bools{};
-		for (int i = 0; i < 4; i++) bools[i] = ints[i];
+		std::transform(ints.begin(), ints.end(), bools.begin(), [](int a) {return bool(a); });
 		return bools;
 	}
 
 	std::string Interpreter::quotedPart(std::string cmd) {
-		int x = (int)cmd.find("\""), y = (int)cmd.rfind("\"");
+		size_t x = cmd.find("\""), y = cmd.rfind("\"");
 		std::string f = cmd.substr(x + 1, y - x - 1);
 		return f;
 	}
@@ -149,14 +133,12 @@ namespace labbish::Micrologic {
 
 	std::string Interpreter::addSlash(std::string p) {
 		if (p == "") return "";
-		if (p[p.size() - 1] != StandardSlash[0]) p = p + StandardSlash;
+		if (p.back() != StandardSlash[0]) p += StandardSlash;
 		return p;
 	}
 
 	std::string Interpreter::convertSlash(std::string filename) {
-		for (int i = 0; i < filename.length(); i++) {
-			if (filename[i] == Slash[0]) filename[i] = StandardSlash[0];
-		}
+		std::replace(filename.begin(), filename.end(), Slash[0], StandardSlash[0]);
 		return filename;
 	}
 
@@ -170,13 +152,13 @@ namespace labbish::Micrologic {
 
 	std::string Interpreter::trim(std::string cmd) {
 		if (cmd == "") return cmd;
-		while (isspace(cmd[0])) cmd.erase(0, 1);
+		while (isspace(cmd.front())) cmd.erase(0, 1);
 		if (cmd == "") return cmd;
-		while (isspace(cmd[cmd.length() - 1])) cmd.erase(cmd.length() - 1, 1);
+		while (isspace(cmd.back())) cmd.pop_back();
 		if (cmd.length() >= 2) {
-			if (cmd[0] == '\"' && cmd[cmd.length() - 1] == '\"') {
+			if (cmd.front() == '\"' && cmd.back() == '\"') {
 				cmd.erase(0, 1);
-				cmd.erase(cmd.length() - 1, 1);
+				cmd.pop_back();
 			}
 		}
 		return cmd;
@@ -185,7 +167,7 @@ namespace labbish::Micrologic {
 	std::pair<std::string, std::string> Interpreter::cutRedirection(std::string cmd) {
 		size_t pos;
 		if (cmd == "") return { "", "" };
-		if (cmd[cmd.length() - 1] != '\"') pos = cmd.rfind(">");
+		if (cmd.back() != '\"') pos = cmd.rfind(">");
 		else {
 			size_t quote_pos2 = cmd.rfind("\"", cmd.length() - 1);
 			size_t quote_pos1 = cmd.rfind("\"", quote_pos2 - 1);
@@ -207,12 +189,10 @@ namespace labbish::Micrologic {
 	}
 
 	std::string Interpreter::combineLine(std::vector<std::string> args) {
-		std::string cmd = "";
-		for (std::string arg : args) {
-			cmd += (arg + " ");
-		}
-		if (cmd != "") cmd = cmd.substr(0, cmd.length() - 1);
-		return cmd;
+		return std::accumulate(args.begin(), args.end(), std::string(),
+			[](std::string a, const std::string& b) -> std::string {
+				return a.empty() ? b : a + " " + b;
+			});
 	}
 
 	void Interpreter::end() {
@@ -221,7 +201,7 @@ namespace labbish::Micrologic {
 	void Interpreter::line(int_ count) {
 		if (!assertPositive(count)) return;
 		int before = (int)blocks.L.size();
-		for (int i = 0; i < count; i++) blocks.add({ Line(Line::LINE) });
+		for (int i = 0; i < count; i++) blocks.add(Line(Line::LINE));
 		int after = (int)blocks.L.size();
 		if (count == 1) writeMessage("LINE", after - 1);
 		else writeMessage("LINES", before, after - 1);
@@ -229,7 +209,7 @@ namespace labbish::Micrologic {
 	void Interpreter::wline(int_ count) {
 		if (!assertPositive(count)) return;
 		int before = (int)blocks.L.size();
-		for (int i = 0; i < count; i++) blocks.add({ Line(Line::WIDELINE) });
+		for (int i = 0; i < count; i++) blocks.add(Line(Line::WIDELINE));
 		int after = (int)blocks.L.size();
 		if (count == 1) writeMessage("WLINE", after - 1);
 		else writeMessage("WLINES", before, after - 1);
@@ -239,7 +219,7 @@ namespace labbish::Micrologic {
 		if (!assertInRange(b, blocks.L)) return;
 		if (!assertLineType(a, Line::LINE)) return;
 		if (!assertLineType(b, Line::LINE)) return;
-		blocks.add({ BlockN({&(blocks.L[*a])},{&(blocks.L[*b])}) });
+		blocks.add(BlockN({ &(blocks.L[*a]) }, { &(blocks.L[*b]) }));
 		writeMessage("BLOCKN", (int)blocks.N.size() - 1, *a, *b);
 	}
 	void Interpreter::A(int_ a, int_ b, int_ c) {
@@ -249,7 +229,7 @@ namespace labbish::Micrologic {
 		if (!assertLineType(a, Line::LINE)) return;
 		if (!assertLineType(b, Line::LINE)) return;
 		if (!assertLineType(c, Line::LINE)) return;
-		blocks.add({ BlockA({&(blocks.L[*a]),&(blocks.L[*b])},{&(blocks.L[*c])}) });
+		blocks.add(BlockA({ &(blocks.L[*a]),&(blocks.L[*b]) }, { &(blocks.L[*c]) }));
 		writeMessage("BLOCKA", (int)blocks.A.size() - 1, *a, *b, *c);
 	}
 	void Interpreter::R(int_ a, int_ b, int_ c) {
@@ -259,14 +239,14 @@ namespace labbish::Micrologic {
 		if (!assertLineType(a, Line::LINE)) return;
 		if (!assertLineType(b, Line::LINE)) return;
 		if (!assertLineType(c, Line::LINE)) return;
-		blocks.add({ BlockR({&(blocks.L[*a]),&(blocks.L[*b])},{&(blocks.L[*c])}) });
+		blocks.add(BlockR({ &(blocks.L[*a]),&(blocks.L[*b]) }, { &(blocks.L[*c]) }));
 		writeMessage("BLOCKR", (int)blocks.R.size() - 1, *a, *b, *c);
 	}
 	void Interpreter::T(int_ a, int_ b) {
 		if (!assertInRange(a, blocks.L)) return;
 		if (!assertInRange(b, blocks.L)) return;
 		if (!assertSameLineType(a, b)) return;
-		blocks.add({ BlockT({&(blocks.L[*a])},{&(blocks.L[*b])}) });
+		blocks.add(BlockT({ &(blocks.L[*a]) }, { &(blocks.L[*b]) }));
 		writeMessage("BLOCKT", (int)blocks.T.size() - 1, *a, *b);
 	}
 	void Interpreter::C(std::array<int_, 4> a, int_ b) {
@@ -274,7 +254,7 @@ namespace labbish::Micrologic {
 		for (int i = 0; i < 4; i++) if (!assertLineType(a[i], Line::LINE)) return;
 		if (!assertInRange(b, blocks.L)) return;
 		if (!assertLineType(b, Line::WIDELINE)) return;
-		blocks.add({ BlockC({&(blocks.L[*a[0]]),&(blocks.L[*a[1]]),&(blocks.L[*a[2]]),&(blocks.L[*a[3]])},{&(blocks.L[*b])}) });
+		blocks.add(BlockC({ &(blocks.L[*a[0]]),&(blocks.L[*a[1]]),&(blocks.L[*a[2]]),&(blocks.L[*a[3]]) }, { &(blocks.L[*b]) }));
 		writeMessage("BLOCKC", (int)blocks.C.size() - 1, *a[0], *a[1], *a[2], *a[3], *b);
 	}
 	void Interpreter::P(int_ a, std::array<int_, 4> b) {
@@ -282,7 +262,7 @@ namespace labbish::Micrologic {
 		if (!assertLineType(a, Line::WIDELINE)) return;
 		for (int i = 0; i < 4; i++) if (!assertInRange(b[i], blocks.L)) return;
 		for (int i = 0; i < 4; i++) if (!assertLineType(b[i], Line::LINE)) return;
-		blocks.add({ BlockP({&(blocks.L[*a])},{&(blocks.L[*b[0]]),&(blocks.L[*b[1]]),&(blocks.L[*b[2]]),&(blocks.L[*b[3]])}) });
+		blocks.add(BlockP({ &(blocks.L[*a]) }, { &(blocks.L[*b[0]]),&(blocks.L[*b[1]]),&(blocks.L[*b[2]]),&(blocks.L[*b[3]]) }));
 		writeMessage("BLOCKP", (int)blocks.P.size() - 1, *a, *b[0], *b[1], *b[2], *b[3]);
 	}
 	void Interpreter::check() {
@@ -303,7 +283,7 @@ namespace labbish::Micrologic {
 	}
 	void Interpreter::set(int_ a, std::array<int_, 4> value) {
 		if (!assertInRange(a, blocks.L)) return;
-		for (int i = 0; i < 4; i++) if (!assertBit(value[i])) return;
+		if (!assertBits(value)) return;
 		if (!assertLineType(a, Line::WIDELINE)) return;
 		blocks.L[*a].set(toBoolArray(*value));
 		writeMessage("SETW", *a, *value[0], *value[1], *value[2], *value[3]);
@@ -321,7 +301,7 @@ namespace labbish::Micrologic {
 	}
 	void Interpreter::input(int_ a, std::array<int_, 4> value) {
 		if (!assertInRange(a, blocks.inputs)) return;
-		for (int i = 0; i < 4; i++) if (!assertBit(value[i])) return;
+		if (!assertBits(value)) return;
 		blocks.input(*a, toBoolArray(*value));
 		writeMessage("INPUTW", *value[0], *value[1], *value[2], *value[3], a);
 	}
@@ -659,7 +639,7 @@ namespace labbish::Micrologic {
 		std::string outfile = cutRedirection(cmdline).second;
 		redirect(outfile);
 
-		if (position.has_value()) position->first++;
+		if (position.has_value()) position->line++;
 
 		if (args.size() == 0) {}
 		else if (args[0] == "end" && args.size() == 1) end();
@@ -806,10 +786,9 @@ namespace labbish::Micrologic {
 		std::regex html(R"(<(.*?)>)");
 		content = std::regex_replace(content, html, "");
 
-		//remove last line (NOTES)
-		size_t lastNewlinePos = content.find_last_of('\n');
-		if (lastNewlinePos != std::string::npos) content.erase(lastNewlinePos);
-		else content.clear();
+		//remove NOTES
+		std::regex notes(R"(^Note.*$)");
+		content = std::regex_replace(content, notes, "");
 
 		//remove empty line
 		std::regex empty(R"(^\s*$)");

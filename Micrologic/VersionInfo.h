@@ -17,7 +17,7 @@ namespace labbish {
 		inline VersionInfo() noexcept {}
 		inline VersionInfo(std::vector<int> version) noexcept :version(version) {}
 		inline VersionInfo(std::string version) {
-			if (version == "" || version == "v") throw version_exception("Empty version string");
+			if (version == "" || version == "v") throw version_exception(std::format("Empty version string: \"{}\"", version));
 			if (version[0] != 'v') throw version_exception(std::format("Version string not starting with 'v': \"{}\"", version));
 			version = version.substr(1);
 			std::vector<size_t> dots{};
@@ -33,10 +33,10 @@ namespace labbish {
 					this->version.push_back(std::stoi(num));
 				}
 				catch (const std::invalid_argument&) {
-					throw version_exception(std::format("Version string contain non-number: \"{}\"", num));
+					throw version_exception(std::format("Version string \"{}\" contain non-number: \"{}\"", version, num));
 				}
 				catch (const std::out_of_range&) {
-					throw version_exception(std::format("Version string contain number out of range: \"{}\"", num));
+					throw version_exception(std::format("Version string \"{}\" contain number out of range: \"{}\"", version, num));
 				}
 			}
 		}

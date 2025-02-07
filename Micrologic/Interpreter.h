@@ -40,7 +40,7 @@ namespace labbish::Micrologic {
 	template <typename T>
 	inline std::vector<T> subVec(const std::vector<T>& vec, int start, int end) {
 		if (start < 0 || end > vec.size() || start > end) {
-			throw std::out_of_range("");
+			throw std::out_of_range("Sub-vector index out of range");
 		}
 		return std::vector<T>(vec.begin() + start, vec.begin() + end);
 	}
@@ -59,10 +59,15 @@ namespace labbish::Micrologic {
 	std::vector<std::string> exportStructure(const Blocks&, std::optional<std::string> path = std::nullopt);
 	std::vector<std::string> exportLineData(const Blocks&);
 
+	struct Position {
+		int line;
+		std::string filename;
+
+		Position(int line, std::string filename) : line(line), filename(filename) {}
+	};
+
 	class Interpreter {
 	public:
-		using Position = std::optional<std::pair<int, std::string>>; //(line count, file name)
-
 		bool Echo;
 		bool Exit = false;
 		std::string lang;
@@ -73,14 +78,14 @@ namespace labbish::Micrologic {
 		bool perStep;
 		FILE* out;
 		FILE* defaultOut;
-		Position position;
-		std::optional<VersionInfo> latest = std::nullopt; //nullopt if already newest or has already show message
+		std::optional<Position> position;
+		std::optional<VersionInfo> latest = std::nullopt; //nullopt if already newest or has already shown message
 		std::optional<std::string> latestContent = std::nullopt;
 		const std::string QuickSaveDirectory = "quick_save";
 
 		Interpreter(Blocks& blocks, std::string exepath, std::string path = "",
 			std::string lang = "en_us", bool Echo = true, FILE* defaultOut = stdout,
-			bool debugTime = false, bool perStep = false, Position position = std::nullopt)
+			bool debugTime = false, bool perStep = false, std::optional<Position> position = std::nullopt)
 			:blocks(blocks), exepath(exepath), path(path), lang(lang), Echo(Echo), debugTime(debugTime),
 			perStep(perStep), defaultOut(defaultOut), out(defaultOut), position(position) {
 		}
@@ -110,7 +115,7 @@ namespace labbish::Micrologic {
 		template<typename... Args>
 		inline const void writeError(std::string error, Args... args) {
 			if (position.has_value())
-				message::ErrorMsg::no_prefix() << std::format("At line {}, file \"{}\"", position->first, position->second);
+				message::ErrorMsg::no_prefix() << std::format("At line {}, file \"{}\"", position->line, position->filename);
 			Micrologic::writeError(error, args...);
 		}
 
@@ -130,9 +135,12 @@ namespace labbish::Micrologic {
 			}
 			return true;
 		}
+		inline bool assertBits(std::array<int_, 4> ints) {
+			return std::all_of(ints.begin(), ints.end(), [this](int_ a) {return assertBit(a); });
+		}
 		inline bool assertInRange(int_ i, size_t min, size_t max) {
 			if (i == std::nullopt) return false;
-			if (i < min && i > max) {
+			if (i < min || i > max) {
 				writeError("OUT_OF_RANGE", *i);
 				return false;
 			}
@@ -144,7 +152,7 @@ namespace labbish::Micrologic {
 		}
 		template <typename T, typename T1>
 		inline bool assertInMap(T t, std::map<T, T1> mp) {
-			if (mp.find(t) == mp.end()) {
+			if (!mp.contains(t)) {
 				writeError("NO_KEY", t);
 				return false;
 			}
@@ -179,7 +187,6 @@ namespace labbish::Micrologic {
 		bool isspace(char);
 		void normalizeArg(std::string&);
 		void normalizeArgs(std::vector<std::string>&);
-		bool isNum(std::string);
 		int_ toInt(char);
 		int_ toInt(std::string);
 		std::vector<int_> toInt(std::vector<std::string>);
@@ -191,7 +198,7 @@ namespace labbish::Micrologic {
 		std::string addSlash(std::string filename); //add slash to the end if none
 		std::string convertSlash(std::string filename); //convert slashes
 		std::string subCommand(std::vector<std::string> cmd, size_t pos = 0, size_t len = -1);
-		std::pair<std::string, std::string> cutRedirection(std::string); //cut "command>file" to ("command","file")
+		std::pair<std::string, std::string> cutRedirection(std::string); //cut "command>file" into ("command", "file")
 		std::string trim(std::string); //trim extra space and quotation marks
 		std::vector<std::string> breakLine(std::string);
 		std::string combineLine(std::vector<std::string>);

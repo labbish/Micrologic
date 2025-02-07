@@ -3,18 +3,14 @@
 
 using namespace labbish::Micrologic;
 
-void checkUpdateInThread(Interpreter& Micrologic) {
-	Micrologic.checkUpdate();
-}
-
 int main(int argc, const char* argv[]) {
 	SetEncoding();
 	Blocks blocks;
 	std::string exepath(_getcwd(NULL, 0));
 	Interpreter Micrologic(blocks, exepath);
-	std::jthread updateThread(checkUpdateInThread, std::ref(Micrologic));
+	std::jthread updateThread([&]() {Micrologic.checkUpdate(); });
 	if (argc == 2) {
-		Micrologic.command("open " + std::string(argv[1]));
+		Micrologic.command(std::format("open {}", argv[1]));
 	}
 	while (true) {
 		Micrologic.flushUpdateMessage();

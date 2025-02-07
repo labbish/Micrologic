@@ -92,32 +92,32 @@ namespace labbish::Micrologic {
 		return std::nullopt;
 	}
 
-	void Blocks::add(std::vector<Line> L) {
-		for (const Line& l : L) this->L.push_back(l);
+	void Blocks::add(Line l) {
+		this->L.push_back(l);
 	}
 
-	void Blocks::add(std::vector<BlockN> N) {
-		for (const BlockN& n : N) this->N.push_back(n);
+	void Blocks::add(BlockN n) {
+		this->N.push_back(n);
 	}
 
-	void Blocks::add(std::vector<BlockA> A) {
-		for (const BlockA& a : A) this->A.push_back(a);
+	void Blocks::add(BlockA a) {
+		this->A.push_back(a);
 	}
 
-	void Blocks::add(std::vector<BlockR> R) {
-		for (const BlockR& r : R) this->R.push_back(r);
+	void Blocks::add(BlockR r) {
+		this->R.push_back(r);
 	}
 
-	void Blocks::add(std::vector<BlockT> T) {
-		for (const BlockT& t : T) this->T.push_back(t);
+	void Blocks::add(BlockT t) {
+		this->T.push_back(t);
 	}
 
-	void Blocks::add(std::vector<BlockC> C) {
-		for (const BlockC& c : C) this->C.push_back(c);
+	void Blocks::add(BlockC c) {
+		this->C.push_back(c);
 	}
 
-	void Blocks::add(std::vector<BlockP> P) {
-		for (const BlockP& p : P) this->P.push_back(p);
+	void Blocks::add(BlockP p) {
+		this->P.push_back(p);
 	}
 
 	void Blocks::add(const Blocks& b) {
@@ -128,24 +128,20 @@ namespace labbish::Micrologic {
 		this->Bs.push_back(std::move(b));
 	}
 
-	void Blocks::add(std::vector<Blocks> Bs) {
-		for (const Blocks& b : Bs) this->Bs.push_back(b);
-	}
-
 	void Blocks::tick() {
 		for (int i = 0; i < speed; i++) {
 			for (int i = 0; i < inputLines.size(); i++) {
 				L[inputs[i]].nextValue = L[inputs[i]].value = inputLines[i]->value;
 				for (int j = 0; j < 4; j++) L[inputs[i]].nextWideValue[j] = L[inputs[i]].wideValue[j] = inputLines[i]->wideValue[j];
 			}
-			for (int i = 0; i < N.size(); i++) N[i].tick();
-			for (int i = 0; i < A.size(); i++) A[i].tick();
-			for (int i = 0; i < R.size(); i++) R[i].tick();
-			for (int i = 0; i < T.size(); i++) T[i].tick();
-			for (int i = 0; i < C.size(); i++) C[i].tick();
-			for (int i = 0; i < P.size(); i++) P[i].tick();
-			for (int i = 0; i < Bs.size(); i++) Bs[i].tick();
-			for (int i = 0; i < L.size(); i++) L[i].flush();
+			for (BlockN& n : N) n.tick();
+			for (BlockA& a : A) a.tick();
+			for (BlockR& r : R) r.tick();
+			for (BlockT& t : T) t.tick();
+			for (BlockC& c : C) c.tick();
+			for (BlockP& p : P) p.tick();
+			for (Blocks& b : Bs) b.tick();
+			for (Line& l : L) l.flush();
 			for (int i = 0; i < outputLines.size(); i++) {
 				outputLines[i]->nextValue = outputLines[i]->value = L[outputs[i]].value;
 				for (int j = 0; j < 4; j++) outputLines[i]->nextWideValue[j] = outputLines[i]->wideValue[j] = L[outputs[i]].wideValue[j];
@@ -197,11 +193,11 @@ namespace labbish::Micrologic {
 	}
 
 	bool Blocks::isInput(int line) {
-		return std::count(inputs.begin(), inputs.end(), line) != 0;
+		return std::ranges::contains(inputs, line);
 	}
 
 	bool Blocks::isOutput(int line) {
-		return std::count(outputs.begin(), outputs.end(), line) != 0;
+		return std::ranges::contains(outputs, line);
 	}
 
 	bool Blocks::check() {

@@ -23,7 +23,7 @@ namespace labbish::Micrologic::UpdateChecker {
 			curl_global_init(CURL_GLOBAL_DEFAULT);
 			curl = curl_easy_init();
 			if (curl) {
-				std::string url = "https://api.github.com/repos/" + owner + "/" + repo + "/releases/latest";
+				std::string url = std::format("https://api.github.com/repos/{}/{}/releases/latest", owner, repo);
 				curl_easy_setopt(curl, CURLOPT_URL, url.c_str());
 				curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, WriteCallback);
 				curl_easy_setopt(curl, CURLOPT_WRITEDATA, &readBuffer);
