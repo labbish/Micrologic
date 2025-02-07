@@ -9,7 +9,7 @@ The project aims to create a shell interpreter to run Micrologic. You may check 
 A bit hard to use since there isn't any gui.
 
 ## Requirements
-* Language version: C++20
+* Language version: C++23
 * Supporting Libs: [nlohmann/json](https://github.com/nlohmann/json), [curl/curl](https://github.com/curl/curl), [labbish/StableVector](https://github.com/labbish/StableVector) and [labbish/Debug-Messages](https://github.com/labbish/Debug-Messages)
 
 Have fun.
